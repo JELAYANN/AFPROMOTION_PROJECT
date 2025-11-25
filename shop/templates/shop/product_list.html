@@ -1,0 +1,207 @@
+{% extends "shop/base.html" %}
+{% load humanize %}
+
+{% block title %}Katalog Produk | AF Promotion{% endblock %}
+
+{% block content %}
+
+<style>
+  /* ===== GLOBAL BRANDING ===== */
+  body {
+    background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%);
+    font-family: 'Poppins', sans-serif;
+    color: #2b2424;
+  }
+
+  :root {
+    --af-maroon: #7A0E1A;
+    --af-maroon-soft: #A03B48;
+    --af-soft-paper: #F8F5F4;
+    --af-soft-deep: #EDE3DF;
+    --af-text: #2B2424;
+    --af-muted: #8A7F7C;
+  }
+
+  .catalog-wrapper {
+    max-width: 1180px;
+    margin: 2rem auto 4rem;
+    padding: 1rem;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== HEADER ===== */
+  .catalog-header {
+    text-align: center;
+    padding: 2.5rem 1rem 3rem;
+  }
+
+  .catalog-header .eyebrow {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--af-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .catalog-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--af-maroon);
+    margin-bottom: 0.6rem;
+  }
+
+  .catalog-header p {
+    font-size: 0.95rem;
+    max-width: 580px;
+    margin: 0 auto;
+    line-height: 1.6;
+    color: var(--af-text);
+  }
+
+  .section-divider {
+    width: 70px;
+    height: 3px;
+    background: var(--af-maroon);
+    margin: 1.5rem auto 0;
+    border-radius: 10px;
+  }
+
+  /* ===== GRID PRODUK ===== */
+  .product-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
+  }
+
+  /* ===== CARD ===== */
+  .product-card {
+    background: radial-gradient(circle at top, #ffffff 0%, #f7f4f2 70%, #ece3df 100%);
+    border-radius: 22px;
+    padding: 1.2rem;
+    box-shadow:
+      0 10px 25px rgba(0, 0, 0, 0.08),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .product-card a {
+    /* Targetkan tautan di dalam product-card */
+    text-decoration: none; 
+}
+
+  .product-card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 14px 32px rgba(0, 0, 0, 0.12),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.9);
+  }
+
+  .product-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 16px;
+    margin-bottom: 0.8rem;
+  }
+
+  .product-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    color: var(--af-text);
+    /* Ganti dengan properti standar */
+    text-decoration: none; 
+    }
+
+  /* Harga */
+  .price {
+    color: var(--af-maroon);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .stock {
+    font-size: 0.85rem;
+    color: var(--af-muted);
+  }
+
+  .stock.out {
+    color: #B91C1C;
+    font-weight: 600;
+  }
+
+  /* ===== TOMBOL TAMBAH ===== */
+  .btn-add {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 0.45rem 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: var(--af-maroon);
+    color: #fff;
+    border-radius: 999px;
+    text-decoration: none;
+    box-shadow: 0 6px 14px rgba(122, 14, 26, 0.4);
+    transition: all 0.18s ease;
+  }
+
+  .btn-add:hover {
+    background: var(--af-maroon-soft);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(122, 14, 26, 0.5);
+  }
+
+</style>
+
+<div class="catalog-wrapper">
+
+  <div class="catalog-header">
+    <div class="eyebrow">AF PROMOTION</div>
+    <h1>Katalog Produk</h1>
+    
+    <div class="section-divider"></div>
+  </div>
+
+  {% if products %}
+  <div class="product-grid">
+    {% for product in products %}
+      <div class="product-card">
+
+        <a href="{% url 'shop:cart_add' product.id %}" class="btn-add">Tambah</a>
+
+        <a href="{% url 'shop:product_detail' product.slug %}">
+          {% if product.image %}
+          <img class="product-img" src="{{ product.image.url }}" alt="{{ product.name }}">
+          {% endif %}
+          <h3>{{ product.name }}</h3>
+        </a>
+        <p class="price">Rp {{ product.price|floatformat:0|intcomma }}</p>
+
+        {% if product.stock > 0 %}
+        <p class="stock">Stok: {{ product.stock }}</p>
+        {% else %}
+        <p class="stock out">Stok Habis</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+    <p style="text-align:center; color:var(--af-muted); margin-top:2rem;">Belum ada produk di katalog.</p>
+  {% endif %}
+
+</div>
+
+{% endblock %}

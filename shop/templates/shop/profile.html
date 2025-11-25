@@ -1,0 +1,327 @@
+{% extends "shop/base.html" %}
+{% load humanize %}
+
+{% block title %}Profil Saya | AF Promotion{% endblock %}
+
+{% block content %}
+
+<style>
+  * {
+    font-family: "Poppins", sans-serif !important;
+  }
+
+  body {
+    background: #f7f4f2;
+  }
+
+  .profile-page {
+    max-width: 900px;
+    margin: 3rem auto 4rem;
+    padding: 0 1.5rem;
+    color: #2C2524;
+  }
+
+  .profile-heading {
+    margin-bottom: 2.5rem;
+  }
+
+  .profile-name {
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #7A0E1A;
+    margin-bottom: 0.3rem;
+  }
+
+  .profile-sub {
+    font-size: 0.85rem;
+    color: #8A7F7C;
+  }
+
+  .profile-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+  }
+
+  /* MESSAGES */
+  .messages {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .messages li {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+    border-left: 3px solid #7A0E1A;
+    background: rgba(122, 14, 26, 0.06);
+    color: #7A0E1A;
+    border-radius: 4px;
+  }
+
+  /* FORM STYLE – super minimal */
+  .profile-form-simple {
+    max-width: 420px;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #8A7F7C;
+    margin-bottom: 1.2rem;
+  }
+
+  .field-block {
+    margin-bottom: 1.6rem;
+  }
+
+  .field-block label {
+    display: block;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    color: #8A7F7C;
+    margin-bottom: 0.3rem;
+  }
+
+  .field-block input,
+  .field-block textarea,
+  .field-block select {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid rgba(148, 134, 129, 0.5);
+    padding: 0.4rem 0;
+    font-size: 0.95rem;
+    background: transparent;
+    outline: none;
+    border-radius: 0;
+    transition: border-color 0.15s ease;
+  }
+
+  .field-block textarea {
+    resize: vertical;
+  }
+
+  .field-block input:focus,
+  .field-block textarea:focus,
+  .field-block select:focus {
+    border-bottom-color: #7A0E1A;
+  }
+
+  /* inline row untuk kota & provinsi */
+  .field-row-inline {
+    display: flex;
+    gap: 1.8rem;
+  }
+
+  .field-row-inline .field-block {
+    flex: 1;
+    margin-bottom: 1.4rem;
+  }
+
+  /* SUBMIT BUTTON */
+  .btn-session {
+    margin-top: 0.5rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 999px;
+    border: 1px solid #7A0E1A;
+    background: transparent;
+    color: #7A0E1A;
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .btn-session:hover {
+    background: #7A0E1A;
+    color: #fff;
+  }
+
+  /* ORDER HISTORY PREVIEW – simple */
+  .profile-orders {
+    border-top: 1px solid rgba(180, 166, 160, 0.4);
+    padding-top: 2rem;
+    margin-top: 1rem;
+  }
+
+  .profile-orders-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #8A7F7C;
+    margin-bottom: 1rem;
+  }
+
+  .order-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(220, 210, 206, 0.6);
+    font-size: 0.9rem;
+  }
+
+  .order-line strong {
+    font-weight: 600;
+  }
+
+  .order-line-total {
+    color: #7A0E1A;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .order-line a {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    color: #8A7F7C;
+    margin-left: 1rem;
+  }
+
+  .order-line a:hover {
+    color: #7A0E1A;
+  }
+
+  .view-all-link {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    color: #8A7F7C;
+  }
+
+  .view-all-link:hover {
+    color: #7A0E1A;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .profile-page {
+      margin-top: 2.2rem;
+    }
+
+    .field-row-inline {
+      flex-direction: column;
+      gap: 0;
+    }
+  }
+</style>
+
+<div class="profile-page">
+
+  <div class="profile-heading">
+    <div class="profile-name">
+      {% if user_obj.first_name or user_obj.last_name %}
+        {{ user_obj.first_name }} {{ user_obj.last_name }}
+      {% else %}
+        {{ user_obj.username }}
+      {% endif %}
+    </div>
+    <div class="profile-sub">
+      Kelola informasi akun dan alamat pengiriman Anda.
+    </div>
+  </div>
+
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <div class="profile-layout">
+    <form method="post" class="profile-form-simple">
+      {% csrf_token %}
+
+      <!-- DATA AKUN -->
+      <div class="section-label">Data Akun</div>
+
+      <div class="field-block">
+        <label>Nama Depan</label>
+        <input type="text" name="first_name" value="{{ user_obj.first_name }}">
+      </div>
+
+      <div class="field-block">
+        <label>Nama Belakang</label>
+        <input type="text" name="last_name" value="{{ user_obj.last_name }}">
+      </div>
+
+      <div class="field-block">
+        <label>Email</label>
+        <input type="email" name="email" value="{{ user_obj.email }}">
+      </div>
+
+      <!-- KONTAK & ALAMAT -->
+      <div class="section-label" style="margin-top:2rem;">Kontak & Alamat</div>
+
+      <div class="field-block">
+        <label for="{{ form.phone.id_for_label }}">No. Telepon</label>
+        {{ form.phone }}
+      </div>
+
+      <div class="field-block">
+        <label for="{{ form.address.id_for_label }}">Alamat</label>
+        {{ form.address }}
+      </div>
+
+      <div class="field-row-inline">
+        <div class="field-block">
+          <label for="{{ form.city.id_for_label }}">Kota</label>
+          {{ form.city }}
+        </div>
+
+        <div class="field-block">
+          <label for="{{ form.province.id_for_label }}">Provinsi</label>
+          {{ form.province }}
+        </div>
+      </div>
+
+      <div class="field-block">
+        <label for="{{ form.postal_code.id_for_label }}">Kode Pos</label>
+        {{ form.postal_code }}
+      </div>
+
+      <button type="submit" class="btn-session">
+        Simpan Perubahan
+      </button>
+    </form>
+
+    <div class="profile-orders">
+      <div class="profile-orders-title">Riwayat Pesanan Terakhir</div>
+
+      {% if orders %}
+        {% for order in orders|slice:":5" %}
+          <div class="order-line">
+            <div>
+              <strong>#{{ order.id }}</strong>
+              <span style="color:#8A7F7C; font-size:0.8rem;">
+                &nbsp;• {{ order.created_at|date:"d M Y H:i" }}
+                &nbsp;• {{ order.get_status_display }}
+              </span>
+            </div>
+            <div>
+              <span class="order-line-total">Rp {{ order.total|intcomma }}</span>
+              <a href="{% url 'shop:order_detail' order.id %}">DETAIL</a>
+            </div>
+          </div>
+        {% endfor %}
+
+        <a href="{% url 'shop:order_history' %}" class="view-all-link">
+          Lihat semua pesanan →
+        </a>
+      {% else %}
+        <p style="font-size:0.9rem; color:#8A7F7C;">Belum ada pesanan.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+x   

@@ -1,0 +1,191 @@
+{% extends "shop/base.html" %}
+{% load humanize %}
+
+{% block title %}Keranjang Belanja | AF Promotion{% endblock %}
+
+{% block content %}
+
+<style>
+  * {
+    font-family: "Poppins", sans-serif !important;
+  }
+
+  body {
+    background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%);
+  }
+
+  .cart-wrap {
+    max-width: 980px;
+    margin: 2.2rem auto 4rem;
+    padding: 1rem 1.5rem;
+    animation: fadeIn 0.6s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .cart-title {
+    text-align: center;
+    font-size: 1.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7A0E1A;
+    margin-bottom: 0.6rem;
+  }
+
+  .cart-subtext {
+    color: #7A6E6C;
+    font-size: 0.92rem;
+    text-align: center;
+    margin-bottom: 2.4rem;
+  }
+
+  /* ===== CARD STYLE ===== */
+  .cart-item {
+    background: radial-gradient(circle at top left, #ffffff 0%, #f7f4f2 70%, #ede4df 100%);
+    border-radius: 20px;
+    padding: 1.4rem 1.2rem;
+    box-shadow:
+      0 12px 28px rgba(0,0,0,0.08),
+      inset 0 0 0 1px rgba(255,255,255,0.6);
+    margin-bottom: 1.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cart-info {
+    max-width: 68%;
+  }
+
+  .cart-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2C2524;
+    margin-bottom: 0.2rem;
+  }
+
+  .cart-meta {
+    font-size: 0.87rem;
+    color: #7A6E6C;
+    margin-bottom: 0.25rem;
+  }
+
+  .cart-price {
+    font-size: 0.95rem;
+    color: #7A0E1A;
+    font-weight: 600;
+  }
+
+  .btn-remove {
+    background: rgba(185, 28, 28, 0.12);
+    color: #991B1B;
+    padding: 0.45rem 0.9rem;
+    text-decoration: none;
+    font-size: 0.78rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    transition: all 0.15s ease;
+  }
+
+  .btn-remove:hover {
+    background: rgba(185, 28, 28, 0.22);
+  }
+
+  /* TOTAL BOX */
+  .cart-total-box {
+    margin-top: 2.2rem;
+    background: #fff;
+    border-radius: 18px;
+    padding: 1.6rem;
+    box-shadow:
+      0 10px 26px rgba(0,0,0,0.06),
+      inset 0 0 0 1px rgba(255,255,255,0.7);
+  }
+
+  .cart-total-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2C2524;
+    margin-bottom: 0.7rem;
+  }
+
+  .cart-total-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #7A0E1A;
+    margin-bottom: 1.4rem;
+  }
+
+  .btn-checkout {
+    display: block;
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border-radius: 999px;
+    background: #7A0E1A;
+    color: #fff;
+    font-size: 0.92rem;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-shadow: 0 14px 30px rgba(122,14,26,0.4);
+    transition: all 0.17s ease;
+  }
+
+  .btn-checkout:hover {
+    background: #A03B48;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(122,14,26,0.5);
+  }
+
+  /* EMPTY STATE */
+  .cart-empty {
+    text-align: center;
+    color: #7A6E6C;
+    font-size: 1rem;
+    padding: 3rem 1rem;
+  }
+</style>
+
+
+<div class="cart-wrap">
+  <h2 class="cart-title">Keranjang Belanja</h2>x    
+
+  {% if items %}
+  
+    {% for item in items %}
+    <div class="cart-item">
+
+      <div class="cart-info">
+        <div class="cart-name">{{ item.product.name }}</div>
+        <div class="cart-meta">Qty: {{ item.quantity }}</div>
+        <div class="cart-price">
+          Rp {{ item.product.price|intcomma }}
+          <span style="color: #7A6E6C; font-size:.85rem;">&times; {{ item.quantity }}</span>
+        </div>
+      </div>
+
+      <a href="{% url 'shop:cart_remove' item.id %}" class="btn-remove">Hapus</a>
+
+    </div>
+    {% endfor %}
+
+    <div class="cart-total-box">
+      <div class="cart-total-title">Total Pembayaran</div>
+      <div class="cart-total-value">Rp {{ total|intcomma }}</div>
+
+      <a href="{% url 'shop:checkout' %}" class="btn-checkout">Lanjut ke Checkout</a>
+    </div>
+
+  {% else %}
+    <div class="cart-empty">Keranjang Anda masih kosong.</div>
+  {% endif %}
+</div>
+
+{% endblock %}

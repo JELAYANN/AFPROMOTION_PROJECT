@@ -1,0 +1,506 @@
+{% extends "shop/base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Beranda | AF Promotion{% endblock %}
+
+{% block content %}
+
+<style>
+  /* ========= GLOBAL ========= */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: #F5F3F2;
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  .home-wrapper {
+    width: 100%;
+    max-width: 1280px;
+    margin: 2.5rem auto 4rem;
+    padding: 0 1.5rem;
+  }
+
+  /* ========= HERO AREA + ANIMATED BACKGROUND ========= */
+  .home-hero-shell {
+    position: relative;
+    padding: 1.5rem 0 0;
+  }
+
+  /* Lingkaran orbit tipis di belakang banner */
+  .hero-orbit {
+    position: absolute;
+    border-radius: 999px;
+    border: 3px dashed rgba(122, 14, 26, 0.18);
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(0.2px);
+  }
+
+  .hero-orbit.orbit-1 {
+    width: 420px;
+    height: 420px;
+    top: -60px;
+    left: -80px;
+    animation: orbit-slow 26s linear infinite;
+  }
+
+  .hero-orbit.orbit-2 {
+    width: 320px;
+    height: 320px;
+    bottom: -40px;
+    right: -40px;
+    animation: orbit-slow 32s linear infinite reverse;
+  }
+
+  /* Titik-titik kecil yang bergerak */
+  .hero-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(122, 14, 26, 0.22);
+    box-shadow: 0 0 12px rgba(122, 14, 26, 0.32);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-dot.dot-1 {
+    top: 18%;
+    left: 8%;
+    animation: dot-drift-1 18s ease-in-out infinite;
+  }
+
+  .hero-dot.dot-2 {
+    top: 65%;
+    left: 16%;
+    animation: dot-drift-2 22s ease-in-out infinite;
+  }
+
+  .hero-dot.dot-3 {
+    top: 22%;
+    right: 10%;
+    animation: dot-drift-3 20s ease-in-out infinite;
+  }
+
+  @keyframes orbit-slow {
+    0% { transform: rotate(0deg) translate3d(0,0,0); }
+    100% { transform: rotate(360deg) translate3d(0,0,0); }
+  }
+
+  @keyframes dot-drift-1 {
+    0%   { transform: translate3d(0, 0, 0); opacity: .7; }
+    25%  { transform: translate3d(40px, -10px, 0); opacity: .9; }
+    50%  { transform: translate3d(20px, 25px, 0); opacity: .6; }
+    75%  { transform: translate3d(-10px, 10px, 0); opacity: .8; }
+    100% { transform: translate3d(0, 0, 0); opacity: .7; }
+  }
+
+  @keyframes dot-drift-2 {
+    0%   { transform: translate3d(0, 0, 0); opacity: .6; }
+    30%  { transform: translate3d(25px, -5px, 0); opacity: .85; }
+    55%  { transform: translate3d(40px, 15px, 0); opacity: .7; }
+    80%  { transform: translate3d(10px, 25px, 0); opacity: .5; }
+    100% { transform: translate3d(0, 0, 0); opacity: .6; }
+  }
+
+  @keyframes dot-drift-3 {
+    0%   { transform: translate3d(0, 0, 0); opacity: .7; }
+    20%  { transform: translate3d(-20px, 10px, 0); opacity: .9; }
+    50%  { transform: translate3d(-35px, -5px, 0); opacity: .6; }
+    80%  { transform: translate3d(-10px, -20px, 0); opacity: .8; }
+    100% { transform: translate3d(0, 0, 0); opacity: .7; }
+  }
+
+  /* ========= HERO BANNER ========= */
+  .home-hero-card {
+    position: relative;
+    width: 100%;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #FFFFFF;
+    box-shadow:
+      0 18px 40px rgba(0,0,0,0.08),
+      inset 0 0 0 1px rgba(255,255,255,0.9);
+    z-index: 1; /* pastikan di atas animasi */
+  }
+
+  .home-hero-card img {
+    width: 100%;
+    display: block;
+    height: auto;
+  }
+
+  /* ========= TAGLINE DI BAWAH BANNER ========= */
+  .home-tagline {
+    margin-top: 1.6rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #8A7F7C;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  /* ========= ACTION BUTTONS ========= */
+  .home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.9rem;
+    margin-top: 1.5rem;
+  }
+
+  .home-btn-primary,
+  .home-btn-outline {
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.8rem;
+    border-radius: 999px;
+    padding: 0.7rem 1.7rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, color 0.12s ease;
+    white-space: nowrap;
+  }
+
+  .home-btn-primary {
+    background: #7A0E1A;
+    color: #FFFFFF;
+    font-weight: 600;
+    box-shadow: 0 12px 26px rgba(122, 14, 26, 0.35);
+  }
+
+  .home-btn-primary:hover {
+    background: #A03B48;
+    transform: translateY(-1px);
+    box-shadow: 0 16px 32px rgba(122, 14, 26, 0.45);
+  }
+
+  .home-btn-outline {
+    border: 1px solid rgba(122, 14, 26, 0.5);
+    color: #7A0E1A;
+    background: rgba(255,255,255,0.9);
+    font-weight: 500;
+  }
+
+  .home-btn-outline:hover {
+    background: #7A0E1A;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 26px rgba(122, 14, 26, 0.35);
+  }
+
+  /* ========= KATALOG SECTION ========= */
+  #katalog {
+    margin-top: 3rem;
+  }
+
+  .catalog-header {
+    text-align: center;
+    margin-bottom: 1.8rem;
+  }
+
+  .catalog-eyebrow {
+    font-size: 0.8rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #8A7F7C;
+    margin-bottom: 0.4rem;
+  }
+
+  .catalog-title {
+    font-size: 1.4rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #7A0E1A;
+    margin-bottom: 0.6rem;
+  }
+
+  .catalog-subtext {
+    font-size: 0.9rem;
+    color: #5B4A47;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .home-catalog-card {
+    margin-top: 1.4rem;
+    border-radius: 18px;
+    background: transparent;
+    box-shadow: none;
+    padding: 1.6rem 0 1.8rem;
+  }
+
+  .catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 960px) {
+    .catalog-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .home-wrapper {
+      margin-top: 1.5rem;
+    }
+
+    .home-hero-card {
+      border-radius: 12px;
+    }
+
+    .catalog-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .hero-orbit {
+      opacity: 0.4;
+    }
+  }
+
+  /* ========= PRODUCT CARD ========= */
+  .catalog-item {
+    position: relative;
+    background: radial-gradient(circle at top left, #FFFFFF 0%, #F5F3F2 65%, #E9DED9 100%);
+    border-radius: 16px;
+    padding: 0.9rem 0.9rem 1rem 1rem;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 450px;
+    min-height: 300px;
+  }
+
+  .catalog-item a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .catalog-item img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
+  .catalog-item-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 0.45rem;
+    color: #2C2524;
+  }
+
+  .catalog-item-bottom {
+    margin-top: auto;
+    padding-top: 0.4rem;
+    border-top: 1px solid rgba(230,219,214,0.8);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .catalog-price {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #7A0E1A;
+  }
+
+  .catalog-stock {
+    font-size: 0.8rem;
+    color: #8A7F7C;
+  }
+
+  .catalog-stock.out {
+    color: #B91C1C;
+    font-weight: 600;
+  }
+
+  .catalog-empty {
+    font-size: 0.9rem;
+    color: #8A7F7C;
+    text-align: center;
+  }
+  .hero-line {
+  position: absolute;
+  background: rgba(122,14,26,0.12);
+  opacity: 0.35;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Garis horizontal */
+.line-h-1 {
+  top: 20%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  animation: line-move-h 14s linear infinite;
+}
+
+.line-h-2 {
+  top: 60%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  animation: line-move-h 20s linear infinite reverse;
+}
+
+/* Garis vertikal */
+.line-v-1 {
+  top: 0;
+  left: 20%;
+  width: 1px;
+  height: 100%;
+  animation: line-move-v 22s linear infinite;
+}
+
+/* Animasi bergerak sangat halus */
+@keyframes line-move-h {
+  0%   { transform: translateX(-12px); opacity: .25; }
+  50%  { transform: translateX(12px); opacity: .42; }
+  100% { transform: translateX(-12px); opacity: .25; }
+}
+
+@keyframes line-move-v {
+  0%   { transform: translateY(-12px); opacity: .3; }
+  50%  { transform: translateY(12px); opacity: .5; }
+  100% { transform: translateY(-12px); opacity: .3; }
+}
+
+.section-divider {
+  width: 100%;
+  max-width: 640px;
+  margin: 2.2rem auto;
+  border: none;
+  border-top: 1px solid rgba(122,14,26,0.25);
+  position: relative;
+}
+
+.section-divider::after {
+  content: "";
+  width: 90px;
+  height: 2px;
+  background: rgba(122,14,26,0.55);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+}
+
+
+</style>
+
+<div class="home-wrapper">
+
+  <!-- HERO + ANIMATED BACKGROUND -->
+  <div class="home-hero-shell">
+    <!-- animasi di belakang -->
+    <div class="hero-orbit orbit-1"></div>
+    <div class="hero-orbit orbit-2"></div>
+    <div class="hero-dot dot-1"></div>
+    <div class="hero-dot dot-2"></div>
+    <div class="hero-dot dot-3"></div>
+    <div class="hero-line line-h-1"></div>
+    <div class="hero-line line-h-2"></div>
+    <div class="hero-line line-v-1"></div>
+
+
+    <!-- BANNER -->
+    <div class="home-hero-card">
+      <img src="{% static 'img/BANER.jpeg' %}"
+           alt="AF Promotion - Custom Sablon & Konveksi Pontianak">
+    </div>
+  </div>
+
+  <!-- COPYWRITING UTAMA -->
+  <p class="home-tagline">
+    <!-- Konveksi & sablon kaos di Pontianak untuk brand, komunitas, dan kebutuhan bisnis —
+    mulai dari kualitas basic sampai premium, dikerjakan tim produksi berpengalaman AF Promotion. -->
+  </p>
+
+  <!-- TOMBOL ARAH KATALOG / AKSI LAIN -->
+  <div class="home-actions">
+    <a href="#katalog" class="home-btn-primary">
+      Lihat Katalog
+    </a>
+
+    {% if not request.user.is_staff %}
+      <a href="{% url 'shop:profile' %}" class="home-btn-outline">
+        Atur Data Pengiriman
+      </a>
+    {% else %}
+      <a href="{% url 'shop:management_dashboard' %}" class="home-btn-outline">
+        Buka Dashboard Admin
+      </a>
+    {% endif %}
+  </div>
+<hr class="section-divider">
+  <!-- ===================== KATALOG DI BAWAH BANNER ===================== -->
+  <section id="katalog">
+    <div class="catalog-header">
+      <div class="catalog-eyebrow">AF Promotion</div>
+      <h2 class="catalog-title">Produk Kami</h2>
+      <p class="catalog-subtext">
+        <!-- Pilihan kaos polos dan produk ready lainnya, siap disablon atau dipakai langsung
+        untuk kebutuhan personal maupun bisnis Anda. -->
+      </p>
+    </div>
+
+    <div class="home-catalog-card">
+      {% if products %}
+        <div class="catalog-grid">
+          {% for product in products %}
+            <div class="catalog-item">
+              <a href="{% url 'shop:product_detail' product.slug %}">
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% endif %}
+                <div class="catalog-item-name">
+                  {{ product.name }}
+                </div>
+              </a>
+
+              <div class="catalog-item-bottom">
+                <span class="catalog-price">
+                  Rp {{ product.price|floatformat:0|intcomma }}
+                </span>
+
+                {% if product.stock > 0 %}
+                  <span class="catalog-stock">Stok: {{ product.stock }}</span>
+                {% else %}
+                  <span class="catalog-stock out">Stok habis</span>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="catalog-empty">
+          Belum ada produk yang tampil di katalog saat ini.
+        </p>
+      {% endif %}
+    </div>
+  </section>
+</div>
+
+{% endblock %}

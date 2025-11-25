@@ -1,0 +1,191 @@
+{% extends "shop/base.html" %}
+{% block title %}Login | AF Promotion{% endblock %}
+
+{% block content %}
+
+<style>
+  * {
+    font-family: "Poppins", sans-serif !important;
+  }
+
+  body {
+    background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%);
+  }
+
+  .auth-page {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: radial-gradient(circle at top, #ffffff 0%, #f7f4f2 70%, #ece3df 100%);
+    border-radius: 24px;
+    padding: 2rem 2.2rem;
+    box-shadow:
+      0 16px 35px rgba(15, 23, 42, 0.18),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+  }
+
+  .auth-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 999px;
+    background: #7A0E1A;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    margin: 0 auto 0.9rem;
+  }
+
+  .auth-brand {
+    text-align: center;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: #8A7F7C;
+    margin-bottom: 1.4rem;
+  }
+
+  .auth-title {
+    text-align: center;
+    font-size: 1.4rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7A0E1A;
+    margin-bottom: 0.4rem;
+  }
+
+  .auth-subtext {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #2B2424;
+    margin-bottom: 1.6rem;
+  }
+
+  .auth-error {
+    background: rgba(185, 28, 28, 0.06);
+    border: 1px solid rgba(185, 28, 28, 0.35);
+    color: #991B1B;
+    font-size: 0.85rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 10px;
+    margin-bottom: 1.1rem;
+    text-align: center;
+  }
+
+  .auth-form-group {
+    margin-bottom: 1rem;
+  }
+
+  .auth-form-group label {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #8A7F7C;
+    margin-bottom: 0.3rem;
+  }
+
+  .auth-form-group input {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 134, 129, 0.4);
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.9);
+    outline: none;
+    transition: border 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .auth-form-group input:focus {
+    border-color: #7A0E1A;
+    box-shadow: 0 0 0 1px rgba(122, 14, 26, 0.3);
+    background: #fff;
+  }
+
+  .auth-submit button {
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    padding: 0.7rem 1rem;
+    background: #7A0E1A;
+    color: #fff;
+    font-size: 0.9rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 12px 28px rgba(122, 14, 26, 0.45);
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+
+  .auth-submit button:hover {
+    background: #A03B48;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(122, 14, 26, 0.55);
+  }
+
+  .auth-footer {
+    margin-top: 1.4rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #8A7F7C;
+  }
+
+  .auth-footer a {
+    color: #7A0E1A;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .auth-footer a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">AF</div>
+    <div class="auth-brand">AF PROMOTION</div>
+
+    <h2 class="auth-title">Login</h2>
+
+    {% if form.errors %}
+      <div class="auth-error">Username atau password salah.</div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="auth-form-group">
+        <label for="id_username">Username</label>
+        {{ form.username }}
+      </div>
+
+      <div class="auth-form-group">
+        <label for="id_password">Password</label>
+        {{ form.password }}
+      </div>
+
+      <div class="auth-submit">
+        <button type="submit">Masuk</button>
+      </div>
+    </form>
+
+    <div class="auth-footer">
+      Belum punya akun?
+      <a href="{% url 'shop:register' %}">Daftar di sini</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,233 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Daftar Akun | AF Promotion{% endblock %}
+
+{% block content %}
+
+<style>
+  * {
+    font-family: "Poppins", sans-serif !important;
+  }
+
+  body {
+    background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%);
+  }
+
+  .auth-page {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.4rem 1.25rem 3rem;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 480px;
+    background: radial-gradient(circle at top, #ffffff 0%, #f7f4f2 70%, #ece3df 100%);
+    border-radius: 26px;
+    padding: 2.3rem 2.3rem 2.6rem;
+    box-shadow:
+      0 16px 35px rgba(15, 23, 42, 0.18),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+    animation: fadeInUp 0.6s ease;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .auth-logo {
+    width: 68px;
+    height: 68px;
+    border-radius: 999px;
+    background: #7A0E1A;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: 0.1em;
+    margin: 0 auto 1rem;
+  }
+
+  .auth-brand {
+    text-align: center;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: #8A7F7C;
+    margin-bottom: 1.4rem;
+  }
+
+  .auth-title {
+    text-align: center;
+    font-size: 1.45rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7A0E1A;
+    margin-bottom: 0.6rem;
+  }
+
+  .auth-subtext {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #2B2424;
+    margin-bottom: 1.8rem;
+  }
+
+  .auth-error-global {
+    background: rgba(185, 28, 28, 0.06);
+    border: 1px solid rgba(185, 28, 28, 0.35);
+    color: #991B1B;
+    padding: .75rem 1rem;
+    border-radius: 10px;
+    font-size: .85rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .auth-form-group {
+    margin-bottom: 1.1rem;
+  }
+
+  .auth-form-group label {
+    font-size: 0.78rem;
+    color: #8A7F7C;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    margin-bottom: 0.3rem;
+    display: block;
+  }
+
+  .auth-form-group input {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 134, 129, 0.45);
+    padding: 0.65rem 0.85rem;
+    font-size: 0.88rem;
+    background: rgba(255,255,255,0.9);
+    transition: 0.15s ease;
+  }
+
+  .auth-form-group input:focus {
+    border-color: #7A0E1A;
+    box-shadow: 0 0 0 1px rgba(122,14,26,0.3);
+    background: #fff;
+  }
+
+  .auth-field-error {
+    font-size: 0.75rem;
+    color: #B91C1C;
+    margin-top: 0.34rem;
+  }
+
+  .auth-submit button {
+    width: 100%;
+    border-radius: 999px;
+    border: none;
+    padding: 0.75rem 1rem;
+    background: #7A0E1A;
+    color: #fff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    box-shadow: 0 12px 28px rgba(122,14,26,0.45);
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .auth-submit button:hover {
+    background: #A03B48;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(122,14,26,0.55);
+  }
+
+  .auth-footer {
+    margin-top: 1.6rem;
+    text-align: center;
+    font-size: 0.87rem;
+    color: #8A7F7C;
+  }
+
+  .auth-footer a {
+    color: #7A0E1A;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .auth-footer a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-logo">AF</div>
+    <div class="auth-brand">AF PROMOTION</div>
+
+    <h2 class="auth-title">Daftar Akun</h2>
+    
+
+    {% if form.non_field_errors %}
+      <div class="auth-error-global">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="auth-form-group">
+        <label>Username</label>
+        {{ form.username }}
+        <div class="auth-field-error">{{ form.username.errors }}</div>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Nama Depan</label>
+        {{ form.first_name }}
+        <div class="auth-field-error">{{ form.first_name.errors }}</div>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Nama Belakang</label>
+        {{ form.last_name }}
+        <div class="auth-field-error">{{ form.last_name.errors }}</div>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Email</label>
+        {{ form.email }}
+        <div class="auth-field-error">{{ form.email.errors }}</div>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Password</label>
+        {{ form.password1 }}
+        <div class="auth-field-error">{{ form.password1.errors }}</div>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Konfirmasi Password</label>
+        {{ form.password2 }}
+        <div class="auth-field-error">{{ form.password2.errors }}</div>
+      </div>
+
+      <div class="auth-submit">
+        <button type="submit">Daftar</button>
+      </div>
+    </form>
+
+    <div class="auth-footer">
+      Sudah punya akun?
+      <a href="{% url 'login' %}">Login di sini</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

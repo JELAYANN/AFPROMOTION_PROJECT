@@ -1,0 +1,330 @@
+{% extends "shop/base.html" %}
+{% load humanize %}
+
+{% block title %}Checkout | AF Promotion{% endblock %}
+
+{% block content %}
+
+<style>
+  * {
+    font-family: "Poppins", sans-serif !important;
+  }
+
+  body {
+    background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%);
+  }
+
+  .checkout-wrap {
+    max-width: 1100px;
+    margin: 2.2rem auto 4rem;
+    padding: 1rem 1.4rem;
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 2rem;
+    animation: fadeInUp 0.6s ease;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 900px) {
+    .checkout-wrap {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .checkout-title {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7A0E1A;
+  }
+
+  .checkout-subtitle {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #7A6E6C;
+    margin-bottom: 1.6rem;
+  }
+
+  /* KARTU RINGKASAN KERANJANG */
+  .summary-card {
+    background: radial-gradient(circle at top, #ffffff 0%, #f7f4f2 70%, #ece3df 100%);
+    border-radius: 22px;
+    padding: 1.4rem 1.5rem;
+    box-shadow:
+      0 14px 32px rgba(0,0,0,0.08),
+      inset 0 0 0 1px rgba(255,255,255,0.7);
+  }
+
+  .summary-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.9rem;
+    color: #2C2524;
+  }
+
+  .summary-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 1rem;
+  }
+
+  .summary-item {
+    padding: 0.55rem 0;
+    border-bottom: 1px solid rgba(210, 200, 196, 0.6);
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: #2C2524;
+  }
+
+  .summary-item:last-child {
+    border-bottom: none;
+  }
+
+  .summary-name {
+    font-weight: 500;
+  }
+
+  .summary-meta {
+    font-size: 0.83rem;
+    color: #7A6E6C;
+  }
+
+  .summary-price {
+    font-weight: 600;
+    color: #7A0E1A;
+    font-size: 0.9rem;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .summary-total-row {
+    margin-top: 1rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(210, 200, 196, 0.9);
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2C2524;
+  }
+
+  .summary-total-label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.85rem;
+    color: #7A6E6C;
+  }
+
+  .summary-total-value {
+    font-size: 1.1rem;
+    color: #7A0E1A;
+  }
+
+  /* FORM CHECKOUT */
+  .checkout-card {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 1.7rem 1.8rem 2rem;
+    box-shadow:
+      0 14px 32px rgba(0,0,0,0.08),
+      inset 0 0 0 1px rgba(255,255,255,0.7);
+  }
+
+  .section-heading {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2C2524;
+  }
+
+  .form-row {
+    margin-bottom: 1rem;
+  }
+
+  .form-row label {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #8A7F7C;
+    margin-bottom: 0.3rem;
+  }
+
+  .form-row input,
+  .form-row textarea,
+  .form-row select {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 134, 129, 0.45);
+    padding: 0.6rem 0.75rem;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.9);
+    outline: none;
+    transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+
+  .form-row textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .form-row input:focus,
+  .form-row textarea:focus,
+  .form-row select:focus {
+    border-color: #7A0E1A;
+    box-shadow: 0 0 0 1px rgba(122, 14, 26, 0.25);
+    background: #fff;
+  }
+
+  .checkout-submit {
+    margin-top: 1.4rem;
+  }
+
+  .checkout-submit button {
+    width: 100%;
+    border-radius: 999px;
+    border: none;
+    padding: 0.85rem 1rem;
+    background: #7A0E1A;
+    color: #fff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 14px 32px rgba(122,14,26,0.45);
+    transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .checkout-submit button:hover {
+    background: #A03B48;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(122,14,26,0.55);
+  }
+
+  @media (max-width: 640px) {
+    .checkout-card {
+      padding: 1.5rem 1.3rem 1.8rem;
+    }
+
+    .summary-card {
+      padding: 1.2rem 1.3rem;
+    }
+  }
+</style>
+
+<div class="checkout-wrap">
+
+  <h2 class="checkout-title">Checkout</h2>
+  <p class="checkout-subtitle">
+    Pastikan detail pesanan dan data pengiriman sudah benar sebelum membuat pesanan.
+  </p>
+
+  <!-- RINGKASAN KERANJANG -->
+  <div class="summary-card">
+    <div class="summary-title">Ringkasan Keranjang</div>
+
+    <ul class="summary-list">
+      {% for item in items %}
+      <li class="summary-item">
+        <div>
+          <div class="summary-name">{{ item.product.name }}</div>
+          <div class="summary-meta">Qty: {{ item.quantity }}</div>
+        </div>
+        <div class="summary-price">
+          Rp {{ item.product.price|intcomma }}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+
+    {# Optional: kamu bisa hitung total di view & kirim ke template, lalu tampilkan di sini #}
+    <!--
+    <div class="summary-total-row">
+      <div class="summary-total-label">Subtotal</div>
+      <div class="summary-total-value">Rp {{ subtotal|intcomma }}</div>
+    </div>
+    -->
+  </div>
+
+  <!-- FORM PENGIRIMAN & KURIR -->
+  <div class="checkout-card">
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="section-heading">Data Pengiriman</div>
+
+      <div class="form-row">
+        <label>Nama Penerima</label>
+        <input type="text" name="shipping_name"
+               value="{{ customer.user.get_full_name }}" required>
+      </div>
+
+      <div class="form-row">
+        <label>No. Telepon</label>
+        <input type="text" name="shipping_phone"
+               value="{{ customer.phone }}" required>
+      </div>
+
+      <div class="form-row">
+        <label>Alamat Lengkap</label>
+        <textarea name="shipping_address" rows="3" required>{{ customer.address }}</textarea>
+      </div>
+
+      <div class="form-row">
+        <label>Kota</label>
+        <input type="text" name="shipping_city"
+               value="{{ customer.city }}" required>
+      </div>
+
+      <div class="form-row">
+        <label>Provinsi</label>
+        <input type="text" name="shipping_province"
+               value="{{ customer.province }}" required>
+      </div>
+
+      <div class="form-row">
+        <label>Kode Pos</label>
+        <input type="text" name="shipping_postal_code"
+               value="{{ customer.postal_code }}" required>
+      </div>
+
+      <div class="section-heading" style="margin-top:1.6rem;">Jasa Kirim</div>
+
+      <div class="form-row">
+        <label>Kurir</label>
+        <select name="courier_code">
+          <option value="jne">JNE</option>
+          <option value="jnt">J&amp;T</option>
+          <option value="sicepat">SiCepat</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Layanan</label>
+        <select name="courier_service">
+          <option value="REG">Reguler</option>
+          <option value="YES">Yakin Esok Sampai</option>
+        </select>
+      </div>
+
+      <div class="checkout-submit">
+        <button type="submit">Buat Pesanan</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+{% endblock %}
