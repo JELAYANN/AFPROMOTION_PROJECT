@@ -144,13 +144,6 @@
     <div class="detail-price">
       Rp {{ product.price|floatformat:0|intcomma }}
     </div>
-
-  </div>
-
-  <!-- RIGHT: INFO -->
-  <div class="detail-info">
-    <h1 class="detail-title">Deskripsi</h1>
-    <p class="detail-description">{{ product.description }}</p>
     {% if product.stock > 0 %}
       <p class="detail-stock">
         Stok tersedia: <strong>{{ product.stock }}</strong>
@@ -160,12 +153,17 @@
         Stok habis
       </p>
     {% endif %}
-
     {% if product.stock > 0 %}
       <a href="{% url 'shop:cart_add' product.id %}" class="btn-add">
         Tambah ke Keranjang
       </a>
     {% endif %}
+  </div>
+
+  <!-- RIGHT: INFO -->
+  <div class="detail-info">
+    <h1 class="detail-title">Deskripsi Produk</h1>
+    <p class="detail-description">{{ product.description }}</p>
 
     <br>
     <a href="{% url 'shop:product_list' %}" class="back-link">← Kembali ke Katalog</a>

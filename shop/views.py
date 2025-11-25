@@ -11,7 +11,7 @@ from django.db.models import Sum, Count  # type: ignore
 from django.utils.dateparse import parse_date  # type: ignore
 from django.http import HttpResponse  # type: ignore
 import csv
-
+from .models import Product, ProductCategory, CartItem, Customer, Order, OrderItem, Payment
 from .forms import ProfileForm, RegisterForm
 from .models import (
     Product,
@@ -26,12 +26,44 @@ from .models import (
 # =====================
 # HOME
 # =====================
-
 def home(request):
-    products = Product.objects.filter(is_active=True).order_by('-created_at')
+    category_slug = request.GET.get('category')
+
+    # Semua kategori
+    categories = ProductCategory.objects.all().order_by('name')
+
+    # Produk untuk katalog utama
+    products_qs = Product.objects.filter(is_active=True)
+    selected_category = None
+
+    if category_slug:
+        selected_category = get_object_or_404(ProductCategory, slug=category_slug)
+        products_qs = products_qs.filter(category=selected_category)
+
+    products = products_qs.order_by('-created_at')[:9]
+
+    # Card kategori: ambil 1 produk contoh per kategori
+    category_cards = []
+    for cat in categories:
+        sample = (
+            Product.objects
+            .filter(is_active=True, category=cat)
+            .order_by('-created_at')
+            .first()
+        )
+        category_cards.append({
+            "category": cat,
+            "sample": sample,
+        })
+
     return render(request, 'shop/home.html', {
         'products': products,
+        'categories': categories,
+        'category_cards': category_cards,
+        'selected_category': selected_category,
     })
+
+
 
 
 # =====================

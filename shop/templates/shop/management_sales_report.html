@@ -315,7 +315,7 @@
            value="{{ start }}"
            class="sr-filter-input">
 
-    <span style="font-size:0.8rem; color:#B0A39F;">sampai</span>
+    <span style="font-size:0.8rem; color:#B0A39F;">-></span>
 
     <input type="date"
            name="end"
@@ -338,19 +338,19 @@
     <div class="sr-card">
       <div class="sr-card-title">Total Pesanan</div>
       <div class="sr-card-value">{{ total_orders }}</div>
-      <div class="sr-card-caption">Jumlah order pada periode ini.</div>
+      <!-- <div class="sr-card-caption">Jumlah order pada periode ini.</div> -->
     </div>
 
     <div class="sr-card">
       <div class="sr-card-title">Omzet</div>
       <div class="sr-card-value">Rp {{ total_revenue|intcomma }}</div>
-      <div class="sr-card-caption">Status PAID + COMPLETED.</div>
+      <!-- <div class="sr-card-caption">Status PAID + COMPLETED.</div> -->
     </div>
 
     <div class="sr-card">
       <div class="sr-card-title">Rata-rata Nilai Order</div>
       <div class="sr-card-value">Rp {{ avg_order_value|intcomma }}</div>
-      <div class="sr-card-caption">Total omzet dibagi jumlah order.</div>
+      <!-- <div class="sr-card-caption">Total omzet dibagi jumlah order.</div> -->
     </div>
 
     <div class="sr-card">

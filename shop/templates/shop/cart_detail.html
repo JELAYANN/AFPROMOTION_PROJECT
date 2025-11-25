@@ -15,13 +15,13 @@
   }
 
   .cart-wrap {
-    max-width: 980px;
-    margin: 2.2rem auto 4rem;
-    padding: 1rem 1.5rem;
-    animation: fadeIn 0.6s ease;
+    max-width: 1080px;
+    margin: 2.4rem auto 4rem;
+    padding: 0 1.5rem;
+    animation: cartFadeIn 0.6s ease;
   }
 
-  @keyframes fadeIn {
+  @keyframes cartFadeIn {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
   }
@@ -32,45 +32,98 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #7A0E1A;
-    margin-bottom: 0.6rem;
+    margin-bottom: .4rem;
   }
 
   .cart-subtext {
     color: #7A6E6C;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     text-align: center;
-    margin-bottom: 2.4rem;
+    margin-bottom: 2rem;
   }
 
-  /* ===== CARD STYLE ===== */
+  /* ===== MAIN LAYOUT: LIST (LEFT) + SUMMARY (RIGHT) ===== */
+  .cart-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+    gap: 1.8rem;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 820px) {
+    .cart-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* ===== ITEM LIST ===== */
+  .cart-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
   .cart-item {
     background: radial-gradient(circle at top left, #ffffff 0%, #f7f4f2 70%, #ede4df 100%);
     border-radius: 20px;
-    padding: 1.4rem 1.2rem;
+    padding: 1rem 1.1rem;
     box-shadow:
-      0 12px 28px rgba(0,0,0,0.08),
-      inset 0 0 0 1px rgba(255,255,255,0.6);
-    margin-bottom: 1.4rem;
-    display: flex;
-    justify-content: space-between;
+      0 10px 24px rgba(0,0,0,0.06),
+      inset 0 0 0 1px rgba(255,255,255,0.7);
+
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 1rem;
     align-items: center;
   }
 
+  @media (max-width: 640px) {
+    .cart-item {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      row-gap: .7rem;
+    }
+  }
+
+  /* thumbnail */
+  .cart-thumb {
+    width: 96px;
+    height: 96px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #e5dedb;
+    flex-shrink: 0;
+  }
+
+  .cart-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
   .cart-info {
-    max-width: 68%;
+    min-width: 0;
   }
 
   .cart-name {
     font-size: 1rem;
     font-weight: 600;
     color: #2C2524;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.15rem;
   }
 
   .cart-meta {
-    font-size: 0.87rem;
+    font-size: 0.8rem;
     color: #7A6E6C;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .cart-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: .4rem;
+    flex-wrap: wrap;
   }
 
   .cart-price {
@@ -79,46 +132,111 @@
     font-weight: 600;
   }
 
+  .cart-subtotal {
+    font-size: 0.85rem;
+    color: #4b3b38;
+    font-weight: 500;
+  }
+
+  /* remove button */
+  .cart-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: .35rem;
+  }
+
   .btn-remove {
-    background: rgba(185, 28, 28, 0.12);
+    background: rgba(185, 28, 28, 0.08);
     color: #991B1B;
-    padding: 0.45rem 0.9rem;
+    padding: 0.4rem 0.9rem;
     text-decoration: none;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     border-radius: 999px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-weight: 600;
     transition: all 0.15s ease;
+    white-space: nowrap;
   }
 
   .btn-remove:hover {
-    background: rgba(185, 28, 28, 0.22);
+    background: rgba(185, 28, 28, 0.18);
   }
 
-  /* TOTAL BOX */
-  .cart-total-box {
-    margin-top: 2.2rem;
-    background: #fff;
-    border-radius: 18px;
-    padding: 1.6rem;
+  .cart-small-label {
+    font-size: 0.75rem;
+    color: #9b8f8b;
+  }
+
+  @media (max-width: 640px) {
+    .cart-actions {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+    }
+  }
+
+  /* ===== SUMMARY BOX (RIGHT) ===== */
+  .cart-summary {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 1.6rem 1.4rem 1.8rem;
     box-shadow:
-      0 10px 26px rgba(0,0,0,0.06),
-      inset 0 0 0 1px rgba(255,255,255,0.7);
+      0 12px 28px rgba(0,0,0,0.07),
+      inset 0 0 0 1px rgba(255,255,255,0.8);
+    position: sticky;
+    top: 92px;
   }
 
-  .cart-total-title {
-    font-size: 1.1rem;
+  @media (max-width: 820px) {
+    .cart-summary {
+      position: static;
+    }
+  }
+
+  .cart-summary-title {
+    font-size: 1.05rem;
     font-weight: 600;
     color: #2C2524;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.6rem;
   }
 
-  .cart-total-value {
-    font-size: 1.5rem;
+  .cart-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.9rem;
+    color: #7A6E6C;
+    margin-bottom: 0.25rem;
+  }
+
+  .cart-summary-row span:last-child {
+    font-weight: 500;
+    color: #4b3b38;
+  }
+
+  .cart-summary-total {
+    margin-top: 0.9rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(214,202,197,0.9);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1.3rem;
+  }
+
+  .cart-summary-total-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2C2524;
+  }
+
+  .cart-summary-total-value {
+    font-size: 1.35rem;
     font-weight: 700;
     color: #7A0E1A;
-    margin-bottom: 1.4rem;
   }
 
   .btn-checkout {
@@ -128,7 +246,7 @@
     border-radius: 999px;
     background: #7A0E1A;
     color: #fff;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     text-align: center;
     font-weight: 600;
     letter-spacing: 0.12em;
@@ -149,42 +267,80 @@
     text-align: center;
     color: #7A6E6C;
     font-size: 1rem;
-    padding: 3rem 1rem;
+    padding: 3rem 1rem 3.5rem;
   }
+
 </style>
 
-
 <div class="cart-wrap">
-  <h2 class="cart-title">Keranjang Belanja</h2>x    
+  <h2 class="cart-title">Keranjang Belanja</h2>
+  <p class="cart-subtext">
+    Cek lagi produk dan jumlahnya sebelum lanjut ke checkout.
+  </p>
 
   {% if items %}
-  
-    {% for item in items %}
-    <div class="cart-item">
+  <div class="cart-layout">
+    <!-- LIST ITEM -->
+    <div class="cart-list">
+      {% for item in items %}
+        <div class="cart-item">
+          <div class="cart-thumb">
+            {% if item.product.image %}
+              <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+            {% endif %}
+          </div>
 
-      <div class="cart-info">
-        <div class="cart-name">{{ item.product.name }}</div>
-        <div class="cart-meta">Qty: {{ item.quantity }}</div>
-        <div class="cart-price">
-          Rp {{ item.product.price|intcomma }}
-          <span style="color: #7A6E6C; font-size:.85rem;">&times; {{ item.quantity }}</span>
+          <div class="cart-info">
+            <div class="cart-name">{{ item.product.name }}</div>
+            <div class="cart-meta">
+              Qty: {{ item.quantity }}
+            </div>
+            <div class="cart-price-row">
+              <div class="cart-price">
+                Rp {{ item.product.price|intcomma }}
+                <span class="cart-small-label">/ pcs</span>
+              </div>
+              
+            </div>
+          </div>
+
+          <div class="cart-actions">
+            <span class="cart-small-label">
+              {{ item.quantity }} item
+            </span>
+            <a href="{% url 'shop:cart_remove' item.id %}" class="btn-remove">
+              Hapus
+            </a>
+          </div>
         </div>
+      {% endfor %}
+    </div>
+
+    <!-- RINGKASAN -->
+    <aside class="cart-summary">
+      <div class="cart-summary-title">Ringkasan Belanja</div>
+
+      <div class="cart-summary-row">
+        <span>Jumlah item</span>
+        <span>{{ items|length }}</span>
       </div>
 
-      <a href="{% url 'shop:cart_remove' item.id %}" class="btn-remove">Hapus</a>
+      <div class="cart-summary-total">
+        <span class="cart-summary-total-label">Total Pembayaran</span>
+        <span class="cart-summary-total-value">Rp {{ total|intcomma }}</span>
+      </div>
 
-    </div>
-    {% endfor %}
-
-    <div class="cart-total-box">
-      <div class="cart-total-title">Total Pembayaran</div>
-      <div class="cart-total-value">Rp {{ total|intcomma }}</div>
-
-      <a href="{% url 'shop:checkout' %}" class="btn-checkout">Lanjut ke Checkout</a>
-    </div>
+      <a href="{% url 'shop:checkout' %}" class="btn-checkout">
+        Lanjut ke Checkout
+      </a>
+    </aside>
+  </div>
 
   {% else %}
-    <div class="cart-empty">Keranjang Anda masih kosong.</div>
+    <div class="cart-empty">
+      Keranjang Anda masih kosong.  
+      Mulai belanja dari katalog untuk isi rak belanjaanmu ✨
+    </div>
   {% endif %}
 </div>
 
