@@ -115,7 +115,7 @@
     100% { transform: translate3d(0, 0, 0); opacity: .7; }
   }
 
-  /* ========= HERO BANNER ========= */
+  /* ========= HERO BANNER (CARD) ========= */
   .home-hero-card {
     position: relative;
     width: 100%;
@@ -126,12 +126,6 @@
       0 18px 40px rgba(0,0,0,0.08),
       inset 0 0 0 1px rgba(255,255,255,0.9);
     z-index: 1;
-  }
-
-  .home-hero-card img {
-    width: 100%;
-    display: block;
-    height: auto;
   }
 
   /* ========= TAGLINE ========= */
@@ -513,6 +507,46 @@
     transform: translateX(-50%);
     border-radius: 999px;
   }
+
+  /* === SLIDER STYLE === */
+  .hero-slider {
+    width: 100%;
+    position: relative;
+    display: flex;
+    transition: transform 0.6s ease;
+  }
+
+  .hero-slide {
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .hero-slide img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .hero-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    
+  }
+
+  .hero-dot {
+    width: 9px;
+    height: 9px;
+    background: rgba(122,14,26,0.25);
+    border-radius: 50%;
+    transition: 0.25s ease;
+  }
+
+  .hero-dot.active {
+    width: 24px;
+    background: #7A0E1A;
+    border-radius: 999px;
+  }
 </style>
 
 <div class="home-wrapper">
@@ -528,9 +562,20 @@
     <div class="hero-line line-h-2"></div>
     <div class="hero-line line-v-1"></div>
 
+    <!-- HERO BANNER SLIDER -->
     <div class="home-hero-card">
-      <img src="{% static 'img/BANER.jpeg' %}"
-           alt="AF Promotion - Custom Sablon & Konveksi Pontianak">
+      <div class="hero-slider" id="heroSlider">
+        <div class="hero-slide">
+          <img src="{% static 'img/BANER1.jpeg' %}" alt="Banner 1">
+        </div>
+        <div class="hero-slide">
+          <img src="{% static 'img/BANER2.png' %}" alt="Banner 2">
+        </div>
+        <div class="hero-slide">
+          <img src="{% static 'img/BANER3.png' %}" alt="Banner 3">
+        </div>
+      </div>
+      <div class="hero-dots" id="heroDots"></div>
     </div>
   </div>
 
@@ -541,10 +586,6 @@
 
   <!-- BUTTONS -->
   <div class="home-actions">
-    <!-- <a href="#katalog" class="home-btn-primary">
-      Lihat Katalog
-    </a> -->
-
     {% if not request.user.is_staff %}
       <a href="{% url 'shop:profile' %}" class="home-btn-outline">
         Atur Data Pengiriman
@@ -555,60 +596,95 @@
       </a>
     {% endif %}
   </div>
-    <hr class="section-divider">
+
+  <hr class="section-divider">
+
   <!-- CATEGORY CARDS -->
   {% if category_cards %}
-  <section class="home-categories">
-    <div class="cat-label">Kategori Produk</div>
-    <div class="cat-grid">
-      {% for card in category_cards %}
-        {% with cat=card.category sample=card.sample %}
-          <div class="cat-card{% if selected_category and selected_category.slug == cat.slug %} cat-card-active{% endif %}">
-            
-            <div class="cat-card-img">
-              {% if sample and sample.image %}
-                <img src="{{ sample.image.url }}" alt="{{ cat.name }}">
-              {% else %}
-                <img src="{% static 'img/placeholders/category_placeholder.jpg' %}" alt="{{ cat.name }}">
-              {% endif %}
-            </div>
+    <section class="home-categories">
+      <div class="cat-label">Kategori Produk</div>
+      <div class="cat-grid">
+        {% for card in category_cards %}
+          {% with cat=card.category sample=card.sample %}
+            <div class="cat-card{% if selected_category and selected_category.slug == cat.slug %} cat-card-active{% endif %}">
 
-            <div class="cat-card-body">
-              <div class="cat-name">{{ cat.name }}</div>
-
-              <div class="cat-meta">
-
-                {# === TOMBOL LIHAT KATALOG === #}
-                {% if request.user.is_authenticated %}
-                  <a href="{% url 'shop:product_list' %}?category={{ cat.slug }}"
-                     class="cat-pill"
-                     style="text-decoration:none; display:inline-block;">
-                    Lihat Katalog
-                  </a>
+              <div class="cat-card-img">
+                {% if sample and sample.image %}
+                  <img src="{{ sample.image.url }}" alt="{{ cat.name }}">
                 {% else %}
-                  <a href="{% url 'login' %}?next={% url 'shop:product_list' %}?category={{ cat.slug }}"
-                     class="cat-pill"
-                     style="text-decoration:none; display:inline-block;">
-                    Login untuk lihat
-                  </a>
+                  <img src="{% static 'img/placeholders/category_placeholder.jpg' %}" alt="{{ cat.name }}">
                 {% endif %}
-
               </div>
 
-              {% if sample %}
-                <div class="cat-sample-name">
-                  <!-- contoh nama produk dalam kategori -->
-                </div>
-              {% endif %}
+              <div class="cat-card-body">
+                <div class="cat-name">{{ cat.name }}</div>
 
+                <div class="cat-meta">
+                  {% if request.user.is_authenticated %}
+                    <a href="{% url 'shop:product_list' %}?category={{ cat.slug }}"
+                       class="cat-pill"
+                       style="text-decoration:none; display:inline-block;">
+                      Lihat Katalog
+                    </a>
+                  {% else %}
+                    <a href="{% url 'login' %}?next={% url 'shop:product_list' %}?category={{ cat.slug }}"
+                       class="cat-pill"
+                       style="text-decoration:none; display:inline-block;">
+                      Login untuk lihat
+                    </a>
+                  {% endif %}
+                </div>
+
+                {% if sample %}
+                  <div class="cat-sample-name">
+                    <!-- contoh nama produk dalam kategori -->
+                  </div>
+                {% endif %}
+              </div>
             </div>
-          </div>
-        {% endwith %}
-      {% endfor %}
-    </div>
-  </section>
-{% endif %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
 
 </div>
+
+<script>
+  const slider = document.getElementById('heroSlider');
+  const dotsContainer = document.getElementById('heroDots');
+  const slides = slider ? slider.children : [];
+  let index = 0;
+
+  if (slider && dotsContainer && slides.length > 0) {
+    // generate dots
+    for (let i = 0; i < slides.length; i++) {
+      const dot = document.createElement("div");
+      dot.className = "hero-dot" + (i === 0 ? " active" : "");
+      dot.dataset.index = i;
+
+      dot.onclick = () => {
+        index = i;
+        updateSlider();
+      };
+
+      dotsContainer.appendChild(dot);
+    }
+
+    const dots = dotsContainer.children;
+
+    function updateSlider() {
+      slider.style.transform = `translateX(-${index * 100}%)`;
+      for (let d of dots) d.classList.remove("active");
+      dots[index].classList.add("active");
+    }
+
+    // auto-slide
+    setInterval(() => {
+      index = (index + 1) % slides.length;
+      updateSlider();
+    }, 4000);
+  }
+</script>
 
 {% endblock %}
