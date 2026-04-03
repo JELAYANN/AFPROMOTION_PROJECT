@@ -418,9 +418,9 @@
               <td>Rp {{ order.total|intcomma }}</td>
               <td>{{ order.customer.user.get_full_name|default:order.customer.user.username }}</td>
               <td>
-                <a href="{% url 'shop:order_detail' order.id %}" class="sr-link-detail">
+                <!-- <a href="{% url 'shop:order_detail' order.id %}" class="sr-link-detail">
                   Detail
-                </a>
+                </a> -->
               </td>
             </tr>
           {% endfor %}

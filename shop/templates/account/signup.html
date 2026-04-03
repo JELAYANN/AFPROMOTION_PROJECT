@@ -1,0 +1,291 @@
+{% extends "shop/base.html" %}
+{% load socialaccount %}
+
+{% block title %}Daftar Akun | AF Promotion{% endblock %}
+
+{% block content %}
+
+<style>
+  /* CSS AF Promotion */
+  * {
+    font-family: "Poppins", sans-serif !important;
+  }
+
+  body {
+    background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%);
+  }
+
+  .auth-page {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.4rem 1.25rem 3rem;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 480px;
+    background: radial-gradient(circle at top, #ffffff 0%, #f7f4f2 70%, #ece3df 100%);
+    border-radius: 26px;
+    padding: 2.5rem 2.3rem 2.6rem;
+    box-shadow:
+      0 16px 35px rgba(15, 23, 42, 0.18),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+    animation: fadeInUp 0.6s ease;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .auth-logo {
+    width: 68px;
+    height: 68px;
+    border-radius: 999px;
+    background: #7A0E1A;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: 0.1em;
+    margin: 0 auto 1rem;
+  }
+
+  .auth-brand {
+    text-align: center;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: #8A7F7C;
+    margin-bottom: 1.4rem;
+  }
+
+  .auth-title {
+    text-align: center;
+    font-size: 1.45rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7A0E1A;
+    margin-bottom: 1.5rem;
+  }
+
+  .auth-form-group {
+    margin-bottom: 1.2rem;
+  }
+
+  /* LABEL TETAP MUNCUL */
+  .auth-form-group label {
+    display: block;
+    font-size: 0.78rem;
+    color: #8A7F7C;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    margin-bottom: 0.5rem;
+  }
+
+  .auth-form-group input {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 134, 129, 0.45);
+    padding: 0.8rem 0.85rem;
+    font-size: 0.88rem;
+    background: rgba(255,255,255,0.9);
+    transition: 0.15s ease;
+    outline: none;
+  }
+
+  /* HANYA MENGHILANGKAN TEKS DI DALAM KOTAK (PLACEHOLDER) */
+  .auth-form-group input::placeholder {
+    color: transparent !important;
+    opacity: 0 !important;
+  }
+
+  .auth-form-group input::-webkit-input-placeholder {
+    color: transparent !important;
+  }
+
+  .auth-form-group input:focus {
+    border-color: #7A0E1A;
+    box-shadow: 0 0 0 1px rgba(122,14,26,0.3);
+    background: #fff;
+  }
+
+  .auth-field-error {
+    font-size: 0.75rem;
+    color: #B91C1C;
+    margin-top: 0.34rem;
+  }
+
+  .auth-error-global {
+    background: rgba(185, 28, 28, 0.06);
+    border: 1px solid rgba(185, 28, 28, 0.35);
+    color: #991B1B;
+    padding: .75rem 1rem;
+    border-radius: 10px;
+    font-size: .85rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .auth-submit button {
+    width: 100%;
+    border-radius: 999px;
+    border: none;
+    padding: 0.85rem 1rem;
+    background: #7A0E1A;
+    color: #fff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    margin-top: 0.8rem;
+    box-shadow: 0 12px 28px rgba(122,14,26,0.45);
+    transition: all 0.2s ease;
+  }
+
+  .auth-submit button:hover {
+    background: #A03B48;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(122,14,26,0.55);
+  }
+
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 2rem 0 1.2rem;
+    color: #8A7F7C;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .auth-divider::before,
+  .auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(148, 134, 129, 0.3);
+  }
+
+  .auth-divider:not(:empty)::before { margin-right: .75em; }
+  .auth-divider:not(:empty)::after { margin-left: .75em; }
+
+  .social-login-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .btn-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(148, 134, 129, 0.4);
+    background: #fff;
+    color: #444;
+  }
+
+  .btn-social:hover {
+    background: #fdfdfd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .btn-github {
+    background: #24292e;
+    color: #fff;
+    border: none;
+  }
+
+  .auth-footer {
+    margin-top: 1.8rem;
+    text-align: center;
+    font-size: 0.87rem;
+    color: #8A7F7C;
+  }
+
+  .auth-footer a {
+    color: #7A0E1A;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .auth-footer a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-logo">AF</div>
+    <div class="auth-brand">AF PROMOTION</div>
+
+    <h2 class="auth-title">Daftar Akun</h2>
+    
+    {% if form.non_field_errors %}
+      <div class="auth-error-global">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'account_signup' %}">
+      {% csrf_token %}
+
+      <div class="auth-form-group">
+        <label>Email</label>
+        {{ form.email }}
+        <div class="auth-field-error">{{ form.email.errors }}</div>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Password</label>
+        {{ form.password1 }}
+        <div class="auth-field-error">{{ form.password1.errors }}</div>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Konfirmasi Password</label>
+        {{ form.password2 }}
+        <div class="auth-field-error">{{ form.password2.errors }}</div>
+      </div>
+
+      <div class="auth-submit">
+        <button type="submit">Daftar</button>
+      </div>
+    </form>
+
+    <div class="auth-divider">Atau daftar cepat dengan</div>
+
+    <div class="social-login-group">
+      <a href="" class="btn-social">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
+        Daftar dengan Google
+      </a>
+      
+      <a href="{% provider_login_url 'github' process='login' %}" class="btn-social btn-github">
+        <svg height="18" width="18" viewBox="0 0 16 16" fill="white"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+        Daftar dengan GitHub
+      </a>
+    </div>
+
+    <div class="auth-footer">
+      Sudah punya akun?
+      <a href="{% url 'account_login' %}">Login di sini</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

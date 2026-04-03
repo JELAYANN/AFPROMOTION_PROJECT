@@ -256,7 +256,8 @@
           {% if not request.user.is_staff %}
             <a href="{% url 'shop:order_history' %}" class="af-nav-link">Pesanan Saya</a>
             <a href="{% url 'shop:product_list' %}" class="af-nav-link">Katalog</a>
-             <a href="{% url 'shop:profile' %}" class="af-nav-link">Profil</a>
+            <a href="{% url 'shop:profile' %}" class="af-nav-link">Profil</a>
+            <a href="#" class="af-nav-link">Costum Product</a>
           {% endif %}
           {# MENU ADMIN / STAFF #}
           {% if request.user.is_staff %}
@@ -272,11 +273,11 @@
                 <path d="M1 1h4l2.68 12.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
             </svg>
             </a>
-          <a href="{% url 'logout' %}" class="af-nav-link af-nav-link-accent">Logout</a>
+          <a href="{% url 'account_logout' %}" class="af-nav-link af-nav-link-accent">Logout</a>
 
         {% else %}
-          <a href="{% url 'login' %}" class="af-nav-link">Login</a>
-          <a href="{% url 'shop:register' %}" class="af-nav-link af-nav-link-accent">Daftar</a>
+          <a href="{% url 'account_login' %}" class="af-nav-link">Login</a>
+          <a href="{% url 'account_signup' %}" class="af-nav-link af-nav-link-accent">Daftar</a>
         {% endif %}
       </div>
     </div>

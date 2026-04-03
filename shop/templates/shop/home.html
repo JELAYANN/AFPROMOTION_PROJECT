@@ -622,14 +622,14 @@
                 <div class="cat-meta">
                   {% if request.user.is_authenticated %}
                     <a href="{% url 'shop:product_list' %}?category={{ cat.slug }}"
-                       class="cat-pill"
-                       style="text-decoration:none; display:inline-block;">
+                      class="cat-pill"
+                      style="text-decoration:none; display:inline-block;">
                       Lihat Katalog
                     </a>
                   {% else %}
-                    <a href="{% url 'login' %}?next={% url 'shop:product_list' %}?category={{ cat.slug }}"
-                       class="cat-pill"
-                       style="text-decoration:none; display:inline-block;">
+                    <a href="{% url 'account_login' %}?next={% url 'shop:product_list' %}?category={{ cat.slug }}"
+                      class="cat-pill"
+                      style="text-decoration:none; display:inline-block;">
                       Login untuk lihat
                     </a>
                   {% endif %}

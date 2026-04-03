@@ -6,21 +6,16 @@
 {% block content %}
 
 <style>
-  * {
-    font-family: "Poppins", sans-serif !important;
-  }
-
-  body {
-    background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%);
-  }
+  * { font-family: "Poppins", sans-serif !important; }
+  body { background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%); }
 
   .detail-wrapper {
-    max-width: 1100px;
+    max-width: 1150px;
     margin: 2.4rem auto 4rem;
     padding: 1rem 1.4rem;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2.6rem;
+    grid-template-columns: 420px 1fr;
+    gap: 3.5rem;
     animation: fadeIn 0.6s ease;
   }
 
@@ -29,146 +24,173 @@
     100% { opacity: 1; transform: translateY(0); }
   }
 
-  @media (max-width: 850px) {
-    .detail-wrapper {
-      grid-template-columns: 1fr;
-    }
+  @media (max-width: 900px) {
+    .detail-wrapper { grid-template-columns: 1fr; gap: 2rem; }
+    .detail-left-panel { position: static !important; }
   }
 
-  /* ===== LEFT: IMAGE BOX ===== */
+  .detail-left-panel { position: sticky; top: 20px; height: fit-content; }
+
   .detail-image-box {
     background: radial-gradient(circle at top, #ffffff 0%, #f7f4f2 70%, #ece3df 100%);
     padding: 1.2rem;
-    border-radius: 22px;
-    box-shadow:
-      0 14px 34px rgba(0,0,0,0.08),
-      inset 0 0 0 1px rgba(255,255,255,0.7);
+    border-radius: 28px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.8);
+    margin-bottom: 1.5rem;
   }
 
-  .detail-image-box img {
-    width: 100%;
-    border-radius: 16px;
-    object-fit: cover;
+  .detail-image-box img { width: 100%; border-radius: 20px; object-fit: cover; }
+
+  .purchase-card {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 1.5rem;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
   }
 
-  /* ===== RIGHT: INFO BOX ===== */
-  .detail-info {
-    padding-top: .5rem;
-  }
+  .detail-title { font-size: 2.2rem; font-weight: 700; color: #7A0E1A; margin-bottom: 0.5rem; text-transform: uppercase; line-height: 1.1; }
+  .detail-price { font-size: 1.8rem; font-weight: 700; color: #7A0E1A; margin-bottom: 2rem; }
+  .detail-description { font-size: 0.95rem; color: #4A403E; line-height: 1.8; white-space: pre-line; }
 
-  .detail-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: #7A0E1A;
-    margin-bottom: 0.7rem;
-    text-transform: uppercase;
-  }
+  .variant-section { margin-bottom: 1.2rem; }
+  .variant-label { display: block; font-size: 0.7rem; font-weight: 600; color: #8A7F7C; text-transform: uppercase; margin-bottom: 0.6rem; letter-spacing: 0.1em; }
 
-  .detail-price {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #7A0E1A;
-    margin-bottom: 1rem;
-    letter-spacing: .02em;
-  }
+  /* Warna */
+  .color-wrapper { display: flex; gap: 10px; flex-wrap: wrap; }
+  .color-item { position: relative; width: 32px; height: 32px; cursor: pointer; }
+  .color-item input { position: absolute; opacity: 0; }
+  .color-swatch { display: block; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #ddd; transition: 0.2s; background-color: var(--swatch-color); }
+  .color-item input:checked + .color-swatch { box-shadow: 0 0 0 2px #7A0E1A; transform: scale(1.1); }
 
-  .detail-description {
-    font-size: 0.95rem;
-    color: #2C2524;
-    line-height: 1.7;
-    margin-bottom: 1.6rem;
-    white-space: pre-line;
-  }
+  /* Ukuran */
+  .size-wrapper { display: flex; gap: 8px; flex-wrap: wrap; }
+  .size-item input { position: absolute; opacity: 0; }
+  .size-chip { display: inline-block; padding: 0.5rem 1rem; border-radius: 12px; background: #fff; border: 1px solid #ddd; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+  .size-item input:checked + .size-chip { background: #7A0E1A; border-color: #7A0E1A; color: #fff; }
+  .size-item input:disabled + .size-chip { opacity: 0.3; cursor: not-allowed; background: #f0f0f0; }
 
-  .detail-stock {
-    font-size: 0.9rem;
-    color: #7A6E6C;
-    margin-bottom: 1.6rem;
-  }
+  /* Qty & Stock */
+  .qty-stock-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; background: #fff; padding: 0.8rem; border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); }
+  .qty-input { width: 60px; border: none; font-weight: 700; color: #7A0E1A; outline: none; text-align: center; }
+  .stock-info { font-size: 0.75rem; font-weight: 500; color: #8A7F7C; }
 
-  .detail-stock.out {
-    color: #B91C1C;
-    font-weight: 600;
+  /* Button */
+  .btn-add { 
+    width: 100%; border: none; padding: 1.1rem; background: #7A0E1A; color: #fff; 
+    border-radius: 999px; text-transform: uppercase; font-weight: 700; cursor: pointer; 
+    box-shadow: 0 12px 25px rgba(122, 14, 26, 0.35); transition: 0.25s; font-size: 0.85rem;
   }
+  .btn-add:hover:not(:disabled) { background: #A03B48; transform: translateY(-2px); box-shadow: 0 15px 30px rgba(122, 14, 26, 0.45); }
+  .btn-add:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
 
-  /* ===== BUTTON ADD TO CART ===== */
-  .btn-add {
-    display: inline-block;
-    padding: 0.9rem 2rem;
-    background: #7A0E1A;
-    color: #fff;
-    border-radius: 999px;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-weight: 600;
-    text-decoration: none;
-    font-size: 0.9rem;
-    box-shadow: 0 14px 32px rgba(122,14,26,0.45);
-    transition: all 0.18s ease;
-    margin-bottom: 1.1rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .btn-add:hover {
-    background: #A03B48;
-    transform: translateY(-2px);
-    box-shadow: 0 16px 40px rgba(122,14,26,0.55);
-  }
-
-  /* ===== BACK LINK ===== */
-  .back-link {
-    display: inline-block;
-    font-size: 0.9rem;
-    color: #7A6E6C;
-    text-decoration: none;
-    margin-top: 0.5rem;
-  }
-
-  .back-link:hover {
-    text-decoration: underline;
-    color: #7A0E1A;
-  }
+  .back-link { display: inline-block; margin-top: 1.5rem; font-size: 0.85rem; color: #8A7F7C; text-decoration: none; }
 </style>
 
 <div class="detail-wrapper">
-
-  <!-- LEFT: IMAGE -->
-  <div class="detail-image-box">
-    {% if product.image %}
-      <img src="{{ product.image.url }}" alt="{{ product.name }}">
-    {% endif %}
-    <h1 class="detail-title">{{ product.name }}</h1>
-    <div class="detail-price">
-      Rp {{ product.price|floatformat:0|intcomma }}
+  
+  <div class="detail-left-panel">
+    <div class="detail-image-box">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+      {% endif %}
     </div>
-    {% if product.stock > 0 %}
-      <p class="detail-stock">
-        Stok tersedia: <strong>{{ product.stock }}</strong>
-      </p>
-    {% else %}
-      <p class="detail-stock out">
-        Stok habis
-      </p>
-    {% endif %}
-    {% if product.stock > 0 %}
-      <a href="{% url 'shop:cart_add' product.id %}" class="btn-add">
-        Tambah ke Keranjang
-      </a>
-    {% endif %}
+
+    <div class="purchase-card">
+      <form action="{% url 'shop:cart_add' product.id %}" method="POST">
+        {% csrf_token %}
+
+        <div class="variant-section">
+          <label class="variant-label">Warna</label>
+          <div class="color-wrapper">
+            {% for color in available_colors %}
+            <label class="color-item">
+              <input type="radio" name="color" value="{{ color.id }}" class="color-radio" required>
+              <span class="color-swatch" style="--swatch-color: {{ color.hex_code }}" title="{{ color.name }}"></span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="variant-section">
+          <label class="variant-label">Ukuran</label>
+          <div class="size-wrapper">
+            {% for size in available_sizes %}
+            <label class="size-item">
+              <input type="radio" name="size" value="{{ size.id }}" class="size-radio" required>
+              <span class="size-chip">{{ size.name }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="qty-stock-row">
+          <div style="display:flex; align-items:center;">
+            <span class="variant-label" style="margin-bottom:0; margin-right:10px;">Qty:</span>
+            <input type="number" name="quantity" class="qty-input" value="1" min="1">
+          </div>
+          <div class="stock-info" id="stock-display">Pilih varian...</div>
+        </div>
+
+        <button type="submit" class="btn-add" id="add-to-cart-btn" {% if not variants.exists %}disabled{% endif %}>
+          {% if variants.exists %}Tambah ke Keranjang{% else %}Stok Habis{% endif %}
+        </button>
+      </form>
+    </div>
   </div>
 
-  <!-- RIGHT: INFO -->
   <div class="detail-info">
-    <h1 class="detail-title">Deskripsi Produk</h1>
-    <p class="detail-description">{{ product.description }}</p>
+    <h1 class="detail-title">{{ product.name }}</h1>
+    <div class="detail-price">Rp {{ product.price|floatformat:0|intcomma }}</div>
+    
+    <div class="detail-description">
+      <strong>Deskripsi Produk:</strong>
+      {{ product.description }}
+    </div>
 
-    <br>
     <a href="{% url 'shop:product_list' %}" class="back-link">← Kembali ke Katalog</a>
   </div>
 
 </div>
+
+{{ variants_json|json_script:"variants-data" }}
+
+<script>
+  // Mengambil data dari JSON Script diatas (Cara ini tidak dideteksi error oleh VS Code)
+  const rawVariants = JSON.parse(document.getElementById('variants-data').textContent);
+
+  const colorRadios = document.querySelectorAll('.color-radio');
+  const sizeRadios = document.querySelectorAll('.size-radio');
+  const stockDisplay = document.getElementById('stock-display');
+  const btnAdd = document.getElementById('add-to-cart-btn');
+
+  function updateDisplay() {
+    const selectedColor = document.querySelector('.color-radio:checked')?.value;
+    const selectedSize = document.querySelector('.size-radio:checked')?.value;
+
+    if (selectedColor) {
+      sizeRadios.forEach(radio => {
+        const available = rawVariants.some(v => String(v.color_id) === String(selectedColor) && String(v.size_id) === String(radio.value) && v.stock > 0);
+        radio.disabled = !available;
+        if (!available && radio.checked) radio.checked = false;
+      });
+    }
+
+    if (selectedColor && selectedSize) {
+      const match = rawVariants.find(v => String(v.color_id) === String(selectedColor) && String(v.size_id) === String(selectedSize));
+      if (match) {
+        stockDisplay.innerText = match.stock + " pcs tersedia";
+        stockDisplay.style.color = match.stock < 5 ? "#B91C1C" : "#8A7F7C";
+        btnAdd.disabled = false;
+      } else {
+        stockDisplay.innerText = "Tidak tersedia";
+        btnAdd.disabled = true;
+      }
+    }
+  }
+
+  colorRadios.forEach(r => r.addEventListener('change', updateDisplay));
+  sizeRadios.forEach(r => r.addEventListener('change', updateDisplay));
+</script>
 
 {% endblock %}

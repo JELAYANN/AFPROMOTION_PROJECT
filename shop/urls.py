@@ -1,4 +1,4 @@
-from django.urls import path  # type: ignore
+from django.urls import path # type: ignore
 from . import views
 
 app_name = 'shop'
@@ -11,6 +11,7 @@ urlpatterns = [
 
     # Cart
     path('cart/', views.cart_detail, name='cart_detail'),
+    # Pastikan views.cart_add di sini merujuk ke fungsi yang baru kita buat
     path('cart/add/<int:product_id>/', views.cart_add, name='cart_add'),
     path('cart/remove/<int:item_id>/', views.cart_remove, name='cart_remove'),
 
@@ -22,7 +23,8 @@ urlpatterns = [
 
     # User profile
     path('profile/', views.profile, name='profile'),
-    path('register/', views.register, name='register'),
+    # Tetap biarkan ter-comment jika Anda menggunakan Allauth untuk register
+    # path('register/', views.register, name='register'),
 
     # Management / Admin-lite
     path('management/dashboard/', views.management_dashboard, name='management_dashboard'),
