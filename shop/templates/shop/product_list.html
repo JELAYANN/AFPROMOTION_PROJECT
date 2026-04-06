@@ -189,11 +189,11 @@
         </a>
         <p class="price">Rp {{ product.price|floatformat:0|intcomma }}</p>
 
-        {% if product.stock > 0 %}
+        <!-- {% if product.stock > 0 %}
         <p class="stock">Stok: {{ product.stock }}</p>
         {% else %}
         <p class="stock out">Stok Habis</p>
-        {% endif %}
+        {% endif %} -->
       </div>
     {% endfor %}
   </div>

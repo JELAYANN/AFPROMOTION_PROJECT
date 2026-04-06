@@ -1,4 +1,4 @@
-{% extends "shop/base.html" %}
+\{% extends "shop/base.html" %}
 {% load humanize %}
 
 {% block title %}{{ product.name }} | AF Promotion{% endblock %}
@@ -50,7 +50,10 @@
   }
 
   .detail-title { font-size: 2.2rem; font-weight: 700; color: #7A0E1A; margin-bottom: 0.5rem; text-transform: uppercase; line-height: 1.1; }
-  .detail-price { font-size: 1.8rem; font-weight: 700; color: #7A0E1A; margin-bottom: 2rem; }
+  
+  /* Perubahan: Tambahkan ID untuk harga */
+  .detail-price { font-size: 1.8rem; font-weight: 700; color: #7A0E1A; margin-bottom: 2rem; transition: all 0.3s ease; }
+  
   .detail-description { font-size: 0.95rem; color: #4A403E; line-height: 1.8; white-space: pre-line; }
 
   .variant-section { margin-bottom: 1.2rem; }
@@ -141,7 +144,8 @@
 
   <div class="detail-info">
     <h1 class="detail-title">{{ product.name }}</h1>
-    <div class="detail-price">Rp {{ product.price|floatformat:0|intcomma }}</div>
+    
+    <div class="detail-price">Rp <span id="price-display">{{ product.price|floatformat:0|intcomma }}</span></div>
     
     <div class="detail-description">
       <strong>Deskripsi Produk:</strong>
@@ -156,36 +160,63 @@
 {{ variants_json|json_script:"variants-data" }}
 
 <script>
-  // Mengambil data dari JSON Script diatas (Cara ini tidak dideteksi error oleh VS Code)
   const rawVariants = JSON.parse(document.getElementById('variants-data').textContent);
 
   const colorRadios = document.querySelectorAll('.color-radio');
   const sizeRadios = document.querySelectorAll('.size-radio');
   const stockDisplay = document.getElementById('stock-display');
+  const priceDisplay = document.getElementById('price-display');
   const btnAdd = document.getElementById('add-to-cart-btn');
+
+  // Harga dasar produk dari Django
+  const basePrice = "{{ product.price|floatformat:0 }}";
+
+  function formatIDR(amount) {
+      return new Intl.NumberFormat('id-ID').format(amount);
+  }
 
   function updateDisplay() {
     const selectedColor = document.querySelector('.color-radio:checked')?.value;
     const selectedSize = document.querySelector('.size-radio:checked')?.value;
 
+    // Logic 1: Filter ketersediaan ukuran berdasarkan warna yang dipilih
     if (selectedColor) {
       sizeRadios.forEach(radio => {
-        const available = rawVariants.some(v => String(v.color_id) === String(selectedColor) && String(v.size_id) === String(radio.value) && v.stock > 0);
+        const available = rawVariants.some(v => 
+            String(v.color_id) === String(selectedColor) && 
+            String(v.size_id) === String(radio.value) && 
+            v.stock > 0
+        );
         radio.disabled = !available;
         if (!available && radio.checked) radio.checked = false;
       });
     }
 
+    // Logic 2: Update Stok dan Harga jika varian lengkap dipilih
     if (selectedColor && selectedSize) {
-      const match = rawVariants.find(v => String(v.color_id) === String(selectedColor) && String(v.size_id) === String(selectedSize));
+      const match = rawVariants.find(v => 
+          String(v.color_id) === String(selectedColor) && 
+          String(v.size_id) === String(selectedSize)
+      );
+
       if (match) {
+        // Update Stok
         stockDisplay.innerText = match.stock + " pcs tersedia";
         stockDisplay.style.color = match.stock < 5 ? "#B91C1C" : "#8A7F7C";
+        
+        // Update Harga (Gunakan price_override jika ada, jika tidak gunakan basePrice)
+        const finalPrice = match.price_override ? match.price_override : basePrice;
+        priceDisplay.innerText = formatIDR(finalPrice);
+        
         btnAdd.disabled = false;
       } else {
         stockDisplay.innerText = "Tidak tersedia";
+        priceDisplay.innerText = formatIDR(basePrice);
         btnAdd.disabled = true;
       }
+    } else {
+        // Jika belum dipilih lengkap, tampilkan harga dasar
+        priceDisplay.innerText = formatIDR(basePrice);
     }
   }
 

@@ -132,21 +132,39 @@ def product_list(request):
 
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
-    variants = product.variants.filter(stock__gt=0)
     
-    # Siapkan data JSON untuk JavaScript agar VS Code tidak error
-    variants_json = list(variants.values('color_id', 'size_id', 'stock'))
+    # Ambil semua varian dari produk ini
+    variants = product.variants.all()
     
-    available_colors = Color.objects.filter(productvariant__product=product, productvariant__stock__gt=0).distinct()
-    available_sizes = Size.objects.filter(productvariant__product=product, productvariant__stock__gt=0).distinct()
+    # 1. Ambil Warna yang unik dari varian yang ada
+    # Kita ambil objek Color-nya langsung agar hex_code bisa terbaca di template
+    color_ids = variants.values_list('color_id', flat=True).distinct()
+    available_colors = Color.objects.filter(id__in=color_ids)
 
-    return render(request, "shop/product_detail.html", {
-        "product": product,
-        "variants": variants,
-        "variants_json": variants_json, # Tambahkan ini
-        "available_colors": available_colors,
-        "available_sizes": available_sizes,
-    })
+    # 2. Ambil Ukuran yang unik dari varian yang ada
+    size_ids = variants.values_list('size_id', flat=True).distinct()
+    available_sizes = Size.objects.filter(id__in=size_ids)
+
+    # 3. Buat data JSON untuk JavaScript (Sangat Penting untuk Harga & Stok)
+    variants_data = []
+    for v in variants:
+        variants_data.append({
+            'id': v.id,
+            'color_id': v.color.id,
+            'size_id': v.size.id,
+            'stock': v.stock,
+            # Pastikan harga dikonversi ke float agar bisa di-JSON
+            'price_override': float(v.price_override) if v.price_override else None
+        })
+
+    context = {
+        'product': product,
+        'available_colors': available_colors,
+        'available_sizes': available_sizes,
+        'variants_json': variants_data, # Dikirim ke script di template
+        'variants': variants,
+    }
+    return render(request, 'shop/product_detail.html', context)
 
 # =====================
 # CUSTOMER HELPER
