@@ -56,7 +56,6 @@ class Product(models.Model):
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=12, decimal_places=2)
-    # Stock di sini bisa jadi stok global atau default jika tidak ada varian
     base_stock = models.PositiveIntegerField(default=0, verbose_name="Stok Dasar")
     image = models.ImageField(upload_to='products/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -69,7 +68,6 @@ class Product(models.Model):
 
     @property
     def total_stock(self):
-        """Menjumlahkan semua stok dari varian yang ada"""
         if self.variants.exists():
             return sum(variant.stock for variant in self.variants.all())
         return self.base_stock
@@ -78,12 +76,10 @@ class Product(models.Model):
         return self.name
 
 class ProductVariant(models.Model):
-    """Logika stok untuk Produk Polos (Warna + Ukuran)"""
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
     color = models.ForeignKey(Color, on_delete=models.PROTECT)
     size = models.ForeignKey(Size, on_delete=models.PROTECT)
     stock = models.PositiveIntegerField(default=0)
-    # Jika ukuran besar lebih mahal, gunakan price_override
     price_override = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
 
     class Meta:
@@ -119,7 +115,6 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # data pengiriman
     shipping_name = models.CharField(max_length=200)
     shipping_phone = models.CharField(max_length=20)
     shipping_address = models.TextField()
@@ -143,11 +138,9 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    # Mencatat varian spesifik yang dibeli
     variant = models.ForeignKey(ProductVariant, on_delete=models.PROTECT, null=True, blank=True)
-    quantity = models.PositiveIntegerField()
-    unit_price = models.DecimalField(max_digits=12, decimal_places=2)
-    # Backup teks varian jika data varian diubah/dihapus di masa depan
+    quantity = models.PositiveIntegerField(default=1)
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0'))
     variant_label = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
@@ -155,7 +148,10 @@ class OrderItem(models.Model):
 
     @property
     def line_total(self):
-        return self.unit_price * self.quantity
+        # PROTEKSI: Menghindari error NoneType * NoneType
+        price = self.unit_price or Decimal('0')
+        qty = self.quantity or 0
+        return price * qty
 
 class Payment(models.Model):
     STATUS_CHOICES = [('PENDING', 'Pending'), ('PAID', 'Paid'), ('FAILED', 'Failed'), ('EXPIRED', 'Expired')]
@@ -175,13 +171,11 @@ class Payment(models.Model):
 class CartItem(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='cart_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    # Menampung varian pilihan (Warna/Ukuran) di keranjang
     variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=1)
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        # User bisa punya produk yang sama di keranjang, asalkan warnanya/ukurannya berbeda
         unique_together = ('customer', 'product', 'variant')
 
     def __str__(self):

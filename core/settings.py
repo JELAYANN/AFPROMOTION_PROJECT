@@ -70,7 +70,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'admin1234',#admin1234
         'HOST': '127.0.0.1',
-        'PORT': '3306',#3306#8889
+        'PORT': '3306',#3306 #8889
     }
 }
 
@@ -115,6 +115,12 @@ ACCOUNT_USERNAME_REQUIRED = False   # User bisa daftar hanya dengan email
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_REQUIRED = True
 
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email' # Login menggunakan email
+ACCOUNT_EMAIL_VERIFICATION = "none" # Set 'none' agar tidak kirim email verifikasi saat testing
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 # 6. Provider Scope
 SOCIALACCOUNT_PROVIDERS = {
     'github': {
@@ -133,3 +139,13 @@ ACCOUNT_SIGNUP_FIELDS = ['email', 'password1*', 'password2*']
 
 ACCOUNT_ADAPTER = 'allauth.account.adapter.DefaultAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'allauth.socialaccount.adapter.DefaultSocialAccountAdapter'
+
+# --- EMAIL CONFIGURATION ---
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  
+EMAIL_USE_SSL = False   
+EMAIL_HOST_USER = 'afpromotion9000@gmail.com'
+EMAIL_HOST_PASSWORD = 'hhnytwkzvoztdwgw' 
+DEFAULT_FROM_EMAIL = 'AF Promotion <afpromotion9000@gmail.com>'

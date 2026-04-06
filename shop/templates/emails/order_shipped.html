@@ -1,0 +1,3 @@
+<h2>Pesanan Dikirim!</h2>
+<p>Halo {{ user.username }}, pesanan #{{ order.id }} sudah dikirim via {{ order.courier_code }}.</p>
+<p>Nomor Resi: <strong>{{ order.tracking_number|default:"Dalam proses" }}</strong></p>

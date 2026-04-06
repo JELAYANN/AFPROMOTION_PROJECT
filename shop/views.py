@@ -10,8 +10,10 @@ from django.contrib.admin.views.decorators import staff_member_required # type: 
 from django.db.models import Sum, Count # type: ignore
 from django.utils.dateparse import parse_date # type: ignore
 from django.http import HttpResponse # type: ignore
+from django.utils.html import strip_tags # type: ignore
+from django.core.mail import send_mail # type: ignore
+from django.template.loader import render_to_string # type: ignore
 import csv
-
 from .models import (
     Product, ProductCategory, CartItem, Customer, 
     Order, OrderItem, Payment, ProductVariant, Color, Size
@@ -276,6 +278,22 @@ def checkout(request):
 
     return render(request, "shop/checkout.html", {"customer": customer, "items": cart_items})
 
+def checkout_success(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    
+    # Kirim email konfirmasi pesanan baru
+    subject = f'Konfirmasi Pesanan #{order.id} - AF Promotion'
+    context = {'order': order, 'user': order.customer.user}
+    html_message = render_to_string('emails/order_created.html', context)
+    
+    send_mail(
+        subject, 
+        strip_tags(html_message), 
+        'AF Promotion <afpromotion9000@gmail.com>', 
+        [order.customer.user.email], 
+        html_message=html_message
+    )
+
 # =====================
 # ORDER & PAYMENT (USER)
 # =====================
@@ -392,3 +410,24 @@ def management_sales_report_export(request):
     for order in orders:
         writer.writerow([order.id, order.created_at.strftime("%Y-%m-%d"), order.customer.user.username, order.status, order.total])
     return response
+
+def kirim_email_status_pesanan(order):
+    subject = f'Pesanan #{order.id} AF Promotion - Sedang Dikerjakan'
+    
+    # KOREKSI DISINI: Gunakan 'order.customer' bukan 'order.user'
+    # Dan ambil user-nya dari customer
+    context = {
+        'order': order,
+        'customer': order.customer,
+        'user': order.customer.user, # Ini cara ambil user dari model Customer
+    }
+    
+    html_message = render_to_string('emails/order_processing.html', context)
+    plain_message = strip_tags(html_message)
+    
+    from_email = 'AF Promotion <afpromotion9000@gmail.com>'
+    
+    # KOREKSI DISINI: Ambil email dari customer.user
+    to_email = [order.customer.user.email]
+
+    send_mail(subject, plain_message, from_email, to_email, html_message=html_message)  
