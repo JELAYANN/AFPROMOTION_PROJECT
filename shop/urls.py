@@ -30,8 +30,11 @@ urlpatterns = [
     path('management/dashboard/', views.management_dashboard, name='management_dashboard'),
     path('management/orders/', views.management_order_list, name='management_order_list'),
     path('management/orders/<int:order_id>/update/', views.management_order_update, name='management_order_update'),
+    path('management/orders/<int:order_id>/', views.management_order_detail, name='management_order_detail'),
 
     # Sales Report
     path('management/sales-report/', views.management_sales_report, name='management_sales_report'),
     path('management/sales-report/export/', views.management_sales_report_export, name='management_sales_report_export'),
+    path('custom/', views.custom_katalog, name='custom_katalog'),
+    path('custom/<slug:slug>/', views.custom_product_detail, name='custom_product_detail'),
 ]

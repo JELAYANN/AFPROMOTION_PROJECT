@@ -1,0 +1,160 @@
+{% extends "shop/base.html" %}
+{% load humanize %}
+
+{% block content %}
+<style>
+    body { background: #f7f4f2; }
+    .m-container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
+    
+    /* Header Area */
+    .m-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; }
+    .m-title { font-size: 1.8rem; font-weight: 800; color: #7A0E1A; text-transform: uppercase; margin: 0; }
+    .back-link { color: #8A7F7C; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.3s; }
+    .back-link:hover { color: #7A0E1A; }
+
+    /* Layout Grid */
+    .m-grid { display: grid; grid-template-columns: 380px 1fr; gap: 2rem; align-items: start; }
+    @media (max-width: 992px) { .m-grid { grid-template-columns: 1fr; } }
+
+    /* Card Styling */
+    .m-card { 
+        background: #ffffff; border-radius: 24px; padding: 2rem; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8);
+    }
+    .card-label { 
+        font-size: 0.75rem; font-weight: 700; color: #8A7F7C; 
+        text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem; 
+        display: block; border-bottom: 2px solid #f8f5f4; padding-bottom: 8px;
+    }
+
+    /* Info Styles */
+    .info-group { margin-bottom: 1.2rem; }
+    .info-label { font-size: 0.8rem; color: #8A7F7C; margin-bottom: 2px; }
+    .info-value { font-size: 0.95rem; font-weight: 600; color: #2C2524; line-height: 1.5; }
+
+    /* Item List Styling */
+    .order-item { 
+        display: grid; grid-template-columns: 100px 1fr auto; gap: 1.5rem; 
+        padding: 1.5rem 0; border-bottom: 1px solid #f1ebe9; align-items: center;
+    }
+    .order-item:last-child { border-bottom: none; }
+    .item-img { width: 100px; height: 100px; border-radius: 16px; object-fit: cover; border: 1px solid #eee; }
+    
+    .badge-status { 
+        font-size: 0.65rem; font-weight: 700; padding: 4px 10px; border-radius: 8px; 
+        text-transform: uppercase; margin-bottom: 8px; display: inline-block;
+    }
+    .badge-custom { background: #7A0E1A; color: #fff; }
+    .badge-polos { background: #E7DFDC; color: #8A7F7C; }
+
+    /* Summary Styling */
+    .summary-box { background: #fdfaf8; padding: 1.5rem; border-radius: 20px; margin-top: 1rem; }
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
+    .total-row { 
+        margin-top: 12px; padding-top: 12px; border-top: 2px dashed #e7dfdc; 
+        display: flex; justify-content: space-between; align-items: center;
+    }
+</style>
+
+<div class="m-container">
+    <div class="m-header">
+        <div>
+            <h1 class="m-title">Pesanan #{{ order.id }}</h1>
+            <p class="text-muted small mb-0">Dibuat pada: {{ order.created_at|date:"d F Y, H:i" }}</p>
+        </div>
+        <a href="{% url 'shop:management_order_list' %}" class="back-link">← Kembali ke Daftar</a>
+    </div>
+
+    <div class="m-grid">
+        <div class="left-col">
+            <div class="m-card">
+                <span class="card-label">Detail Pengiriman</span>
+                
+                <div class="info-group">
+                    <div class="info-label">Nama Penerima</div>
+                    <div class="info-value">{{ order.shipping_name }}</div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Telepon</div>
+                    <div class="info-value">{{ order.shipping_phone }}</div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Alamat Lengkap</div>
+                    <div class="info-value">
+                        {{ order.shipping_address }}<br>
+                        {{ order.shipping_city }}, {{ order.shipping_province }} {{ order.shipping_postal_code }}
+                    </div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Logistik</div>
+                    <div class="info-value">{{ order.courier_code|upper }} - {{ order.courier_service }}</div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Nomor Resi</div>
+                    <div class="info-value text-primary">{{ order.tracking_number|default:"Belum diinput" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-col">
+            <div class="m-card">
+                <span class="card-label">Item Pesanan ({{ items|length }})</span>
+                
+                {% for item in items %}
+                <div class="order-item">
+                    {% if item.is_custom and item.custom_image %}
+                        <img src="{{ item.custom_image.url }}" class="item-img" alt="Custom Design">
+                    {% else %}
+                        <img src="{{ item.product.image.url }}" class="item-img" alt="Product Image">
+                    {% endif %}
+
+                    <div class="item-details">
+                        {% if item.is_custom %}
+                            <span class="badge-status badge-custom">Custom Product</span>
+                        {% else %}
+                            <span class="badge-status badge-polos">Produk Polos</span>
+                        {% endif %}
+                        
+                        <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 4px;">{{ item.product.name }}</h4>
+                        <div style="font-size: 0.85rem; color: #8A7F7C; margin-bottom: 8px;">
+                            Varian: <strong>{{ item.variant_label }}</strong>
+                        </div>
+                        
+                        {% if item.is_custom %}
+                        <div style="background: #fdf2f2; padding: 10px; border-radius: 12px; font-size: 0.8rem;">
+                            <strong>Catatan:</strong> {{ item.custom_notes|default:"-" }}<br>
+                            <a href="{{ item.custom_image.url }}" download class="text-danger fw-bold mt-1 d-inline-block">Download Desain PNG</a>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="item-price text-end">
+                        <div style="font-size: 0.85rem; color: #8A7F7C;">{{ item.quantity }} x</div>
+                        <div style="font-weight: 700; color: #7A0E1A;">Rp {{ item.unit_price|intcomma }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="summary-box">
+                    <div class="summary-row">
+                        <span>Subtotal Produk</span>
+                        <span>Rp {{ order.subtotal|intcomma }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Ongkos Kirim</span>
+                        <span>Rp {{ order.shipping_cost|intcomma }}</span>
+                    </div>
+                    <div class="total-row">
+                        <span class="total-label">Total Pembayaran</span>
+                        <span style="font-size: 1.4rem; font-weight: 800; color: #7A0E1A;">Rp {{ order.total|intcomma }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

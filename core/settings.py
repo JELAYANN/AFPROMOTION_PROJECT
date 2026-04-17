@@ -73,7 +73,9 @@ DATABASES = {
         'PORT': '3306',#3306 #8889
     }
 }
-
+# git push origin main     
+# git commit -m "Update Fitur Notif WA"
+# git add .      
 # --- AUTHENTICATION ---
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -149,3 +151,6 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'afpromotion9000@gmail.com'
 EMAIL_HOST_PASSWORD = 'hhnytwkzvoztdwgw' 
 DEFAULT_FROM_EMAIL = 'AF Promotion <afpromotion9000@gmail.com>'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

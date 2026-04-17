@@ -1,6 +1,6 @@
-from django.db import models  # type: ignore
+from django.db import models # type: ignore
 from django.contrib.auth.models import User # type: ignore
-from django.utils.text import slugify # type: ignore
+from django.utils.text import slugify   # type: ignore
 from decimal import Decimal
 
 # --- MASTER DATA PENGGUNA ---
@@ -31,7 +31,7 @@ class Size(models.Model):
     def __str__(self):
         return self.name
 
-# --- PRODUK & KATEGORI ---
+# --- PRODUK POLOS & KATEGORI ---
 
 class ProductCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -47,16 +47,11 @@ class ProductCategory(models.Model):
         return self.name
 
 class Product(models.Model):
-    category = models.ForeignKey(
-        ProductCategory,
-        on_delete=models.PROTECT,
-        related_name='products'
-    )
+    category = models.ForeignKey(ProductCategory, on_delete=models.PROTECT, related_name='products')
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
-    price = models.DecimalField(max_digits=12, decimal_places=2)
-    base_stock = models.PositiveIntegerField(default=0, verbose_name="Stok Dasar")
+    price = models.DecimalField(max_digits=12, decimal_places=2, help_text="Harga dasar produk polos")
     image = models.ImageField(upload_to='products/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -65,12 +60,6 @@ class Product(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
-
-    @property
-    def total_stock(self):
-        if self.variants.exists():
-            return sum(variant.stock for variant in self.variants.all())
-        return self.base_stock
 
     def __str__(self):
         return self.name
@@ -85,16 +74,63 @@ class ProductVariant(models.Model):
     class Meta:
         unique_together = ('product', 'color', 'size')
 
+    # --- TAMBAHKAN INI (Hati-hati indentasi/tab-nya) ---
     def get_price(self):
-        return self.price_override if self.price_override else self.product.price
+        if self.price_override:
+            return self.price_override
+        return self.product.price
 
     def __str__(self):
-        return f"{self.product.name} - {self.color} - {self.size} (Stok: {self.stock})"
+        return f"{self.product.name} - {self.color} - {self.size}"
+
+# --- SISTEM CUSTOM PRODUCT (SABLON/BORDIR) ---
+
+class CustomService(models.Model):
+    name = models.CharField(max_length=100) # Contoh: 'DTF A3', 'Bordir Logo'
+    service_type = models.CharField(max_length=20, choices=[('SABLON', 'Sablon'), ('BORDIR', 'Bordir')])
+    additional_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.name} (+ Rp {self.additional_price})"
+
+class CustomProduct(models.Model):
+    """Produk paket kustom (Baju + Jasa)"""
+    base_product = models.ForeignKey(Product, on_delete=models.CASCADE, help_text="Produk polos yang digunakan sebagai bahan")
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True, blank=True)
+    description = models.TextField()
+    available_services = models.ManyToManyField(CustomService, related_name='custom_products')
+    image = models.ImageField(upload_to='custom_products/')
+    is_active = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+class CustomProductVariant(models.Model):
+    """
+    KUNCI SOLUSI: Menentukan harga baju kustom per ukuran 
+    dan stok terpisah khusus untuk jalur kustom.
+    """
+    custom_product = models.ForeignKey(CustomProduct, on_delete=models.CASCADE, related_name='variants')
+    size = models.ForeignKey(Size, on_delete=models.PROTECT)
+    price = models.DecimalField(max_digits=12, decimal_places=2, help_text="Harga baju khusus ukuran ini untuk paket kustom")
+    stock = models.PositiveIntegerField(default=0, help_text="Stok khusus untuk jalur kustom")
+
+    class Meta:
+        unique_together = ('custom_product', 'size')
+
+    def __str__(self):
+        return f"{self.custom_product.name} - {self.size.name} (Stok: {self.stock})"
 
 # --- TRANSAKSI (ORDER & PAYMENT) ---
 
 class Order(models.Model):
-    STATUS_CHOICES = [
+    SHIPPING_STATUS_CHOICES = [
         ('PENDING', 'Menunggu Pembayaran'),
         ('PAID', 'Sudah Dibayar'),
         ('PROCESSING', 'Diproses'),
@@ -103,15 +139,21 @@ class Order(models.Model):
         ('CANCELLED', 'Dibatalkan'),
     ]
 
-    SHIPPING_STATUS_CHOICES = [
-        ('NONE', 'Belum Dikirim'),
-        ('ON_PROCESS', 'Diproses Gudang'),
-        ('ON_DELIVERY', 'Dalam Pengiriman'),
-        ('DELIVERED', 'Terkirim'),
-    ]
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='orders')
+    
+    # PERBAIKAN DI SINI: Ganti STATUS_CHOICES menjadi SHIPPING_STATUS_CHOICES
+    status = models.CharField(
+        max_length=20, 
+        choices=SHIPPING_STATUS_CHOICES, 
+        default='PENDING'
+    )
 
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='orders')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    # Sesuaikan referensi choices di sini
+    status = models.CharField(max_length=20, choices=SHIPPING_STATUS_CHOICES, default='PENDING')
+
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='orders')
+    status = models.CharField(max_length=20, choices=SHIPPING_STATUS_CHOICES, default='PENDING')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -129,55 +171,57 @@ class Order(models.Model):
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0'))
     total = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0'))
 
-    tracking_number = models.CharField(max_length=100, blank=True, null=True)
-    shipping_status = models.CharField(max_length=20, choices=SHIPPING_STATUS_CHOICES, default='NONE')
-
     def __str__(self):
         return f"Order #{self.id} - {self.customer}"
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    variant = models.ForeignKey(ProductVariant, on_delete=models.PROTECT, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=1)
+    
+    # Harga Baju (Price from CustomProductVariant)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0'))
     variant_label = models.CharField(max_length=200, blank=True, null=True)
 
-    def __str__(self):
-        return f"{self.product.name} ({self.variant_label}) x {self.quantity}"
+    # --- Data Custom ---
+    is_custom = models.BooleanField(default=False)
+    custom_service_name = models.CharField(max_length=100, blank=True, null=True)
+    custom_price = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0')) # Harga jasa saat transaksi
+    custom_image = models.ImageField(upload_to='orders/custom_designs/%Y/%m/%d/', blank=True, null=True)
+    custom_notes = models.TextField(blank=True, null=True)
 
     @property
     def line_total(self):
-        # PROTEKSI: Menghindari error NoneType * NoneType
-        price = self.unit_price or Decimal('0')
-        qty = self.quantity or 0
-        return price * qty
-
-class Payment(models.Model):
-    STATUS_CHOICES = [('PENDING', 'Pending'), ('PAID', 'Paid'), ('FAILED', 'Failed'), ('EXPIRED', 'Expired')]
-    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='payment')
-    amount = models.DecimalField(max_digits=12, decimal_places=2)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
-    invoice_id = models.CharField(max_length=100, blank=True, null=True)
-    payment_link = models.URLField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    paid_at = models.DateTimeField(blank=True, null=True)
+        return (self.unit_price + self.custom_price) * self.quantity
 
     def __str__(self):
-        return f"Payment for Order #{self.order_id} - {self.status}"
+        return f"{self.product.name} x {self.quantity}"
+
+class Payment(models.Model):
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='payment')
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    status = models.CharField(max_length=20, default='PENDING')
+    created_at = models.DateTimeField(auto_now_add=True)
 
 # --- KERANJANG BELANJA ---
 
 class CartItem(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='cart_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    
+    # KUNCI SINKRONISASI: Relasi ke Varian Custom
+    custom_variant = models.ForeignKey(CustomProductVariant, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    # Relasi ke Varian Polos (Tetap ada untuk produk retail biasa)
     variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, null=True, blank=True)
+    
     quantity = models.PositiveIntegerField(default=1)
+    is_custom = models.BooleanField(default=False)
+    custom_service = models.ForeignKey(CustomService, on_delete=models.SET_NULL, null=True, blank=True)
+    custom_image = models.ImageField(upload_to='temp/custom_designs/', blank=True, null=True)
+    custom_notes = models.TextField(blank=True, null=True)
+    
     added_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        unique_together = ('customer', 'product', 'variant')
-
     def __str__(self):
-        variant_txt = f" [{self.variant.color}/{self.variant.size}]" if self.variant else ""
-        return f"{self.customer} - {self.product.name}{variant_txt} ({self.quantity})"
+        return f"{self.customer} - {self.product.name}"

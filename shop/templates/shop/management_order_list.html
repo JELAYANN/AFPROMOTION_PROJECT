@@ -6,38 +6,38 @@
 {% block content %}
 
 <style>
-  * {
+* {
     font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
-  }
+}
 
-  body {
+body {
     background: #f7f4f2;
-  }
+}
 
-  .m-orders-page {
-    max-width: 1100px;
+.m-orders-page {
+    max-width: 1200px; /* Diperlebar sedikit agar kolom desain muat */
     margin: 2.6rem auto 4rem;
     padding: 0 clamp(1rem, 4vw, 1.5rem) 2rem;
     color: #2C2524;
-  }
+}
 
-  .m-page-title {
+.m-page-title {
     font-size: clamp(1.5rem, 2vw + 1rem, 1.9rem);
     font-weight: 700;
     color: #7A0E1A;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin-bottom: 0.4rem;
-  }
+}
 
-  .m-page-sub {
+.m-page-sub {
     font-size: 0.9rem;
     color: #8A7F7C;
     margin-bottom: 1.8rem;
-  }
+}
 
-  /* FILTER BAR */
-  .m-filter-bar {
+/* FILTER BAR */
+.m-filter-bar {
     display: flex;
     align-items: center;
     gap: .75rem;
@@ -47,246 +47,233 @@
     background: rgba(255,255,255,0.9);
     box-shadow: 0 10px 24px rgba(0,0,0,0.04);
     border: 1px solid rgba(230, 220, 215, .9);
-  }
+}
 
-  .m-filter-label {
+.m-filter-label {
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: .16em;
     color: #8A7F7C;
-  }
+}
 
-  .m-filter-select {
+.m-filter-select {
     border-radius: 999px;
     padding: 0.4rem 0.9rem;
     border: 1px solid rgba(210, 198, 193, 0.8);
     font-size: 0.85rem;
     background: #fdfaf8;
     outline: none;
-  }
+}
 
-  .m-filter-select:focus {
-    border-color: #7A0E1A;
-  }
-
-  @media (max-width: 640px) {
-    .m-filter-bar {
-      padding-inline: 0.9rem;
-    }
-  }
-
-  /* WRAPPER TABEL */
-  .m-table-wrap {
+/* WRAPPER TABEL */
+.m-table-wrap {
     border-radius: 18px;
     background: #ffffff;
-    box-shadow:
-      0 12px 30px rgba(0,0,0,0.06),
-      inset 0 0 0 1px rgba(255,255,255,0.9);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.06);
     padding: 1.3rem 1.3rem 1.5rem;
-    overflow-x: auto;               /* penting buat mobile */
-    -webkit-overflow-scrolling: touch;
-  }
+    overflow-x: auto;
+}
 
-  .m-table {
+.m-table {
     width: 100%;
-    min-width: 820px;               /* biar kolom nggak kepres di HP */
+    min-width: 1000px; /* Ditingkatkan agar kolom desain tidak sesak */
     border-collapse: collapse;
     font-size: 0.88rem;
-  }
+}
 
-  .m-table thead th {
+.m-table thead th {
     text-align: left;
-    padding-bottom: 0.45rem;
+    padding-bottom: 0.8rem;
     font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.14em;
     color: #8A7F7C;
-    border-bottom: 1px solid rgba(219, 208, 203, 0.95);
-    white-space: nowrap;
-  }
+    border-bottom: 2px solid rgba(219, 208, 203, 0.5);
+}
 
-  .m-table tbody td {
-    padding: 0.6rem 0;
+.m-table tbody td {
+    padding: 1rem 0.5rem;
     border-bottom: 1px solid rgba(238, 229, 225, 0.9);
     vertical-align: middle;
-  }
+}
 
-  .m-table tbody tr:last-child td {
-    border-bottom: none;
-  }
+/* DESIGN PREVIEW BOX */
+.design-item-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fdfaf8;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    margin-bottom: 4px;
+}
 
-  /* STATUS BADGE (opsional kalau mau dipakai lagi) */
-  .m-status-badge {
-    display: inline-block;
-    padding: 0.18rem 0.6rem;
-    border-radius: 999px;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-  .badge-PENDING { background: rgba(244, 158, 38, 0.16); color: #B45309; }
-  .badge-PAID { background: rgba(16, 185, 129, 0.18); color: #047857; }
-  .badge-PROCESSING { background: rgba(59, 130, 246, 0.16); color: #1D4ED8; }
-  .badge-SHIPPED { background: rgba(14, 165, 233, 0.16); color: #0369A1; }
-  .badge-COMPLETED { background: rgba(34, 197, 94, 0.16); color: #15803D; }
-  .badge-CANCELLED { background: rgba(239, 68, 68, 0.16); color: #B91C1C; }
+.design-img-preview {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #7A0E1A;
+}
 
-  /* FORM UPDATE (INLINE) */
-  .m-update-form {
+.btn-dl {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    text-decoration: none;
+    background: #7A0E1A;
+    color: white !important;
+    font-weight: 600;
+}
+
+.btn-dl:hover {
+    background: #5a0a13;
+}
+
+/* FORM UPDATE */
+.m-update-form {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
-    font-size: 0.78rem;
-  }
+}
 
-  .m-update-select,
-  .m-update-input {
-    border-radius: 999px;
-    padding: 0.28rem 0.7rem;
+.m-update-select, .m-update-input {
+    border-radius: 8px;
+    padding: 0.4rem 0.7rem;
     border: 1px solid rgba(214, 202, 197, 0.9);
-    font-size: 0.78rem;
-    background: #FDF9F7;
+    font-size: 0.8rem;
     outline: none;
-    width: 100%;
-  }
+}
 
-  .m-update-select:focus,
-  .m-update-input:focus {
-    border-color: #7A0E1A;
-  }
-
-  .m-update-btn {
-    align-self: flex-start;
-    padding: 0.32rem 1rem;
+.m-update-btn {
+    padding: 0.5rem 1rem;
     border-radius: 999px;
     border: none;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
     background: #7A0E1A;
     color: #fff;
     cursor: pointer;
-    transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
-    box-shadow: 0 8px 18px rgba(122, 14, 26, 0.35);
-    margin-top: 0.1rem;
-    white-space: nowrap;
-  }
+    box-shadow: 0 4px 12px rgba(122, 14, 26, 0.2);
+}
 
-  .m-update-btn:hover {
+.m-update-btn:hover {
     background: #A03B48;
-    transform: translateY(-1px);
-    box-shadow: 0 12px 24px rgba(122, 14, 26, 0.45);
-  }
+}
 
-  @media (max-width: 480px) {
-    .m-orders-page {
-      margin-top: 2rem;
-    }
-
-    .m-table-wrap {
-      padding-inline: 1rem;
-    }
-  }
+.btn-detail {
+    text-decoration: none;
+    font-size: 0.75rem;
+    color: #8A7F7C;
+    font-weight: 600;
+    display: block;
+    margin-top: 8px;
+    text-align: center;
+}
 </style>
 
 <div class="m-orders-page">
-  <h1 class="m-page-title">Manajemen Pesanan</h1>
-  <p class="m-page-sub">
-    
-  </p>
+    <h1 class="m-page-title">Manajemen Pesanan</h1>
+    <p class="m-page-sub">Pantau dan kelola status pengiriman serta desain kustom pelanggan.</p>
 
-  <!-- FILTER STATUS (GET) -->
-  <form method="get" class="m-filter-bar">
-    <span class="m-filter-label">Filter Status</span>
-    <select name="status" class="m-filter-select" onchange="this.form.submit()">
-      <option value="">Semua</option>
-      {% for code, label in order_status_choices %}
-        <option value="{{ code }}" {% if status_filter == code %}selected{% endif %}>
-          {{ label }}
-        </option>
-      {% endfor %}
-    </select>
-  </form>
-
-  <div class="m-table-wrap">
-    <table class="m-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Tanggal</th>
-          <th>Pelanggan</th>
-          <th>Status</th>
-          <th>Total</th>
-          <th>Resi</th>
-          <th>Shipping</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for order in orders %}
-        <tr>
-          <td>#{{ order.id }}</td>
-          <td>{{ order.created_at|date:"d M Y H:i" }}</td>
-          <td>
-            {{ order.customer.user.get_full_name|default:order.customer.user.username }}
-          </td>
-
-          <!-- kolom STATUS: select -->
-          <td style="min-width:130px;">
-            <form method="post"
-                  action="{% url 'shop:management_order_update' order.id %}"
-                  class="m-update-form">
-              {% csrf_token %}
-              <select name="status" class="m-update-select">
-                {% for code, label in order_status_choices %}
-                  <option value="{{ code }}" {% if order.status == code %}selected{% endif %}>
+    <form method="get" class="m-filter-bar">
+        <span class="m-filter-label">Filter Status</span>
+        <select name="status" class="m-filter-select" onchange="this.form.submit()">
+            <option value="">Semua</option>
+            {% for code, label in order_status_choices %}
+                <option value="{{ code }}" {% if status_filter == code %}selected{% endif %}>
                     {{ label }}
-                  </option>
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <div class="m-table-wrap">
+        <table class="m-table">
+            <thead>
+                <tr>
+                    <th>Order Info</th>
+                    <th>Pelanggan</th>
+                    <th>Desain Custom</th> <th style="width: 150px;">Status Pembayaran</th>
+                    <th>Total</th>
+                    <th style="width: 180px;">Update Tracking</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>
+                        <strong>#{{ order.id }}</strong><br>
+                        <small class="text-muted">{{ order.created_at|date:"d M Y" }}</small><br>
+                        <small class="text-muted">{{ order.created_at|date:"H:i" }}</small>
+                    </td>
+
+                    <td>
+                        <span style="font-weight: 600;">{{ order.customer.user.get_full_name|default:order.customer.user.username }}</span>
+                    </td>
+
+                    <td>
+                        {% for item in order.items.all %}
+                            {% if item.is_custom and item.custom_image %}
+                                <div class="design-item-box">
+                                    <a href="{{ item.custom_image.url }}" target="_blank">
+                                        <img src="{{ item.custom_image.url }}" class="design-img-preview" alt="Design">
+                                    </a>
+                                    <div class="d-flex flex-column">
+                                        <small style="font-size: 0.65rem; color: #7A0E1A; font-weight: 600;">{{ item.product.name }}</small>
+                                        <a href="{{ item.custom_image.url }}" download="Design_Order_{{ order.id }}.png" class="btn-dl">
+                                            DL PNG
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% if not order.items.all %}
+                            <small class="text-muted">-</small>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <form method="post" action="{% url 'shop:management_order_update' order.id %}" class="m-update-form" id="form-{{ order.id }}">
+                            {% csrf_token %}
+                            <select name="status" class="m-update-select">
+                                {% for code, label in order_status_choices %}
+                                    <option value="{{ code }}" {% if order.status == code %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                    </td>
+
+                    <td><strong>Rp {{ order.total|intcomma }}</strong></td>
+
+                    <td>
+                        <input type="text" name="tracking_number" class="m-update-input mb-1" placeholder="Nomor Resi" value="{{ order.tracking_number|default:'' }}">
+                        <select name="shipping_status" class="m-update-select">
+                            {% for code, label in shipping_status_choices %}
+                                <option value="{{ code }}" {% if order.shipping_status == code %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <td>
+                        <button type="submit" form="form-{{ order.id }}" class="m-update-btn">Simpan</button>
+                        </form> <a href="{% url 'shop:management_order_detail' order.id %}" class="btn-detail">Detail</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">Belum ada pesanan masuk.</td>
+                </tr>
                 {% endfor %}
-              </select>
-          </td>
-
-          <!-- kolom TOTAL -->
-          <td>Rp {{ order.total|intcomma }}</td>
-
-          <!-- kolom RESI -->
-          <td style="min-width:170px;">
-              <input type="text"
-                    name="tracking_number"
-                    class="m-update-input"
-                    placeholder="Isi jika sudah dikirim"
-                    value="{{ order.tracking_number|default:'' }}">
-          </td>
-
-          <!-- kolom SHIPPING STATUS -->
-          <td style="min-width:150px;">
-              <select name="shipping_status" class="m-update-select">
-                {% for code, label in shipping_status_choices %}
-                  <option value="{{ code }}" {% if order.shipping_status == code %}selected{% endif %}>
-                    {{ label }}
-                  </option>
-                {% endfor %}
-              </select>
-          </td>
-
-          <!-- kolom AKSI -->
-          <td>
-              <button type="submit" class="m-update-btn">
-                Simpan
-              </button>
-            </form>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="8" style="padding-top:0.8rem;">
-            Belum ada pesanan.
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}
