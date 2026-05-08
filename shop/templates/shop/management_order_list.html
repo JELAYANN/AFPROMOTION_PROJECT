@@ -15,7 +15,7 @@ body {
 }
 
 .m-orders-page {
-    max-width: 1200px; /* Diperlebar sedikit agar kolom desain muat */
+    max-width: 1200px;
     margin: 2.6rem auto 4rem;
     padding: 0 clamp(1rem, 4vw, 1.5rem) 2rem;
     color: #2C2524;
@@ -76,7 +76,7 @@ body {
 
 .m-table {
     width: 100%;
-    min-width: 1000px; /* Ditingkatkan agar kolom desain tidak sesak */
+    min-width: 1100px;
     border-collapse: collapse;
     font-size: 0.88rem;
 }
@@ -84,6 +84,7 @@ body {
 .m-table thead th {
     text-align: left;
     padding-bottom: 0.8rem;
+    padding-left: 0.5rem;
     font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.14em;
@@ -92,7 +93,7 @@ body {
 }
 
 .m-table tbody td {
-    padding: 1rem 0.5rem;
+    padding: 1.2rem 0.5rem;
     border-bottom: 1px solid rgba(238, 229, 225, 0.9);
     vertical-align: middle;
 }
@@ -103,15 +104,15 @@ body {
     align-items: center;
     gap: 8px;
     background: #fdfaf8;
-    padding: 4px;
+    padding: 6px;
     border-radius: 10px;
     border: 1px solid #eee;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .design-img-preview {
-    width: 45px;
-    height: 45px;
+    width: 50px;
+    height: 50px;
     object-fit: cover;
     border-radius: 6px;
     border: 1px solid #7A0E1A;
@@ -119,48 +120,46 @@ body {
 
 .btn-dl {
     font-size: 0.65rem;
-    padding: 2px 8px;
+    padding: 3px 8px;
     border-radius: 6px;
     text-decoration: none;
     background: #7A0E1A;
     color: white !important;
     font-weight: 600;
-}
-
-.btn-dl:hover {
-    background: #5a0a13;
+    text-align: center;
 }
 
 /* FORM UPDATE */
 .m-update-form {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.5rem;
+    max-width: 160px;
 }
 
-.m-update-select, .m-update-input {
+.m-update-select {
     border-radius: 8px;
-    padding: 0.4rem 0.7rem;
+    padding: 0.4rem;
     border: 1px solid rgba(214, 202, 197, 0.9);
     font-size: 0.8rem;
-    outline: none;
+    background: #fff;
 }
 
 .m-update-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 999px;
+    padding: 0.5rem;
+    border-radius: 8px;
     border: none;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     background: #7A0E1A;
     color: #fff;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(122, 14, 26, 0.2);
+    transition: 0.3s;
 }
 
 .m-update-btn:hover {
-    background: #A03B48;
+    background: #4d0910;
 }
 
 .btn-detail {
@@ -169,19 +168,27 @@ body {
     color: #8A7F7C;
     font-weight: 600;
     display: block;
-    margin-top: 8px;
+    margin-top: 5px;
     text-align: center;
+    border: 1px solid #ddd;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+.btn-detail:hover {
+    background: #fdfaf8;
 }
 </style>
 
 <div class="m-orders-page">
     <h1 class="m-page-title">Manajemen Pesanan</h1>
-    <p class="m-page-sub">Pantau dan kelola status pengiriman serta desain kustom pelanggan.</p>
+    <p class="m-page-sub">Pantau dan kelola status pengiriman serta desain kustom pelanggan secara real-time.</p>
 
+    <!-- Filter Bar -->
     <form method="get" class="m-filter-bar">
-        <span class="m-filter-label">Filter Status</span>
+        <span class="m-filter-label">Filter Status:</span>
         <select name="status" class="m-filter-select" onchange="this.form.submit()">
-            <option value="">Semua</option>
+            <option value="">Semua Status</option>
             {% for code, label in order_status_choices %}
                 <option value="{{ code }}" {% if status_filter == code %}selected{% endif %}>
                     {{ label }}
@@ -196,49 +203,37 @@ body {
                 <tr>
                     <th>Order Info</th>
                     <th>Pelanggan</th>
-                    <th>Desain Custom</th> <th style="width: 150px;">Status Pembayaran</th>
-                    <th>Total</th>
-                    <th style="width: 180px;">Update Tracking</th>
-                    <th>Aksi</th>
+                    <th>Total Bayar</th>
+                    <th style="width: 200px;">Update Status</th>
+                    <th style="text-align: center;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 {% for order in orders %}
                 <tr>
+                    <!-- Info Pesanan -->
                     <td>
-                        <strong>#{{ order.id }}</strong><br>
+                        <strong style="color: #7A0E1A;">#{{ order.id }}</strong><br>
                         <small class="text-muted">{{ order.created_at|date:"d M Y" }}</small><br>
-                        <small class="text-muted">{{ order.created_at|date:"H:i" }}</small>
+                        <small style="font-size: 0.7rem;">Jam: {{ order.created_at|date:"H:i" }}</small>
                     </td>
 
+                    <!-- Nama Pelanggan -->
                     <td>
                         <span style="font-weight: 600;">{{ order.customer.user.get_full_name|default:order.customer.user.username }}</span>
                     </td>
 
+
+                    <!-- Total Harga -->
                     <td>
-                        {% for item in order.items.all %}
-                            {% if item.is_custom and item.custom_image %}
-                                <div class="design-item-box">
-                                    <a href="{{ item.custom_image.url }}" target="_blank">
-                                        <img src="{{ item.custom_image.url }}" class="design-img-preview" alt="Design">
-                                    </a>
-                                    <div class="d-flex flex-column">
-                                        <small style="font-size: 0.65rem; color: #7A0E1A; font-weight: 600;">{{ item.product.name }}</small>
-                                        <a href="{{ item.custom_image.url }}" download="Design_Order_{{ order.id }}.png" class="btn-dl">
-                                            DL PNG
-                                        </a>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                        {% if not order.items.all %}
-                            <small class="text-muted">-</small>
-                        {% endif %}
+                        <span style="font-weight: 700; color: #2C2524;">Rp {{ order.total|intcomma }}</span>
                     </td>
 
+                    <!-- Form Update Status (POST ke management_order_list sesuai permintaan view terbaru) -->
                     <td>
-                        <form method="post" action="{% url 'shop:management_order_update' order.id %}" class="m-update-form" id="form-{{ order.id }}">
+                        <form method="POST" class="m-update-form">
                             {% csrf_token %}
+                            <input type="hidden" name="order_id" value="{{ order.id }}">
                             <select name="status" class="m-update-select">
                                 {% for code, label in order_status_choices %}
                                     <option value="{{ code }}" {% if order.status == code %}selected{% endif %}>
@@ -246,29 +241,18 @@ body {
                                     </option>
                                 {% endfor %}
                             </select>
+                            <button type="submit" class="m-update-btn">Simpan Status</button>
+                        </form>
                     </td>
 
-                    <td><strong>Rp {{ order.total|intcomma }}</strong></td>
-
+                    <!-- Tombol Detail -->
                     <td>
-                        <input type="text" name="tracking_number" class="m-update-input mb-1" placeholder="Nomor Resi" value="{{ order.tracking_number|default:'' }}">
-                        <select name="shipping_status" class="m-update-select">
-                            {% for code, label in shipping_status_choices %}
-                                <option value="{{ code }}" {% if order.shipping_status == code %}selected{% endif %}>
-                                    {{ label }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </td>
-
-                    <td>
-                        <button type="submit" form="form-{{ order.id }}" class="m-update-btn">Simpan</button>
-                        </form> <a href="{% url 'shop:management_order_detail' order.id %}" class="btn-detail">Detail</a>
+                        <a href="{% url 'shop:management_order_detail' order.id %}" class="btn-detail">Lihat Detail</a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7" class="text-center py-5 text-muted">Belum ada pesanan masuk.</td>
+                    <td colspan="6" class="text-center py-5 text-muted">Belum ada pesanan masuk.</td>
                 </tr>
                 {% endfor %}
             </tbody>

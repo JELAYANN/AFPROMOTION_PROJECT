@@ -138,38 +138,31 @@ class Order(models.Model):
         ('COMPLETED', 'Selesai'),
         ('CANCELLED', 'Dibatalkan'),
     ]
-
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='orders')
-    
-    # PERBAIKAN DI SINI: Ganti STATUS_CHOICES menjadi SHIPPING_STATUS_CHOICES
-    status = models.CharField(
-        max_length=20, 
-        choices=SHIPPING_STATUS_CHOICES, 
-        default='PENDING'
-    )
-
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='orders')
-    # Sesuaikan referensi choices di sini
-    status = models.CharField(max_length=20, choices=SHIPPING_STATUS_CHOICES, default='PENDING')
-
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='orders')
-    status = models.CharField(max_length=20, choices=SHIPPING_STATUS_CHOICES, default='PENDING')
+    customer = models.ForeignKey(Customer,on_delete=models.PROTECT,related_name='orders')
+    status = models.CharField(max_length=20,choices=SHIPPING_STATUS_CHOICES,default='PENDING')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    # =========================
+    # SHIPPING DATA
+    # =========================
     shipping_name = models.CharField(max_length=200)
     shipping_phone = models.CharField(max_length=20)
     shipping_address = models.TextField()
     shipping_city = models.CharField(max_length=100)
     shipping_province = models.CharField(max_length=100)
     shipping_postal_code = models.CharField(max_length=10)
-
     courier_code = models.CharField(max_length=50)
     courier_service = models.CharField(max_length=100)
-    shipping_cost = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0'))
-
-    subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0'))
-    total = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0'))
+    # =========================
+    # TRACKING NUMBER
+    # =========================
+    tracking_number = models.CharField(max_length=100,blank=True,null=True)
+    # =========================
+    # PRICE
+    # =========================
+    shipping_cost = models.DecimalField(max_digits=12,decimal_places=2,default=Decimal('0'))
+    subtotal = models.DecimalField(max_digits=12,decimal_places=2,default=Decimal('0'))
+    total = models.DecimalField(max_digits=12,decimal_places=2,default=Decimal('0'))
 
     def __str__(self):
         return f"Order #{self.id} - {self.customer}"
@@ -186,22 +179,38 @@ class OrderItem(models.Model):
     # --- Data Custom ---
     is_custom = models.BooleanField(default=False)
     custom_service_name = models.CharField(max_length=100, blank=True, null=True)
-    custom_price = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0')) # Harga jasa saat transaksi
-    custom_image = models.ImageField(upload_to='orders/custom_designs/%Y/%m/%d/', blank=True, null=True)
+    custom_price = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0'))
+    
+    # PERBAIKAN: upload_to disamakan dengan struktur folder di Screenshot Anda
+    # Gunakan 'custom_products/' agar sinkron dengan media/custom_products/
+    custom_image = models.ImageField(upload_to='custom_products/', blank=True, null=True)
     custom_notes = models.TextField(blank=True, null=True)
 
     @property
     def line_total(self):
+        # Logika ini tetap dipertahankan agar perhitungan total harga aman
         return (self.unit_price + self.custom_price) * self.quantity
+
+    @property
+    def safe_image_url(self):
+        """Metode tambahan agar template tidak error saat gambar kosong"""
+        if self.custom_image and hasattr(self.custom_image, 'url'):
+            return self.custom_image.url
+        return None
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
 
 class Payment(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='payment')
+    external_id = models.CharField(max_length=255, blank=True, null=True) 
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     status = models.CharField(max_length=20, default='PENDING')
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True) 
+    paid_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Payment for Order {self.order.id} - {self.status}" 
 
 # --- KERANJANG BELANJA ---
 

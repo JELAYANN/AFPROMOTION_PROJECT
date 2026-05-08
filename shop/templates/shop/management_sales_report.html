@@ -311,16 +311,16 @@
     <span class="sr-filter-label">Periode</span>
 
     <input type="date"
-           name="start"
-           value="{{ start }}"
-           class="sr-filter-input">
+          name="start"
+          value="{{ start }}"
+          class="sr-filter-input">
 
     <span style="font-size:0.8rem; color:#B0A39F;">-></span>
 
     <input type="date"
-           name="end"
-           value="{{ end }}"
-           class="sr-filter-input">
+          name="end"
+          value="{{ end }}"
+          class="sr-filter-input">
 
     <button type="submit" class="sr-btn-apply">
       Terapkan
@@ -328,7 +328,7 @@
 
     <!-- Export CSV dengan membawa parameter tanggal yg sama -->
     <a href="{% url 'shop:management_sales_report_export' %}?start={{ start }}&end={{ end }}"
-       class="sr-btn-export">
+      class="sr-btn-export">
       Download CSV
     </a>
   </form>

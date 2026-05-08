@@ -1,8 +1,11 @@
 {% extends "shop/base.html" %}
 {% load humanize %}
 
+{% block title %}Detail Pesanan #{{ order.id }} | AF Promotion{% endblock %}
+
 {% block content %}
 <style>
+    * { font-family: "Poppins", sans-serif !important; }
     body { background: #f7f4f2; }
     .m-container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
     
@@ -34,11 +37,13 @@
 
     /* Item List Styling */
     .order-item { 
-        display: grid; grid-template-columns: 100px 1fr auto; gap: 1.5rem; 
+        display: grid; grid-template-columns: 120px 1fr auto; gap: 1.5rem; 
         padding: 1.5rem 0; border-bottom: 1px solid #f1ebe9; align-items: center;
     }
     .order-item:last-child { border-bottom: none; }
-    .item-img { width: 100px; height: 100px; border-radius: 16px; object-fit: cover; border: 1px solid #eee; }
+    
+    .img-wrapper { position: relative; width: 120px; height: 120px; }
+    .item-img { width: 100%; height: 100%; border-radius: 16px; object-fit: cover; border: 1px solid #eee; background: #fdfaf8; }
     
     .badge-status { 
         font-size: 0.65rem; font-weight: 700; padding: 4px 10px; border-radius: 8px; 
@@ -46,6 +51,15 @@
     }
     .badge-custom { background: #7A0E1A; color: #fff; }
     .badge-polos { background: #E7DFDC; color: #8A7F7C; }
+
+    /* Download Button */
+    .btn-download {
+        background: #7A0E1A; color: white !important; padding: 8px 16px; 
+        border-radius: 8px; text-decoration: none; font-size: 0.75rem; 
+        font-weight: 700; display: inline-block; transition: 0.3s; margin-top: 10px;
+        border: none;
+    }
+    .btn-download:hover { background: #4d0910; transform: translateY(-2px); }
 
     /* Summary Styling */
     .summary-box { background: #fdfaf8; padding: 1.5rem; border-radius: 20px; margin-top: 1rem; }
@@ -69,17 +83,14 @@
         <div class="left-col">
             <div class="m-card">
                 <span class="card-label">Detail Pengiriman</span>
-                
                 <div class="info-group">
                     <div class="info-label">Nama Penerima</div>
                     <div class="info-value">{{ order.shipping_name }}</div>
                 </div>
-
                 <div class="info-group">
                     <div class="info-label">Telepon</div>
                     <div class="info-value">{{ order.shipping_phone }}</div>
                 </div>
-
                 <div class="info-group">
                     <div class="info-label">Alamat Lengkap</div>
                     <div class="info-value">
@@ -87,30 +98,38 @@
                         {{ order.shipping_city }}, {{ order.shipping_province }} {{ order.shipping_postal_code }}
                     </div>
                 </div>
-
                 <div class="info-group">
                     <div class="info-label">Logistik</div>
                     <div class="info-value">{{ order.courier_code|upper }} - {{ order.courier_service }}</div>
                 </div>
-
                 <div class="info-group">
                     <div class="info-label">Nomor Resi</div>
-                    <div class="info-value text-primary">{{ order.tracking_number|default:"Belum diinput" }}</div>
+                    <div class="info-value text-primary" style="font-family: monospace;">
+                        {{ order.tracking_number|default:"Belum diinput oleh Admin" }}
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="right-col">
             <div class="m-card">
-                <span class="card-label">Item Pesanan ({{ items|length }})</span>
+                <span class="card-label">Item Pesanan ({{ order.items.all|length }})</span>
                 
-                {% for item in items %}
+                {% for item in order.items.all %}
                 <div class="order-item">
-                    {% if item.is_custom and item.custom_image %}
-                        <img src="{{ item.custom_image.url }}" class="item-img" alt="Custom Design">
-                    {% else %}
-                        <img src="{{ item.product.image.url }}" class="item-img" alt="Product Image">
-                    {% endif %}
+                    <div class="img-wrapper">
+                        {% if item.is_custom and item.custom_image %}
+                            <a href="{{ item.custom_image.url }}" target="_blank">
+                                <img src="{{ item.custom_image.url }}" class="item-img" alt="Custom Design">
+                            </a>
+                        {% elif item.product.image %}
+                            <img src="{{ item.product.image.url }}" class="item-img" alt="Product Image">
+                        {% else %}
+                            <div class="item-img d-flex align-items-center justify-content-center bg-light">
+                                <small class="text-muted">No Image</small>
+                            </div>
+                        {% endif %}
+                    </div>
 
                     <div class="item-details">
                         {% if item.is_custom %}
@@ -120,14 +139,33 @@
                         {% endif %}
                         
                         <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 4px;">{{ item.product.name }}</h4>
-                        <div style="font-size: 0.85rem; color: #8A7F7C; margin-bottom: 8px;">
-                            Varian: <strong>{{ item.variant_label }}</strong>
+                        <div style="font-size: 0.85rem; color: #8A7F7C; margin-bottom: 12px;">
+                            Varian: <strong>{{ item.variant_label|default:"Standar" }}</strong>
                         </div>
                         
                         {% if item.is_custom %}
-                        <div style="background: #fdf2f2; padding: 10px; border-radius: 12px; font-size: 0.8rem;">
-                            <strong>Catatan:</strong> {{ item.custom_notes|default:"-" }}<br>
-                            <a href="{{ item.custom_image.url }}" download class="text-danger fw-bold mt-1 d-inline-block">Download Desain PNG</a>
+                        <div style="background: #fdfaf8; padding: 15px; border-radius: 16px; border: 1px solid #f1ebe9;">
+                            <div class="mb-2">
+                                <strong style="font-size: 0.75rem; color: #7A0E1A;">CATATAN PELANGGAN:</strong><br>
+                                <span style="font-size: 0.85rem;">{{ item.custom_notes|default:"Tidak ada catatan." }}</span>
+                            </div>
+                            
+                            <hr style="border-top: 1px solid #eee; margin: 10px 0;">
+                            
+                            {% if item.custom_image %}
+                                <div class="d-flex align-items-center gap-3">
+                                    <a href="{{ item.custom_image.url }}" target="_blank" style="font-size: 0.8rem; color: #7A0E1A; font-weight: 600;">
+                                        👁️ Lihat Gambar Full
+                                    </a>
+                                    <a href="{{ item.custom_image.url }}" download="AF_PROMO_#{{ order.id }}_Design.png" class="btn-download">
+                                        📥 DOWNLOAD PNG
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div style="color: #d9534f; font-size: 0.8rem; font-weight: 600;">
+                                    ⚠️ File desain tidak ditemukan di sistem.
+                                </div>
+                            {% endif %}
                         </div>
                         {% endif %}
                     </div>
@@ -141,15 +179,11 @@
 
                 <div class="summary-box">
                     <div class="summary-row">
-                        <span>Subtotal Produk</span>
-                        <span>Rp {{ order.subtotal|intcomma }}</span>
-                    </div>
-                    <div class="summary-row">
                         <span>Ongkos Kirim</span>
                         <span>Rp {{ order.shipping_cost|intcomma }}</span>
                     </div>
                     <div class="total-row">
-                        <span class="total-label">Total Pembayaran</span>
+                        <span class="total-label" style="font-weight: 700;">Total Pembayaran</span>
                         <span style="font-size: 1.4rem; font-weight: 800; color: #7A0E1A;">Rp {{ order.total|intcomma }}</span>
                     </div>
                 </div>

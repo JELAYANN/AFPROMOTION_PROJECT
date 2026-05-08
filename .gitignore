@@ -1,0 +1,18 @@
+# ENV
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Env
+venv/
+
+# Media Upload
+media/
+
+# MacOS
+.DS_Store
+
+# VSCode
+.vscode/clear

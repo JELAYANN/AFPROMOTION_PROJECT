@@ -1,0 +1,509 @@
+{% extends "shop/base.html" %}
+{% load humanize %}
+
+{% block title %}
+Pembayaran Berhasil - Pesanan #{{ order.id }}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+*{
+    font-family:"Poppins",sans-serif!important;
+}
+
+body{
+    background:
+    radial-gradient(circle at top,#faf7f5 0%,#f4efec 35%,#ece4e0 100%);
+}
+
+/* =========================
+WRAPPER
+========================= */
+
+.success-wrap{
+    max-width:1000px;
+    margin:2.8rem auto 4rem;
+    padding:1rem 1.4rem;
+    animation:fadeIn .55s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(14px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* =========================
+HEADER
+========================= */
+
+.success-header{
+    text-align:center;
+    margin-bottom:2.4rem;
+}
+
+.success-badge{
+    width:90px;
+    height:90px;
+    margin:0 auto 1.4rem;
+
+    border-radius:999px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+    linear-gradient(
+        135deg,
+        rgba(16,185,129,.15) 0%,
+        rgba(5,150,105,.12) 100%
+    );
+
+    box-shadow:
+    0 12px 32px rgba(16,185,129,.18);
+}
+
+.success-icon{
+    font-size:2.8rem;
+    color:#059669;
+}
+
+.success-title{
+    font-size:2rem;
+    font-weight:700;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:#7A0E1A;
+    margin-bottom:.7rem;
+}
+
+.success-subtitle{
+    max-width:700px;
+    margin:0 auto;
+    color:#7A6E6C;
+    line-height:1.8;
+    font-size:.96rem;
+}
+
+/* =========================
+GRID
+========================= */
+
+.success-grid{
+    display:grid;
+    grid-template-columns:1.15fr .85fr;
+    gap:2rem;
+}
+
+@media(max-width:900px){
+    .success-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+/* =========================
+CARD
+========================= */
+
+.success-card{
+    background:
+    linear-gradient(
+        180deg,
+        rgba(255,255,255,.96) 0%,
+        rgba(248,244,242,.98) 100%
+    );
+
+    border-radius:24px;
+    padding:1.8rem;
+
+    box-shadow:
+    0 14px 40px rgba(0,0,0,.08),
+    inset 0 0 0 1px rgba(255,255,255,.85);
+
+    backdrop-filter:blur(10px);
+}
+
+.card-title{
+    font-size:1.08rem;
+    font-weight:600;
+    color:#2C2524;
+    margin-bottom:1.3rem;
+}
+
+/* =========================
+STATUS BOX
+========================= */
+
+.status-box{
+    display:inline-flex;
+    align-items:center;
+    gap:.6rem;
+
+    background:rgba(16,185,129,.12);
+    color:#047857;
+
+    padding:.7rem 1rem;
+    border-radius:999px;
+
+    font-size:.82rem;
+    font-weight:600;
+    letter-spacing:.07em;
+    text-transform:uppercase;
+
+    margin-bottom:1.5rem;
+}
+
+.status-dot{
+    width:10px;
+    height:10px;
+    border-radius:999px;
+    background:#10B981;
+
+    animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+    0%{
+        transform:scale(.9);
+        opacity:.7;
+    }
+    70%{
+        transform:scale(1.2);
+        opacity:1;
+    }
+    100%{
+        transform:scale(.9);
+        opacity:.7;
+    }
+}
+
+/* =========================
+INFO
+========================= */
+
+.info-group{
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+}
+
+.info-row{
+    display:flex;
+    justify-content:space-between;
+    gap:1rem;
+    font-size:.94rem;
+}
+
+.info-label{
+    color:#7A6E6C;
+}
+
+.info-value{
+    color:#2C2524;
+    font-weight:600;
+    text-align:right;
+}
+
+/* =========================
+SUMMARY
+========================= */
+
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:.8rem;
+    font-size:.96rem;
+}
+
+.summary-total{
+    display:flex;
+    justify-content:space-between;
+
+    margin-top:1.3rem;
+    padding-top:1rem;
+
+    border-top:1px dashed rgba(180,170,166,.7);
+
+    font-size:1.4rem;
+    font-weight:700;
+    color:#7A0E1A;
+}
+
+/* =========================
+INFO BOXES
+========================= */
+
+.success-note{
+    margin-top:1.5rem;
+
+    background:
+    rgba(16,185,129,.08);
+
+    border:
+    1px solid rgba(16,185,129,.12);
+
+    border-radius:18px;
+
+    padding:1rem 1.1rem;
+
+    color:#065F46;
+    font-size:.9rem;
+    line-height:1.8;
+}
+
+.shipping-note{
+    margin-top:1.2rem;
+
+    background:
+    rgba(122,14,26,.05);
+
+    border-radius:18px;
+
+    padding:1rem 1.1rem;
+
+    color:#5E524F;
+    font-size:.9rem;
+    line-height:1.8;
+}
+
+/* =========================
+BUTTONS
+========================= */
+
+.button-group{
+    display:flex;
+    flex-wrap:wrap;
+    gap:1rem;
+    margin-top:2rem;
+}
+
+.btn-main{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:1rem 1.5rem;
+
+    border-radius:999px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #7A0E1A 0%,
+        #9F1F30 100%
+    );
+
+    color:#fff;
+    text-decoration:none;
+
+    font-size:.9rem;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+
+    box-shadow:
+    0 14px 34px rgba(122,14,26,.35);
+
+    transition:all .2s ease;
+}
+
+.btn-main:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 18px 42px rgba(122,14,26,.48);
+}
+
+.btn-secondary{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:1rem 1.5rem;
+
+    border-radius:999px;
+
+    background:#fff;
+
+    color:#7A0E1A;
+    text-decoration:none;
+
+    border:1px solid rgba(122,14,26,.15);
+
+    font-size:.9rem;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+
+    transition:all .2s ease;
+}
+
+.btn-secondary:hover{
+    background:#faf6f5;
+    transform:translateY(-2px);
+}
+
+/* =========================
+FOOTER TEXT
+========================= */
+
+.footer-text{
+    margin-top:2.5rem;
+    text-align:center;
+
+    color:#8B7F7C;
+    font-size:.82rem;
+    line-height:1.8;
+}
+
+</style>
+
+<div class="success-wrap">
+
+    <!-- HEADER -->
+    <div class="success-header">
+
+        <div class="success-badge">
+            <div class="success-icon">✓</div>
+        </div>
+
+        <div class="success-title">
+            Pembayaran Berhasil
+        </div>
+
+        <div class="success-subtitle">
+            Terima kasih {{ order.shipping_name }} ✨
+            Pembayaran pesanan Anda telah berhasil kami terima dan pesanan sekarang masuk ke antrean proses produksi AF Promotion.
+        </div>
+
+    </div>
+
+    <!-- GRID -->
+    <div class="success-grid">
+
+        <!-- LEFT -->
+        <div class="success-card">
+
+            <div class="status-box">
+                <span class="status-dot"></span>
+                Pembayaran Terkonfirmasi
+            </div>
+
+            <div class="card-title">
+                Informasi Pesanan
+            </div>
+
+            <div class="info-group">
+
+                <div class="info-row">
+                    <div class="info-label">Nomor Pesanan</div>
+                    <div class="info-value">#{{ order.id }}</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Nama Penerima</div>
+                    <div class="info-value">{{ order.shipping_name }}</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">No Telepon</div>
+                    <div class="info-value">{{ order.shipping_phone }}</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Kurir</div>
+                    <div class="info-value">
+                        {{ order.courier_code|upper }}
+                        -
+                        {{ order.courier_service }}
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Alamat Pengiriman</div>
+                    <div class="info-value">
+                        {{ order.shipping_city }},
+                        {{ order.shipping_province }}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="success-note">
+                ✅ Sistem pembayaran Midtrans telah mengonfirmasi transaksi Anda secara otomatis dan aman.
+            </div>
+
+            <div class="shipping-note">
+                📦 Tim AF Promotion akan segera memproses pesanan Anda.
+                Notifikasi berikutnya akan dikirim melalui WhatsApp dan Email ketika status pesanan berubah.
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="success-card">
+
+            <div class="card-title">
+                Ringkasan Pembayaran
+            </div>
+
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>
+                    Rp {{ order.subtotal|intcomma }}
+                </span>
+            </div>
+
+            <div class="summary-row">
+                <span>Ongkir</span>
+                <span>
+                    Rp {{ order.shipping_cost|intcomma }}
+                </span>
+            </div>
+
+            <div class="summary-total">
+                <span>Total</span>
+                <span>
+                    Rp {{ order.total|intcomma }}
+                </span>
+            </div>
+
+            <div class="button-group">
+
+                <a
+                    href="{% url 'shop:order_detail' order.id %}"
+                    class="btn-main">
+
+                    Lihat Detail Pesanan
+
+                </a>
+
+                <a
+                    href="{% url 'shop:order_history' %}"
+                    class="btn-secondary">
+
+                    Riwayat Pesanan
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-text">
+        © 2026 AF Promotion Pontianak — Crafted with precision, delivered with pride.
+    </div>
+
+</div>
+
+{% endblock %}
