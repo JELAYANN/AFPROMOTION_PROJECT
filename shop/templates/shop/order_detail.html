@@ -215,6 +215,80 @@ SHIPPING
 }
 
 /* =========================
+ORDER ITEMS
+========================= */
+
+.order-items{
+    margin-top:2rem;
+}
+
+.order-item{
+    display:flex;
+    gap:1rem;
+
+    padding:1rem 0;
+
+    border-bottom:1px solid rgba(210,200,196,.55);
+}
+
+.order-item:last-child{
+    border-bottom:none;
+}
+
+.order-item-image{
+    width:85px;
+    height:85px;
+
+    border-radius:16px;
+    overflow:hidden;
+    flex-shrink:0;
+
+    background:#fff;
+}
+
+.order-item-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.order-item-content{
+    flex:1;
+}
+
+.order-item-title{
+    font-size:1rem;
+    font-weight:600;
+    color:#2C2524;
+    margin-bottom:.3rem;
+}
+
+.order-item-variant{
+    font-size:.86rem;
+    color:#7A6E6C;
+    margin-bottom:.4rem;
+}
+
+.order-item-price{
+    font-size:.9rem;
+    color:#7A0E1A;
+    font-weight:600;
+}
+
+.custom-box{
+    margin-top:.55rem;
+
+    padding:.7rem .9rem;
+
+    border-radius:14px;
+
+    background:rgba(122,14,26,.05);
+
+    font-size:.82rem;
+    color:#5F4B48;
+}
+
+/* =========================
 PAYMENT INFO
 ========================= */
 
@@ -344,50 +418,41 @@ BACK
                 Status Pesanan
             </div>
 
-            <!-- STATUS -->
-
             {% if order.status == "PENDING" %}
-
                 <span class="status-badge badge-pending">
                     <span class="pulse-dot"></span>
                     Menunggu Pembayaran
                 </span>
 
             {% elif order.status == "PAID" %}
-
                 <span class="status-badge badge-paid">
                     <span class="pulse-dot"></span>
                     Pembayaran Berhasil
                 </span>
 
             {% elif order.status == "PROCESSING" %}
-
                 <span class="status-badge badge-processing">
                     <span class="pulse-dot"></span>
                     Sedang Diproses
                 </span>
 
             {% elif order.status == "SHIPPED" %}
-
                 <span class="status-badge badge-shipped">
                     <span class="pulse-dot"></span>
                     Sedang Dikirim
                 </span>
 
             {% elif order.status == "COMPLETED" %}
-
                 <span class="status-badge badge-completed">
                     <span class="pulse-dot"></span>
                     Pesanan Selesai
                 </span>
 
             {% elif order.status == "CANCELLED" %}
-
                 <span class="status-badge badge-cancelled">
                     <span class="pulse-dot"></span>
                     Pesanan Dibatalkan
                 </span>
-
             {% endif %}
 
             <!-- SHIPPING -->
@@ -426,15 +491,95 @@ BACK
                 </p>
 
                 {% if order.tracking_number %}
-
                     <p>
                         No Resi:
                         <strong>
                             {{ order.tracking_number }}
                         </strong>
                     </p>
-
                 {% endif %}
+
+            </div>
+
+            <!-- ORDER ITEMS -->
+
+            <div class="order-items">
+
+                <div class="card-title">
+                    Produk Dipesan
+                </div>
+
+                {% for item in items %}
+
+                    <div class="order-item">
+
+                        <div class="order-item-image">
+
+                            {% if item.product.image %}
+                                <img
+                                src="{{ item.product.image.url }}"
+                                alt="{{ item.product.name }}">
+                            {% endif %}
+
+                        </div>
+
+                        <div class="order-item-content">
+
+                            <div class="order-item-title">
+                                {{ item.product.name }}
+                            </div>
+
+                            <div class="order-item-variant">
+                                {{ item.variant_label }}
+                            </div>
+
+                            <div class="order-item-variant">
+                                Qty:
+                                {{ item.quantity }}
+                            </div>
+
+                            <div class="order-item-price">
+                                Rp {{ item.unit_price|add:item.custom_price|intcomma }}
+                            </div>
+
+                            {% if item.is_custom %}
+
+                                <div class="custom-box">
+
+                                    <strong>Custom Design</strong>
+
+                                    {% if item.custom_notes %}
+                                        <br>
+                                        {{ item.custom_notes }}
+                                    {% endif %}
+
+                                    {% if item.custom_image %}
+                                        <br><br>
+
+                                        <a
+                                        href="{{ item.custom_image.url }}"
+                                        target="_blank">
+
+                                            Lihat Design Upload
+
+                                        </a>
+                                    {% endif %}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                {% empty %}
+
+                    <p>
+                        Tidak ada item pada pesanan ini.
+                    </p>
+
+                {% endfor %}
 
             </div>
 
@@ -509,8 +654,6 @@ BACK
 
             </div>
 
-            <!-- BUTTON PAYMENT -->
-
             {% if order.status == "PENDING" %}
 
                 <a
@@ -537,7 +680,6 @@ BACK
 
 </div>
 
-<!-- AUTO REFRESH STATUS -->
 {% if order.status == "PENDING" %}
 
 <script>
