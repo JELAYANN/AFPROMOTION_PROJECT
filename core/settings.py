@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     # LOCAL APPS
-    'shop',
+    'shop.apps.ShopConfig',
 
     # DJANGO ALLAUTH
     'allauth',
@@ -223,3 +223,11 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 FONNTE_TOKEN = config("FONNTE_TOKEN")
+RAJAONGKIR_API_KEY = config("RAJAONGKIR_API_KEY")
+ORIGIN_SUBDISTRICT_ID = int(
+    config('ORIGIN_SUBDISTRICT_ID', default=0)
+)
+DEFAULT_COURIER = config(
+    "DEFAULT_COURIER",
+    default="JNE"
+)

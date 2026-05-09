@@ -1,37 +1,30 @@
 {% extends "shop/base.html" %}
 {% load static %}
 {% load humanize %}
-
 {% block title %}Beranda | AF Promotion{% endblock %}
-
 {% block content %}
-
 <style>
   /* ========= GLOBAL ========= */
   html {
     scroll-behavior: smooth;
   }
-
   body {
     background: #F5F3F2;
     font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     margin: 0;
     padding: 0;
   }
-
   .home-wrapper {
     width: 100%;
     max-width: 1280px;
     margin: 2.5rem auto 4rem;
     padding: 0 1.5rem;
   }
-
   /* ========= HERO AREA + ANIMATED BACKGROUND ========= */
   .home-hero-shell {
     position: relative;
     padding: 1.5rem 0 0;
   }
-
   .hero-orbit {
     position: absolute;
     border-radius: 150px;
@@ -40,7 +33,6 @@
     z-index: 0;
     filter: blur(0.2px);
   }
-
   .hero-orbit.orbit-1 {
     width: 420px;
     height: 420px;
@@ -48,7 +40,6 @@
     left: -80px;
     animation: orbit-slow 30s linear infinite;
   }
-
   .hero-orbit.orbit-2 {
     width: 320px;
     height: 320px;
@@ -56,7 +47,6 @@
     right: -60px;
     animation: orbit-slow 30s linear infinite reverse;
   }
-
   .hero-dot {
     position: absolute;
     width: 8px;
@@ -67,30 +57,25 @@
     pointer-events: none;
     z-index: 0;
   }
-
   .hero-dot.dot-1 {
     top: 18%;
     left: 8%;
     animation: dot-drift-1 18s ease-in-out infinite;
   }
-
   .hero-dot.dot-2 {
     top: 65%;
     left: 16%;
     animation: dot-drift-2 22s ease-in-out infinite;
   }
-
   .hero-dot.dot-3 {
     top: 22%;
     right: 10%;
     animation: dot-drift-3 20s ease-in-out infinite;
   }
-
   @keyframes orbit-slow {
     0% { transform: rotate(0deg) translate3d(0,0,0); }
     100% { transform: rotate(360deg) translate3d(0,0,0); }
   }
-
   @keyframes dot-drift-1 {
     0%   { transform: translate3d(0, 0, 0); opacity: .7; }
     25%  { transform: translate3d(40px, -10px, 0); opacity: .9; }
@@ -98,7 +83,6 @@
     75%  { transform: translate3d(-10px, 10px, 0); opacity: .8; }
     100% { transform: translate3d(0, 0, 0); opacity: .7; }
   }
-
   @keyframes dot-drift-2 {
     0%   { transform: translate3d(0, 0, 0); opacity: .6; }
     30%  { transform: translate3d(25px, -5px, 0); opacity: .85; }
@@ -106,7 +90,6 @@
     80%  { transform: translate3d(10px, 25px, 0); opacity: .5; }
     100% { transform: translate3d(0, 0, 0); opacity: .6; }
   }
-
   @keyframes dot-drift-3 {
     0%   { transform: translate3d(0, 0, 0); opacity: .7; }
     20%  { transform: translate3d(-20px, 10px, 0); opacity: .9; }
@@ -114,7 +97,6 @@
     80%  { transform: translate3d(-10px, -20px, 0); opacity: .8; }
     100% { transform: translate3d(0, 0, 0); opacity: .7; }
   }
-
   /* ========= HERO BANNER (CARD) ========= */
   .home-hero-card {
     position: relative;
@@ -127,7 +109,6 @@
       inset 0 0 0 1px rgba(255,255,255,0.9);
     z-index: 1;
   }
-
   /* ========= TAGLINE ========= */
   .home-tagline {
     margin-top: 1.6rem;
@@ -139,7 +120,6 @@
     margin-right: auto;
     line-height: 1.7;
   }
-
   /* ========= ACTION BUTTONS ========= */
   .home-actions {
     display: flex;
@@ -148,7 +128,6 @@
     gap: 0.9rem;
     margin-top: 1.5rem;
   }
-
   .home-btn-primary,
   .home-btn-outline {
     text-decoration: none;
@@ -164,39 +143,33 @@
     transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, color 0.12s ease;
     white-space: nowrap;
   }
-
   .home-btn-primary {
     background: #7A0E1A;
     color: #FFFFFF;
     font-weight: 600;
     box-shadow: 0 12px 26px rgba(122, 14, 26, 0.35);
   }
-
   .home-btn-primary:hover {
     background: #A03B48;
     transform: translateY(-1px);
     box-shadow: 0 16px 32px rgba(122, 14, 26, 0.45);
   }
-
   .home-btn-outline {
     border: 1px solid rgba(122, 14, 26, 0.5);
     color: #7A0E1A;
     background: rgba(255,255,255,0.9);
     font-weight: 500;
   }
-
   .home-btn-outline:hover {
     background: #7A0E1A;
     color: #FFFFFF;
     transform: translateY(-1px);
     box-shadow: 0 12px 26px rgba(122, 14, 26, 0.35);
   }
-
   /* ========= CATEGORY CARDS ========= */
   .home-categories {
     margin-top: 2.4rem;
   }
-
   .cat-label {
     font-size: 0.8rem;
     text-transform: uppercase;
@@ -205,37 +178,30 @@
     margin-bottom: 0.8rem;
     text-align: center;
   }
-
   .cat-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.4rem;
   }
-
   @media (max-width: 960px) {
     .cat-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
-
   @media (max-width: 640px) {
     .home-wrapper {
       margin-top: 1.5rem;
     }
-
     .home-hero-card {
       border-radius: 12px;
     }
-
     .cat-grid {
       grid-template-columns: minmax(0, 1fr);
     }
-
     .hero-orbit {
       opacity: 0.4;
     }
   }
-
   .cat-card {
     position: relative;
     display: flex;
@@ -250,41 +216,35 @@
       inset 0 0 0 1px rgba(255,255,255,0.9);
     transition: transform 0.14s ease, box-shadow 0.14s ease;
   }
-
   .cat-card:hover {
     transform: translateY(-4px);
     box-shadow:
       0 18px 40px rgba(0,0,0,0.12),
       inset 0 0 0 1px rgba(255,255,255,1);
   }
-
   .cat-card-active {
     box-shadow:
       0 22px 46px rgba(122,14,26,0.25),
       inset 0 0 0 1px rgba(122,14,26,0.45);
   }
-
   .cat-card-img {
     width: 100%;
     height: 370px;
     overflow: hidden;
     background: #E5DED9;
   }
-
   .cat-card-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
   }
-
   .cat-card-body {
     padding: 0.85rem 1rem 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
   }
-
   .cat-name {
     font-size: 0.95rem;
     font-weight: 600;
@@ -292,14 +252,12 @@
     text-transform: uppercase;
     color: #7A0E1A;
   }
-
   .cat-meta {
     display: flex;
     justify-content: space-between;
     font-size: 0.8rem;
     color: #8A7F7C;
   }
-
   .cat-pill {
     padding: 0.15rem 0.6rem;
     border-radius: 999px;
@@ -308,23 +266,19 @@
     text-transform: uppercase;
     letter-spacing: 0.12em;
   }
-
   .cat-sample-name {
     font-size: 0.8rem;
     color: #4A3B38;
     margin-top: 0.2rem;
   }
-
   /* ========= KATALOG SECTION ========= */
   #katalog {
     margin-top: 3rem;
   }
-
   .catalog-header {
     text-align: center;
     margin-bottom: 1.8rem;
   }
-
   .catalog-eyebrow {
     font-size: 0.8rem;
     letter-spacing: 0.24em;
@@ -332,7 +286,6 @@
     color: #8A7F7C;
     margin-bottom: 0.4rem;
   }
-
   .catalog-title {
     font-size: 1.4rem;
     letter-spacing: 0.16em;
@@ -340,7 +293,6 @@
     color: #7A0E1A;
     margin-bottom: 0.6rem;
   }
-
   .catalog-subtext {
     font-size: 0.9rem;
     color: #5B4A47;
@@ -348,7 +300,6 @@
     margin: 0 auto;
     line-height: 1.6;
   }
-
   .home-catalog-card {
     margin-top: 1.4rem;
     border-radius: 18px;
@@ -356,25 +307,21 @@
     box-shadow: none;
     padding: 1.6rem 0 1.8rem;
   }
-
   .catalog-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.5rem;
   }
-
   @media (max-width: 960px) {
     .catalog-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
-
   @media (max-width: 640px) {
     .catalog-grid {
       grid-template-columns: minmax(0, 1fr);
     }
   }
-
   .catalog-item {
     position: relative;
     background: radial-gradient(circle at top left, #FFFFFF 0%, #F5F3F2 65%, #E9DED9 100%);
@@ -390,26 +337,22 @@
     max-width: 450px;
     min-height: 300px;
   }
-
   .catalog-item a {
     text-decoration: none;
     color: inherit;
   }
-
   .catalog-item img {
     width: 100%;
     height: 320px;
     object-fit: cover;
     border-radius: 12px;
   }
-
   .catalog-item-name {
     font-size: 0.95rem;
     font-weight: 600;
     margin-top: 0.45rem;
     color: #2C2524;
   }
-
   .catalog-item-bottom {
     margin-top: auto;
     padding-top: 0.4rem;
@@ -419,29 +362,24 @@
     justify-content: space-between;
     gap: 0.5rem;
   }
-
   .catalog-price {
     font-size: 0.9rem;
     font-weight: 600;
     color: #7A0E1A;
   }
-
   .catalog-stock {
     font-size: 0.8rem;
     color: #8A7F7C;
   }
-
   .catalog-stock.out {
     color: #B91C1C;
     font-weight: 600;
   }
-
   .catalog-empty {
     font-size: 0.9rem;
     color: #8A7F7C;
     text-align: center;
   }
-
   /* ========= ANIMATED LINES ========= */
   .hero-line {
     position: absolute;
@@ -450,7 +388,6 @@
     z-index: 0;
     pointer-events: none;
   }
-
   .line-h-1 {
     top: 20%;
     left: 0;
@@ -458,7 +395,6 @@
     height: 1px;
     animation: line-move-h 14s linear infinite;
   }
-
   .line-h-2 {
     top: 60%;
     left: 0;
@@ -466,7 +402,6 @@
     height: 1px;
     animation: line-move-h 20s linear infinite reverse;
   }
-
   .line-v-1 {
     top: 0;
     left: 20%;
@@ -474,19 +409,16 @@
     height: 100%;
     animation: line-move-v 22s linear infinite;
   }
-
   @keyframes line-move-h {
     0%   { transform: translateX(-12px); opacity: .25; }
     50%  { transform: translateX(12px); opacity: .42; }
     100% { transform: translateX(-12px); opacity: .25; }
   }
-
   @keyframes line-move-v {
     0%   { transform: translateY(-12px); opacity: .3; }
     50%  { transform: translateY(12px); opacity: .5; }
     100% { transform: translateY(-12px); opacity: .3; }
   }
-
   .section-divider {
     width: 100%;
     max-width: 640px;
@@ -495,7 +427,6 @@
     border-top: 1px solid rgba(122,14,26,0.25);
     position: relative;
   }
-
   .section-divider::after {
     content: "";
     width: 90px;
@@ -507,7 +438,6 @@
     transform: translateX(-50%);
     border-radius: 999px;
   }
-
   /* === SLIDER STYLE === */
   .hero-slider {
     width: 100%;
@@ -515,25 +445,21 @@
     display: flex;
     transition: transform 0.6s ease;
   }
-
   .hero-slide {
     width: 100%;
     flex-shrink: 0;
   }
-
   .hero-slide img {
     width: 100%;
     height: auto;
     display: block;
   }
-
   .hero-dots {
     display: flex;
     gap: 6px;
     justify-content: center;
     
   }
-
   .hero-dot {
     width: 9px;
     height: 9px;
@@ -541,16 +467,13 @@
     border-radius: 50%;
     transition: 0.25s ease;
   }
-
   .hero-dot.active {
     width: 24px;
     background: #7A0E1A;
     border-radius: 999px;
   }
 </style>
-
 <div class="home-wrapper">
-
   <!-- HERO + ANIMATED BACKGROUND -->
   <div class="home-hero-shell">
     <div class="hero-orbit orbit-1"></div>
@@ -561,7 +484,6 @@
     <div class="hero-line line-h-1"></div>
     <div class="hero-line line-h-2"></div>
     <div class="hero-line line-v-1"></div>
-
     <!-- HERO BANNER SLIDER -->
     <div class="home-hero-card">
       <div class="hero-slider" id="heroSlider">
@@ -578,12 +500,10 @@
       <div class="hero-dots" id="heroDots"></div>
     </div>
   </div>
-
   <!-- COPYWRITING -->
   <p class="home-tagline">
     <!-- isi kalau mau: Konveksi & sablon kaos di Pontianak untuk brand, komunitas, dan bisnis Anda. -->
   </p>
-
   <!-- BUTTONS -->
   <div class="home-actions">
     {% if not request.user.is_staff %}
@@ -596,9 +516,7 @@
       </a>
     {% endif %}
   </div>
-
   <hr class="section-divider">
-
   <!-- CATEGORY CARDS -->
   {% if category_cards %}
     <section class="home-categories">
@@ -607,7 +525,6 @@
         {% for card in category_cards %}
           {% with cat=card.category sample=card.sample %}
             <div class="cat-card{% if selected_category and selected_category.slug == cat.slug %} cat-card-active{% endif %}">
-
               <div class="cat-card-img">
                 {% if sample and sample.image %}
                   <img src="{{ sample.image.url }}" alt="{{ cat.name }}">
@@ -615,10 +532,8 @@
                   <img src="{% static 'img/placeholders/category_placeholder.jpg' %}" alt="{{ cat.name }}">
                 {% endif %}
               </div>
-
               <div class="cat-card-body">
                 <div class="cat-name">{{ cat.name }}</div>
-
                 <div class="cat-meta">
                   {% if request.user.is_authenticated %}
                     <a href="{% url 'shop:product_list' %}?category={{ cat.slug }}"
@@ -634,7 +549,6 @@
                     </a>
                   {% endif %}
                 </div>
-
                 {% if sample %}
                   <div class="cat-sample-name">
                     <!-- contoh nama produk dalam kategori -->
@@ -647,38 +561,30 @@
       </div>
     </section>
   {% endif %}
-
 </div>
-
 <script>
   const slider = document.getElementById('heroSlider');
   const dotsContainer = document.getElementById('heroDots');
   const slides = slider ? slider.children : [];
   let index = 0;
-
   if (slider && dotsContainer && slides.length > 0) {
     // generate dots
     for (let i = 0; i < slides.length; i++) {
       const dot = document.createElement("div");
       dot.className = "hero-dot" + (i === 0 ? " active" : "");
       dot.dataset.index = i;
-
       dot.onclick = () => {
         index = i;bv 
         updateSlider();
       };
-
       dotsContainer.appendChild(dot);
     }
-
     const dots = dotsContainer.children;
-
     function updateSlider() {
       slider.style.transform = `translateX(-${index * 100}%)`;
       for (let d of dots) d.classList.remove("active");
       dots[index].classList.add("active");
     }
-
     // auto-slide
     setInterval(() => {
       index = (index + 1) % slides.length;

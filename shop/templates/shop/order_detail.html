@@ -1,697 +1,222 @@
 {% extends "shop/base.html" %}
 {% load humanize %}
-
-{% block title %}
-Detail Pesanan #{{ order.id }}
-{% endblock %}
-
+{% block title %}Detail Pesanan #{{ order.id }}{% endblock %}
 {% block content %}
-
 <style>
-
-*{
-    font-family:"Poppins",sans-serif!important;
-}
-
-body{
-    background:
-    linear-gradient(
-        180deg,
-        #f8f5f4 0%,
-        #f1ebe9 45%,
-        #e7dfdc 100%
-    );
-}
-
-/* =========================
-WRAP
-========================= */
-
-.order-wrap{
-    max-width:1150px;
-    margin:2.4rem auto 4rem;
-    padding:1rem 1.4rem;
-    animation:fadeIn .6s ease;
-}
-
-@keyframes fadeIn{
-    from{
-        opacity:0;
-        transform:translateY(12px);
+    * { font-family: "Poppins", sans-serif !important; }
+    body {
+        background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%);
     }
-    to{
-        opacity:1;
-        transform:translateY(0);
+    /* ========================= WRAP ========================= */
+    .order-wrap {
+        max-width: 1150px;
+        margin: 2.4rem auto 4rem;
+        padding: 1rem 1.4rem;
+        animation: fadeIn .6s ease;
     }
-}
-
-/* =========================
-TITLE
-========================= */
-
-.order-title{
-    text-align:center;
-    font-size:2rem;
-    font-weight:700;
-    color:#7A0E1A;
-    text-transform:uppercase;
-    letter-spacing:.08em;
-    margin-bottom:.5rem;
-}
-
-.order-subtitle{
-    text-align:center;
-    color:#7A6E6C;
-    margin-bottom:2.3rem;
-}
-
-/* =========================
-GRID
-========================= */
-
-.order-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:2rem;
-}
-
-@media(max-width:900px){
-    .order-grid{
-        grid-template-columns:1fr;
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
     }
-}
-
-/* =========================
-CARD
-========================= */
-
-.order-card{
-    background:
-    radial-gradient(
-        circle at top,
-        #ffffff 0%,
-        #f7f4f2 70%,
-        #ece3df 100%
-    );
-
-    border-radius:22px;
-    padding:1.7rem 1.8rem;
-
-    box-shadow:
-    0 14px 32px rgba(0,0,0,.08),
-    inset 0 0 0 1px rgba(255,255,255,.6);
-}
-
-.card-title{
-    font-size:1.08rem;
-    font-weight:600;
-    color:#2C2524;
-    margin-bottom:1rem;
-}
-
-/* =========================
-STATUS BADGE
-========================= */
-
-.status-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:.55rem;
-
-    padding:.55rem 1rem;
-
-    border-radius:999px;
-
-    font-size:.78rem;
-    font-weight:600;
-    letter-spacing:.07em;
-    text-transform:uppercase;
-}
-
-/* Pending */
-
-.badge-pending{
-    background:rgba(244,158,38,.18);
-    color:#B45309;
-}
-
-/* Paid */
-
-.badge-paid{
-    background:rgba(16,185,129,.16);
-    color:#047857;
-}
-
-/* Processing */
-
-.badge-processing{
-    background:rgba(59,130,246,.15);
-    color:#1D4ED8;
-}
-
-/* Shipped */
-
-.badge-shipped{
-    background:rgba(14,165,233,.15);
-    color:#0369A1;
-}
-
-/* Completed */
-
-.badge-completed{
-    background:rgba(34,197,94,.15);
-    color:#15803D;
-}
-
-/* Cancelled */
-
-.badge-cancelled{
-    background:rgba(239,68,68,.16);
-    color:#B91C1C;
-}
-
-/* =========================
-PULSE DOT
-========================= */
-
-.pulse-dot{
-    width:9px;
-    height:9px;
-    border-radius:999px;
-    background:currentColor;
-    animation:pulse 1.5s infinite;
-}
-
-@keyframes pulse{
-    0%{
-        transform:scale(.9);
-        opacity:.7;
+    /* ========================= TITLE ========================= */
+    .order-title {
+        text-align: center;
+        font-size: 2rem; font-weight: 700;
+        color: #7A0E1A; text-transform: uppercase;
+        letter-spacing: .08em; margin-bottom: .5rem;
     }
-
-    70%{
-        transform:scale(1.3);
-        opacity:1;
+    .order-subtitle { text-align: center; color: #7A6E6C; margin-bottom: 2.3rem; }
+    /* ========================= GRID ========================= */
+    .order-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    @media (max-width: 900px) {
+        .order-grid { grid-template-columns: 1fr; }
     }
-
-    100%{
-        transform:scale(.9);
-        opacity:.7;
+    /* ========================= CARD ========================= */
+    .order-card {
+        background: radial-gradient(circle at top, #ffffff 0%, #f7f4f2 70%, #ece3df 100%);
+        border-radius: 22px;
+        padding: 1.7rem 1.8rem;
+        box-shadow: 0 14px 32px rgba(0, 0, 0, .08), inset 0 0 0 1px rgba(255, 255, 255, .6);
     }
-}
-
-/* =========================
-SHIPPING
-========================= */
-
-.shipping-info{
-    margin-top:.4rem;
-}
-
-.shipping-info p{
-    margin:.35rem 0;
-    color:#2C2524;
-    font-size:.94rem;
-    line-height:1.6;
-}
-
-/* =========================
-ORDER ITEMS
-========================= */
-
-.order-items{
-    margin-top:2rem;
-}
-
-.order-item{
-    display:flex;
-    gap:1rem;
-
-    padding:1rem 0;
-
-    border-bottom:1px solid rgba(210,200,196,.55);
-}
-
-.order-item:last-child{
-    border-bottom:none;
-}
-
-.order-item-image{
-    width:85px;
-    height:85px;
-
-    border-radius:16px;
-    overflow:hidden;
-    flex-shrink:0;
-
-    background:#fff;
-}
-
-.order-item-image img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.order-item-content{
-    flex:1;
-}
-
-.order-item-title{
-    font-size:1rem;
-    font-weight:600;
-    color:#2C2524;
-    margin-bottom:.3rem;
-}
-
-.order-item-variant{
-    font-size:.86rem;
-    color:#7A6E6C;
-    margin-bottom:.4rem;
-}
-
-.order-item-price{
-    font-size:.9rem;
-    color:#7A0E1A;
-    font-weight:600;
-}
-
-.custom-box{
-    margin-top:.55rem;
-
-    padding:.7rem .9rem;
-
-    border-radius:14px;
-
-    background:rgba(122,14,26,.05);
-
-    font-size:.82rem;
-    color:#5F4B48;
-}
-
-/* =========================
-PAYMENT INFO
-========================= */
-
-.summary-row{
-    display:flex;
-    justify-content:space-between;
-    margin:.55rem 0;
-    font-size:.95rem;
-}
-
-.summary-total{
-    display:flex;
-    justify-content:space-between;
-
-    margin-top:1rem;
-    padding-top:1rem;
-
-    border-top:1px solid rgba(210,200,196,.8);
-
-    font-size:1.3rem;
-    font-weight:700;
-    color:#7A0E1A;
-}
-
-/* =========================
-BUTTON
-========================= */
-
-.btn-action{
-    display:inline-block;
-
-    padding:.9rem 1.4rem;
-
-    border-radius:999px;
-
-    background:
-    linear-gradient(
-        135deg,
-        #7A0E1A 0%,
-        #9F1F30 100%
-    );
-
-    color:#fff;
-    text-decoration:none;
-
-    text-transform:uppercase;
-    letter-spacing:.09em;
-
-    font-weight:600;
-    font-size:.84rem;
-
-    margin-top:1.5rem;
-
-    box-shadow:
-    0 12px 28px rgba(122,14,26,.42);
-
-    transition:all .18s ease;
-}
-
-.btn-action:hover{
-    transform:translateY(-2px);
-
-    box-shadow:
-    0 18px 40px rgba(122,14,26,.55);
-}
-
-/* =========================
-SUCCESS BOX
-========================= */
-
-.success-box{
-    margin-top:1.4rem;
-
-    background:
-    rgba(16,185,129,.08);
-
-    border:
-    1px solid rgba(16,185,129,.14);
-
-    border-radius:18px;
-
-    padding:1rem 1.1rem;
-
-    color:#065F46;
-
-    font-size:.9rem;
-    line-height:1.7;
-}
-
-/* =========================
-BACK
-========================= */
-
-.back-link{
-    margin-top:2rem;
-    display:inline-block;
-
-    font-size:.9rem;
-
-    color:#7A6E6C;
-    text-decoration:none;
-}
-
-.back-link:hover{
-    text-decoration:underline;
-    color:#7A0E1A;
-}
-
-</style>
-
-<div class="order-wrap">
-
-    <h1 class="order-title">
-        Detail Pesanan #{{ order.id }}
-    </h1>
-
-    <p class="order-subtitle">
-        Terima kasih telah berbelanja di AF Promotion!
-    </p>
-
+    .card-title { font-size: 1.08rem; font-weight: 600; color: #2C2524; margin-bottom: 1rem; }
+    /* ========================= STATUS BADGE ========================= */
+    .status-badge {
+        display: inline-flex; align-items: center; gap: .55rem;
+        padding: .55rem 1rem; border-radius: 999px;
+        font-size: .78rem; font-weight: 600;
+        letter-spacing: .07em; text-transform: uppercase;
+    }
+    .badge-pending    { background: rgba(244, 158, 38,  .18); color: #B45309; }
+    .badge-paid       { background: rgba(16,  185, 129, .16); color: #047857; }
+    .badge-processing { background: rgba(59,  130, 246, .15); color: #1D4ED8; }
+    .badge-shipped    { background: rgba(14,  165, 233, .15); color: #0369A1; }
+    .badge-completed  { background: rgba(34,  197, 94,  .15); color: #15803D; }
+    .badge-cancelled  { background: rgba(239, 68,  68,  .16); color: #B91C1C; }
+    /* ========================= PULSE DOT ========================= */
+    .pulse-dot {
+        width: 9px; height: 9px;
+        border-radius: 999px; background: currentColor;
+        animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+        0%   { transform: scale(.9);  opacity: .7; }
+        70%  { transform: scale(1.3); opacity: 1;  }
+        100% { transform: scale(.9);  opacity: .7; }
+    }
+    /* ========================= SHIPPING ========================= */
+    .shipping-info { margin-top: .4rem; }
+    .shipping-info p { margin: .35rem 0; color: #2C2524; font-size: .94rem; line-height: 1.6; }
+    /* ========================= ORDER ITEMS ========================= */
+    .order-items { margin-top: 2rem; }
+    .order-item {
+        display: flex; gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(210, 200, 196, .55);
+    }
+    .order-item:last-child { border-bottom: none; }
+    .order-item-image {
+        width: 85px; height: 85px;
+        border-radius: 16px; overflow: hidden;
+        flex-shrink: 0; background: #fff;
+    }
+    .order-item-image img { width: 100%; height: 100%; object-fit: cover; }
+    .order-item-content    { flex: 1; }
+    .order-item-title      { font-size: 1rem;  font-weight: 600; color: #2C2524; margin-bottom: .3rem; }
+    .order-item-variant    { font-size: .86rem; color: #7A6E6C; margin-bottom: .4rem; }
+    .order-item-price      { font-size: .9rem;  color: #7A0E1A; font-weight: 600; }
+    .custom-box {
+        margin-top: .55rem; padding: .7rem .9rem;
+        border-radius: 14px; background: rgba(122, 14, 26, .05);
+        font-size: .82rem; color: #5F4B48;
+    }
+    /* ========================= PAYMENT INFO ========================= */
+    .summary-row { display: flex; justify-content: space-between; margin: .55rem 0; font-size: .95rem; }
+    .summary-total {
+        display: flex; justify-content: space-between;
+        margin-top: 1rem; padding-top: 1rem;
+        border-top: 1px solid rgba(210, 200, 196, .8);
+        font-size: 1.3rem; font-weight: 700; color: #7A0E1A;
+    }
+    /* ========================= BUTTON ========================= */
+    .btn-action {
+        display: inline-block; padding: .9rem 1.4rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #7A0E1A 0%, #9F1F30 100%);
+        color: #fff; text-decoration: none;
+        text-transform: uppercase; letter-spacing: .09em;
+        font-weight: 600; font-size: .84rem;
+        margin-top: 1.5rem;
+        box-shadow: 0 12px 28px rgba(122, 14, 26, .42);
+        transition: all .18s ease;
+    }
+    .btn-action:hover { transform: translateY(-2px); box-shadow: 0 18px 40px rgba(122, 14, 26, .55); }
+    /* ========================= SUCCESS BOX ========================= */
+    .success-box {
+        margin-top: 1.4rem; padding: 1rem 1.1rem;
+        border-radius: 18px;
+        background: rgba(16, 185, 129, .08);
+        border: 1px solid rgba(16, 185, 129, .14);
+        color: #065F46; font-size: .9rem; line-height: 1.7;
+    }
+    /* ========================= BACK ========================= */
+    .back-link { margin-top: 2rem; display: inline-block; font-size: .9rem; color: #7A6E6C; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; color: #7A0E1A; }
+    </style>
+    <div class="order-wrap">
+    <h1 class="order-title">Detail Pesanan #{{ order.id }}</h1>
+    <p class="order-subtitle">Terima kasih telah berbelanja di AF Promotion!</p>
     <div class="order-grid">
-
         <!-- LEFT -->
         <div class="order-card">
-
-            <div class="card-title">
-                Status Pesanan
-            </div>
-
-            {% if order.status == "PENDING" %}
-                <span class="status-badge badge-pending">
-                    <span class="pulse-dot"></span>
-                    Menunggu Pembayaran
-                </span>
-
-            {% elif order.status == "PAID" %}
-                <span class="status-badge badge-paid">
-                    <span class="pulse-dot"></span>
-                    Pembayaran Berhasil
-                </span>
-
-            {% elif order.status == "PROCESSING" %}
-                <span class="status-badge badge-processing">
-                    <span class="pulse-dot"></span>
-                    Sedang Diproses
-                </span>
-
-            {% elif order.status == "SHIPPED" %}
-                <span class="status-badge badge-shipped">
-                    <span class="pulse-dot"></span>
-                    Sedang Dikirim
-                </span>
-
-            {% elif order.status == "COMPLETED" %}
-                <span class="status-badge badge-completed">
-                    <span class="pulse-dot"></span>
-                    Pesanan Selesai
-                </span>
-
-            {% elif order.status == "CANCELLED" %}
-                <span class="status-badge badge-cancelled">
-                    <span class="pulse-dot"></span>
-                    Pesanan Dibatalkan
-                </span>
+        <div class="card-title">Status Pesanan</div>
+        {% if order.status == "PENDING" %}
+            <span class="status-badge badge-pending"><span class="pulse-dot"></span> Menunggu Pembayaran</span>
+        {% elif order.status == "PAID" %}
+            <span class="status-badge badge-paid"><span class="pulse-dot"></span> Pembayaran Berhasil</span>
+        {% elif order.status == "PROCESSING" %}
+            <span class="status-badge badge-processing"><span class="pulse-dot"></span> Sedang Diproses</span>
+        {% elif order.status == "SHIPPED" %}
+            <span class="status-badge badge-shipped"><span class="pulse-dot"></span> Sedang Dikirim</span>
+        {% elif order.status == "COMPLETED" %}
+            <span class="status-badge badge-completed"><span class="pulse-dot"></span> Pesanan Selesai</span>
+        {% elif order.status == "CANCELLED" %}
+            <span class="status-badge badge-cancelled"><span class="pulse-dot"></span> Pesanan Dibatalkan</span>
+        {% endif %}
+        <!-- DATA PENGIRIMAN -->
+        <div class="card-title" style="margin-top: 1.6rem;">Data Pengiriman</div>
+        <div class="shipping-info">
+            <p><strong>{{ order.shipping_name }}</strong></p>
+            <p>{{ order.shipping_address }}</p>
+            <p>{{ order.shipping_city }}, {{ order.shipping_province }} {{ order.shipping_postal_code }}</p>
+            <p>Kurir: {{ order.courier_code|upper }} - {{ order.courier_service }}</p>
+            {% if order.tracking_number %}
+            <p>{{ order.tracking_number }}</p>
+            {% else %}
+            <p>Menunggu pengiriman</p>
             {% endif %}
-
-            <!-- SHIPPING -->
-
-            <div
-            style="margin-top:1.6rem;"
-            class="card-title">
-
-                Data Pengiriman
-
-            </div>
-
-            <div class="shipping-info">
-
-                <p>
-                    <strong>
-                        {{ order.shipping_name }}
-                    </strong>
-                </p>
-
-                <p>
-                    {{ order.shipping_address }}
-                </p>
-
-                <p>
-                    {{ order.shipping_city }},
-                    {{ order.shipping_province }}
-                    {{ order.shipping_postal_code }}
-                </p>
-
-                <p>
-                    Kurir:
-                    {{ order.courier_code|upper }}
-                    -
-                    {{ order.courier_service }}
-                </p>
-
-                {% if order.tracking_number %}
-                    <p>
-                        No Resi:
-                        <strong>
-                            {{ order.tracking_number }}
-                        </strong>
-                    </p>
-                {% endif %}
-
-            </div>
-
-            <!-- ORDER ITEMS -->
-
-            <div class="order-items">
-
-                <div class="card-title">
-                    Produk Dipesan
-                </div>
-
-                {% for item in items %}
-
-                    <div class="order-item">
-
-                        <div class="order-item-image">
-
-                            {% if item.product.image %}
-                                <img
-                                src="{{ item.product.image.url }}"
-                                alt="{{ item.product.name }}">
-                            {% endif %}
-
-                        </div>
-
-                        <div class="order-item-content">
-
-                            <div class="order-item-title">
-                                {{ item.product.name }}
-                            </div>
-
-                            <div class="order-item-variant">
-                                {{ item.variant_label }}
-                            </div>
-
-                            <div class="order-item-variant">
-                                Qty:
-                                {{ item.quantity }}
-                            </div>
-
-                            <div class="order-item-price">
-                                Rp {{ item.unit_price|add:item.custom_price|intcomma }}
-                            </div>
-
-                            {% if item.is_custom %}
-
-                                <div class="custom-box">
-
-                                    <strong>Custom Design</strong>
-
-                                    {% if item.custom_notes %}
-                                        <br>
-                                        {{ item.custom_notes }}
-                                    {% endif %}
-
-                                    {% if item.custom_image %}
-                                        <br><br>
-
-                                        <a
-                                        href="{{ item.custom_image.url }}"
-                                        target="_blank">
-
-                                            Lihat Design Upload
-
-                                        </a>
-                                    {% endif %}
-
-                                </div>
-
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-                {% empty %}
-
-                    <p>
-                        Tidak ada item pada pesanan ini.
-                    </p>
-
-                {% endfor %}
-
-            </div>
-
-            <!-- SUCCESS BOX -->
-
-            {% if order.status == "PAID" %}
-
-                <div class="success-box">
-
-                    ✅ Pembayaran berhasil diterima.
-
-                    Pesanan Anda akan segera masuk
-                    ke tahap produksi oleh tim
-                    AF Promotion.
-
-                </div>
-
-            {% elif order.status == "PROCESSING" %}
-
-                <div class="success-box">
-
-                    🎨 Pesanan sedang diproses
-                    dan dipersiapkan untuk pengiriman.
-
-                </div>
-
-            {% elif order.status == "SHIPPED" %}
-
-                <div class="success-box">
-
-                    🚚 Pesanan telah dikirim.
-
-                    Silakan pantau status pengiriman
-                    menggunakan nomor resi.
-
-                </div>
-
-            {% endif %}
-
         </div>
-
+        <!-- PRODUK DIPESAN -->
+        <div class="order-items">
+            <div class="card-title">Produk Dipesan</div>
+            {% for item in items %}
+            <div class="order-item">
+            <div class="order-item-image">
+                {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                {% endif %}
+            </div>
+            <div class="order-item-content">
+                <div class="order-item-title">{{ item.product.name }}</div>
+                <div class="order-item-variant">{{ item.variant_label }}</div>
+                <div class="order-item-variant">Qty: {{ item.quantity }}</div>
+                <div class="order-item-price">Rp {{ item.unit_price|add:item.custom_price|intcomma }}</div>
+                {% if item.is_custom %}
+                <div class="custom-box">
+                <strong>Custom Design</strong>
+                {% if item.custom_notes %}<br>{{ item.custom_notes }}{% endif %}
+                {% if item.custom_image %}<br><br><a href="{{ item.custom_image.url }}" target="_blank">Lihat Design Upload</a>{% endif %}
+                </div>
+                {% endif %}
+            </div>
+            </div>
+            {% empty %}
+            <p>Tidak ada item pada pesanan ini.</p>
+            {% endfor %}
+        </div>
+        <!-- SUCCESS BOX -->
+        {% if order.status == "PAID" %}
+            <div class="success-box">✅ Pembayaran berhasil diterima. Pesanan Anda akan segera masuk ke tahap produksi oleh tim AF Promotion.</div>
+        {% elif order.status == "PROCESSING" %}
+            <div class="success-box">🎨 Pesanan sedang diproses dan dipersiapkan untuk pengiriman.</div>
+        {% elif order.status == "SHIPPED" %}
+            <div class="success-box">🚚 Pesanan telah dikirim. Silakan pantau status pengiriman menggunakan nomor resi.</div>
+        {% endif %}
+        </div>
         <!-- RIGHT -->
         <div class="order-card">
-
-            <div class="card-title">
-                Ringkasan Pembayaran
-            </div>
-
-            <div class="summary-row">
-                <span>Subtotal</span>
-
-                <span>
-                    Rp {{ order.subtotal|intcomma }}
-                </span>
-            </div>
-
-            <div class="summary-row">
-                <span>Ongkir</span>
-
-                <span>
-                    Rp {{ order.shipping_cost|intcomma }}
-                </span>
-            </div>
-
-            <div class="summary-total">
-
-                <span>Total</span>
-
-                <span>
-                    Rp {{ order.total|intcomma }}
-                </span>
-
-            </div>
-
-            {% if order.status == "PENDING" %}
-
-                <a
-                href="{% url 'shop:order_pay' order.id %}"
-                class="btn-action">
-
-                    Bayar Sekarang
-
-                </a>
-
-            {% endif %}
-
+        <div class="card-title">Ringkasan Pembayaran</div>
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <span>Rp {{ order.subtotal|intcomma }}</span>
         </div>
-
+        <div class="summary-row">
+            <span>Ongkir</span>
+            <span>Rp {{ order.shipping_cost|intcomma }}</span>
+        </div>
+        <div class="summary-total">
+            <span>Total</span>
+            <span>Rp {{ order.total|intcomma }}</span>
+        </div>
+        {% if order.status == "PENDING" %}
+            <a href="{% url 'shop:order_pay' order.id %}" class="btn-action">Bayar Sekarang</a>
+        {% endif %}
+        </div>
     </div>
-
-    <a
-    href="{% url 'shop:product_list' %}"
-    class="back-link">
-
-        ← Kembali ke Katalog
-
-    </a>
-
-</div>
-
-{% if order.status == "PENDING" %}
-
-<script>
-
-setTimeout(function(){
-
-    location.reload();
-
-}, 10000);
-
-</script>
-
-{% endif %}
-
-{% endblock %}
+    <a href="{% url 'shop:product_list' %}" class="back-link">← Kembali ke Katalog</a>
+    </div>
+    {% if order.status == "PENDING" %}
+    <script>
+    setTimeout(function () { location.reload(); }, 10000);
+    </script>
+    {% endif %}
+    {% endblock %}

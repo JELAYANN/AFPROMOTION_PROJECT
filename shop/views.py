@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect # type: ignore                    
 from django.contrib.auth.decorators import login_required      # type: ignore 
+from django.views.decorators.http import require_POST # type: ignore
 from django.contrib import messages# type: ignore
 from decimal import Decimal
 from django.db import transaction# type: ignore
@@ -20,6 +21,7 @@ import uuid # type: ignore
 import base64 # type: ignore
 import urllib3 # type: ignore
 import hashlib # type: ignore
+from django.http import JsonResponse # type: ignore
 import csv
 import json
 import midtransclient      # type: ignore
@@ -30,6 +32,13 @@ from .models import (
     Order, OrderItem, Payment, ProductVariant, Color, Size, CustomProduct, CustomService 
 )
 from .forms import ProfileForm, RegisterForm
+from .shipping import (
+    get_provinces,
+    get_cities,
+    get_subdistricts,
+    get_shipping_cost,
+    create_shipment
+)
 # =====================
 # HELPER
 # =====================
@@ -139,107 +148,200 @@ def cart_remove(request, item_id):
 # =====================
 @login_required
 @require_http_methods(["GET", "POST"])
+@login_required
 def checkout(request):
     customer = get_customer(request)
-    # Ambil item keranjang
-    cart_items = CartItem.objects.filter(customer=customer).select_related(
+    cart_items = CartItem.objects.filter(
+        customer=customer
+    ).select_related(
         'product',
         'variant',
         'custom_variant',
         'custom_service'
     )
-    # Jika keranjang kosong
+    # =========================
+    # VALIDASI CART
+    # =========================
     if not cart_items.exists():
-        messages.warning(request, "Keranjang kosong.")
-        return redirect("shop:cart_detail")
-    shipping_cost = Decimal("20000")
+        messages.warning(
+            request,
+            "Keranjang kosong."
+        )
+        return redirect(
+            "shop:cart_detail"
+        )
+    # =========================
+    # VALIDASI ALAMAT CUSTOMER
+    # =========================
+    if not customer.subdistrict_id:
+        messages.warning(
+            request,
+            "Silakan lengkapi alamat profile terlebih dahulu."
+        )
+        return redirect(
+            "shop:profile"
+        )
+    # =========================
+    # HITUNG TOTAL BERAT
+    # =========================
+    total_weight = 0
+    for item in cart_items:
+        weight = getattr(
+            item.product,
+            'weight',
+            1000
+        ) or 1000
+        total_weight += (
+            weight * item.quantity
+        )
     # =========================
     # POST / CREATE ORDER
     # =========================
     if request.method == "POST":
+        try:
+            raw_shipping_cost = request.POST.get(
+                "shipping_cost",
+                "0"
+            )
+            shipping_cost = Decimal(
+                raw_shipping_cost.replace(',', '')
+            )
+        except:
+            shipping_cost = Decimal("0")
+        # =========================
+        # VALIDASI SHIPPING
+        # =========================
+        courier_code = request.POST.get(
+            "courier_code"
+        )
+        courier_service = request.POST.get(
+            "courier_service"
+        )
+        destination_subdistrict_id = request.POST.get(
+            "destination_subdistrict_id"
+        )
+        if not courier_code or not courier_service:
+            messages.error(
+                request,
+                "Silakan pilih kurir pengiriman."
+            )
+            return redirect(
+                "shop:checkout"
+            )
         try:
             with transaction.atomic():
                 # =========================
                 # VALIDASI STOK
                 # =========================
                 for item in cart_items:
-                    variant_obj = item.custom_variant if item.is_custom else item.variant
+                    variant_obj = (
+                        item.custom_variant
+                        if item.is_custom
+                        else item.variant
+                    )
                     if not variant_obj:
                         messages.error(
                             request,
-                            f"Variant untuk {item.product.name} tidak ditemukan."
+                            f"Variant {item.product.name} tidak ditemukan."
                         )
-                        return redirect("shop:cart_detail")
+                        return redirect(
+                            "shop:cart_detail"
+                        )
                     if variant_obj.stock < item.quantity:
                         messages.error(
                             request,
                             f"Stok {item.product.name} tidak cukup."
                         )
-                        return redirect("shop:cart_detail")
+                        return redirect(
+                            "shop:cart_detail"
+                        )
                 # =========================
-                # BUAT ORDER
+                # CREATE ORDER
                 # =========================
                 order = Order.objects.create(
                     customer=customer,
-                    shipping_name=request.POST.get("shipping_name"),
-                    shipping_phone=request.POST.get("shipping_phone"),
-                    shipping_address=request.POST.get("shipping_address"),
-                    shipping_city=request.POST.get("shipping_city"),
-                    shipping_province=request.POST.get("shipping_province"),
-                    shipping_postal_code=request.POST.get("shipping_postal_code"),
-                    courier_code=request.POST.get("courier_code"),
-                    courier_service=request.POST.get("courier_service"),
+                    # SHIPPING CUSTOMER
+                    shipping_name=request.POST.get(
+                        "shipping_name"
+                    ),
+                    shipping_phone=request.POST.get(
+                        "shipping_phone"
+                    ),
+                    shipping_address=request.POST.get(
+                        "shipping_address"
+                    ),
+                    shipping_city=request.POST.get(
+                        "shipping_city"
+                    ),
+                    shipping_province=request.POST.get(
+                        "shipping_province"
+                    ),
+                    shipping_postal_code=request.POST.get(
+                        "shipping_postal_code"
+                    ),
+                    # SHIPPING REGION
+                    destination_subdistrict_id=
+                    destination_subdistrict_id,
+                    # COURIER
+                    courier_code=courier_code,
+                    courier_service=
+                    courier_service,
+                    # SHIPPING
                     shipping_cost=shipping_cost,
+                    total_weight=total_weight,
                 )
                 subtotal = Decimal("0")
                 # =========================
-                # PINDAHKAN CART -> ORDER ITEM
+                # CART -> ORDER ITEM
                 # =========================
                 for item in cart_items:
-                    # =====================
                     # CUSTOM PRODUCT
-                    # =====================
                     if item.is_custom and item.custom_variant:
-                        unit_price = item.custom_variant.price
+                        unit_price = (
+                            item.custom_variant.price
+                        )
                         service_price = (
                             item.custom_service.additional_price
                             if item.custom_service
                             else Decimal("0")
                         )
-                        variant_label = f"Custom: {item.custom_variant.size.name}"
-                        # Kurangi stok
-                        item.custom_variant.stock -= item.quantity
+                        variant_label = (
+                            f"Custom: "
+                            f"{item.custom_variant.size.name}"
+                        )
+                        # REDUCE STOCK
+                        item.custom_variant.stock -= (
+                            item.quantity
+                        )
                         item.custom_variant.save()
-                    # =====================
-                    # STANDARD PRODUCT
-                    # =====================
+                    # NORMAL PRODUCT
                     else:
                         unit_price = (
                             item.variant.price_override
-                            if item.variant and item.variant.price_override
+                            if item.variant
+                            and item.variant.price_override
                             else item.product.price
                         )
                         service_price = Decimal("0")
                         variant_label = (
-                            f"{item.variant.color.name} - {item.variant.size.name}"
+                            f"{item.variant.color.name}"
+                            f" - "
+                            f"{item.variant.size.name}"
                             if item.variant
                             else "Standard"
                         )
-                        # Kurangi stok
+                        # REDUCE STOCK
                         if item.variant:
-                            item.variant.stock -= item.quantity
+                            item.variant.stock -= (
+                                item.quantity
+                            )
                             item.variant.save()
-                    # =====================
-                    # HITUNG TOTAL ITEM
-                    # =====================
+                    # TOTAL
                     line_total = (
-                        (unit_price + service_price)
-                        * item.quantity
-                    )
+                        unit_price + service_price
+                    ) * item.quantity
                     subtotal += line_total
-                    # =====================
                     # CREATE ORDER ITEM
-                    # =====================
                     OrderItem.objects.create(
                         order=order,
                         product=item.product,
@@ -248,15 +350,24 @@ def checkout(request):
                         custom_price=service_price,
                         is_custom=item.is_custom,
                         variant_label=variant_label,
-                        # custom design
-                        custom_image=item.custom_image if item.is_custom else None,
-                        custom_notes=item.custom_notes if item.is_custom else None,
+                        custom_image=(
+                            item.custom_image
+                            if item.is_custom
+                            else None
+                        ),
+                        custom_notes=(
+                            item.custom_notes
+                            if item.is_custom
+                            else None
+                        ),
                     )
                 # =========================
-                # FINALISASI TOTAL ORDER
+                # FINAL TOTAL
                 # =========================
                 order.subtotal = subtotal
-                order.total = subtotal + shipping_cost
+                order.total = (
+                    subtotal + shipping_cost
+                )
                 order.save()
                 # =========================
                 # CREATE PAYMENT
@@ -267,29 +378,31 @@ def checkout(request):
                     status="PENDING"
                 )
                 # =========================
-                # HAPUS KERANJANG
+                # CLEAR CART
                 # =========================
                 cart_items.delete()
                 messages.success(
                     request,
-                    "Order berhasil dibuat. Lanjutkan pembayaran."
+                    "Order berhasil dibuat."
                 )
-                # =========================
-                # REDIRECT KE MIDTRANS
-                # =========================
                 return redirect(
                     "shop:order_pay",
                     order_id=order.id
                 )
         except Exception as e:
-            print("CHECKOUT ERROR:", str(e))
+            print(
+                "CHECKOUT ERROR:",
+                str(e)
+            )
             messages.error(
                 request,
-                f"Terjadi kesalahan checkout: {str(e)}"
+                f"Checkout gagal: {str(e)}"
             )
-            return redirect("shop:checkout")
+            return redirect(
+                "shop:checkout"
+            )
     # =========================
-    # GET / TAMPILAN CHECKOUT
+    # GET / DISPLAY CHECKOUT
     # =========================
     grand_total = Decimal("0")
     for item in cart_items:
@@ -298,28 +411,34 @@ def checkout(request):
             if item.is_custom
             else (
                 item.variant.price_override
-                if item.variant and item.variant.price_override
+                if item.variant
+                and item.variant.price_override
                 else item.product.price
             )
         )
         service_price = (
             item.custom_service.additional_price
-            if item.is_custom and item.custom_service
+            if item.is_custom
+            and item.custom_service
             else Decimal("0")
         )
         item.line_total = (
-            (product_price + service_price)
-            * item.quantity
-        )
+            product_price + service_price
+        ) * item.quantity
         grand_total += item.line_total
-    return render(request, "shop/checkout.html", {
+    context = {
         "customer": customer,
         "items": cart_items,
         "subtotal": grand_total,
-        "shipping_cost": shipping_cost,
-        "total": grand_total + shipping_cost,
-    })
-
+        "total_weight": total_weight,
+        "shipping_cost": Decimal("0"),
+        "total": grand_total,
+    }
+    return render(
+        request,
+        "shop/checkout.html",
+        context
+    )
 @login_required
 def order_pay(request, order_id):
     print("ORDER PAY DIPANGGIL")
@@ -479,15 +598,13 @@ def order_pay(request, order_id):
             "shop:order_detail",
             order_id=order.id
         )
-    
 @csrf_exempt
 def midtrans_callback(request):
     if request.method != "POST":
         return HttpResponse(status=405)
     try:
         notification = json.loads(request.body)
-        print("MIDTRANS CALLBACK:")
-        print(notification)
+        print("MIDTRANS CALLBACK:", notification)
         # =========================
         # AMBIL DATA
         # =========================
@@ -497,65 +614,96 @@ def midtrans_callback(request):
         gross_amount = notification.get("gross_amount")
         signature_key = notification.get("signature_key")
         # =========================
+        # VALIDASI ORDER ID
+        # =========================
+        if not order_id_full:
+            print("ORDER ID TIDAK ADA")
+            return HttpResponse(status=400)
+        # =========================
         # VALIDASI SIGNATURE
         # =========================
-        server_key = settings.MIDTRANS_SERVER_KEY
-        raw_signature = (
-            order_id_full +
-            status_code +
-            gross_amount +
-            server_key
-        )
-        generated_signature = hashlib.sha512(
-            raw_signature.encode()
-        ).hexdigest()
-        if signature_key != generated_signature:
-            print("SIGNATURE INVALID!")
-            return HttpResponse(status=403)
-        print("SIGNATURE VALID")
+        if status_code and gross_amount and signature_key:
+            server_key = settings.MIDTRANS_SERVER_KEY.strip()
+            raw_signature = (
+                str(order_id_full)
+                + str(status_code)
+                + str(gross_amount)
+                + str(server_key)
+            )
+            generated_signature = hashlib.sha512(
+                raw_signature.encode()
+            ).hexdigest()
+            if signature_key != generated_signature:
+                print("SIGNATURE INVALID!")
+                return HttpResponse(status=403)
+            print("SIGNATURE VALID")
+        else:
+            print("SIGNATURE SKIPPED (sandbox/local callback)")
         # =========================
-        # AMBIL ORDER
+        # GET ORDER
         # =========================
         order_id = order_id_full.split("-")[2]
-        order = get_object_or_404(
-            Order,
-            id=order_id
-        )
-        payment = Payment.objects.filter(
-            order=order
-        ).first()
-        # =========================
-        # UPDATE STATUS
-        # =========================
+        order = get_object_or_404(Order, id=order_id)
+        payment = Payment.objects.filter(order=order).first()
+        # ==================================================
+        # SUCCESS PAYMENT
+        # ==================================================
         if transaction_status in ["capture", "settlement"]:
-            order.status = "PAID"
-            order.save()
+            # =========================
+            # PAYMENT UPDATE
+            # =========================
             if payment:
-                payment.status = "PAID"
-                payment.paid_at = timezone.now()
-                payment.save()
-            print(f"ORDER #{order.id} BERHASIL DIUPDATE KE PAID")
-            send_order_update_notification(
-                order,
-                "PAID"
-            )
-        elif transaction_status in [
-            "deny",
-            "expire",
-            "cancel"
-        ]:
-            order.status = "CANCELLED"
-            order.save()
+                if payment.status != "PAID":
+                    payment.status = "PAID"
+                    payment.paid_at = timezone.now()
+                    payment.save(update_fields=["status", "paid_at"])
+            # =========================
+            # ORDER UPDATE
+            # =========================
+            if order.status != "PAID":
+                order.status = "PAID"
+                order.save(update_fields=["status"])
+                print(f"ORDER #{order.id} PAID")
+            else:
+                print(f"ORDER #{order.id} already PAID")
+            # ==================================================
+            # CREATE SHIPMENT (ONLY ONCE)
+            # ==================================================
+            if not order.tracking_number:
+                shipment_result = create_shipment(order)
+                print("SHIPMENT RESULT:", shipment_result)
+                if shipment_result.get("success"):
+                    awb = shipment_result.get("awb")
+                    if awb:
+                        order.tracking_number = awb
+                        order.shipping_status = "PROCESSING"
+                        order.save(update_fields=[
+                            "tracking_number",
+                            "shipping_status"
+                        ])
+                        print(f"AWB CREATED: {awb}")
+                    else:
+                        print("AWB NOT FOUND")
+                else:
+                    print("SHIPMENT FAILED")
+            else:
+                print(f"ORDER #{order.id} already has AWB")
+        # ==================================================
+        # FAILED PAYMENT
+        # ==================================================
+        elif transaction_status in ["deny", "expire", "cancel"]:
+            if order.status != "CANCELLED":
+                order.status = "CANCELLED"
+                order.save(update_fields=["status"])
             if payment:
-                payment.status = "FAILED"
-                payment.save()
-            print(f"ORDER #{order.id} DIBATALKAN")
+                if payment.status != "FAILED":
+                    payment.status = "FAILED"
+                    payment.save(update_fields=["status"])
+            print(f"ORDER #{order.id} CANCELLED")
         return HttpResponse(status=200)
     except Exception as e:
-        print("CALLBACK ERROR:")
-        print(str(e))
+        print("CALLBACK ERROR:", str(e))
         return HttpResponse(status=500)
-
 @login_required
 def payment_success(request, order_id):
     order = get_object_or_404(
@@ -563,41 +711,109 @@ def payment_success(request, order_id):
         id=order_id,
         customer__user=request.user
     )
-    return render(
-        request,
-        'shop/payment_success.html',
-        {
-            'order': order
-        }
-    )
-
+    payment = Payment.objects.filter(order=order).first()
+    context = {
+        "order": order,
+        "payment": payment
+    }
+    return render(request, 'shop/payment_success.html', context)
 # =====================
 # ORDER HISTORY & PROFILE
 # =====================
 @login_required
 def order_history(request):
     return render(request, "shop/order_history.html", {"orders": Order.objects.filter(customer=get_customer(request)).order_by("-created_at")})
-
 @login_required
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, customer=get_customer(request))
     return render(request, "shop/order_detail.html", {"order": order, "items": order.items.select_related("product").all()})
-
 @login_required
 def profile(request):
     customer = get_customer(request)
     if request.method == "POST":
-        form = ProfileForm(request.POST, instance=customer)
+        form = ProfileForm(
+            request.POST,
+            instance=customer
+        )
         if form.is_valid():
-            form.save()
+            customer = form.save(
+                commit=False
+            )
+            # =========================
+            # SHIPPING REGION
+            # =========================
+            customer.province = request.POST.get(
+                "province",
+                ""
+            )
+            customer.city = request.POST.get(
+                "city",
+                ""
+            )
+            customer.subdistrict = request.POST.get(
+                "subdistrict",
+                ""
+            )
+            # =========================
+            # SHIPPING REGION ID
+            # =========================
+            customer.province_id = request.POST.get(
+                "province_id",
+                ""
+            )
+            customer.city_id = request.POST.get(
+                "city_id",
+                ""
+            )
+            customer.subdistrict_id = request.POST.get(
+                "subdistrict_id",
+                ""
+            )
+            customer.save()
+            # =========================
+            # UPDATE USER
+            # =========================
             u = request.user
-            u.first_name, u.last_name, u.email = request.POST.get("first_name", ""), request.POST.get("last_name", ""), request.POST.get("email", "")
+            u.first_name = request.POST.get(
+                "first_name",
+                ""
+            )
+            u.last_name = request.POST.get(
+                "last_name",
+                ""
+            )
+            u.email = request.POST.get(
+                "email",
+                ""
+            )
             u.save()
-            messages.success(request, "Profil diperbarui.")
-            return redirect("shop:profile")
-    else: form = ProfileForm(instance=customer)
-    return render(request, "shop/profile.html", {"form": form, "orders": Order.objects.filter(customer=customer).order_by("-created_at"), "user_obj": request.user})
-
+            messages.success(
+                request,
+                "Profil berhasil diperbarui."
+            )
+            return redirect(
+                "shop:profile"
+            )
+    else:
+        form = ProfileForm(
+            instance=customer
+        )
+    orders = Order.objects.filter(
+        customer=customer
+    ).order_by(
+        "-created_at"
+    )
+    context = {
+        "form": form,
+        "orders": orders,
+        "user_obj": request.user,
+        "customer": customer,
+    }
+    return render(
+        request,
+        "shop/profile.html",
+        context
+    )
 def register(request):
     if request.user.is_authenticated: return redirect("shop:product_list")
     if request.method == "POST":
@@ -610,7 +826,6 @@ def register(request):
             return redirect("shop:product_list")
     else: form = RegisterForm()
     return render(request, "shop/register.html", {"form": form})
-
 def logout_view(request):
     auth_logout(request)
     return redirect("login")
@@ -623,7 +838,6 @@ VALID_REVENUE_STATUSES = [
     "SHIPPED",
     "COMPLETED"
 ]
-
 @staff_member_required
 def management_dashboard(request):
     revenue_orders = Order.objects.filter(
@@ -648,79 +862,81 @@ def management_dashboard(request):
             Order.objects.select_related("customer__user")
             .order_by("-created_at")[:5],
     })
-
 @staff_member_required
 def management_order_list(request):
     # =========================
     # UPDATE STATUS
     # =========================
     if request.method == "POST":
-        order_id = request.POST.get("order_id")
-        new_status = request.POST.get("status")
+        order_id = request.POST.get(
+            "order_id"
+        )
+        new_status = request.POST.get(
+            "status"
+        )
         if order_id and new_status:
-            order = get_object_or_404(Order, id=order_id)
+            order = get_object_or_404(
+                Order,
+                id=order_id
+            )
             old_status = order.status
-            # update status
-            order.status = new_status
-            order.save()
             # =========================
-            # NOTIFICATION LOGIC
+            # UPDATE STATUS
             # =========================
-            # PROCESSING
-            if (
-                new_status == "PROCESSING"
-                and old_status != "PROCESSING"
-            ):
-                send_order_update_notification(
-                    order,
-                    "PROCESSING"
-                )
+            if old_status != new_status:
+                order.status = new_status
+                # save -> trigger signal
+                order.save()
                 messages.success(
                     request,
-                    f"Pesanan #{order.id} diproses & notifikasi dikirim!"
-                )
-            # SHIPPED
-            elif (
-                new_status == "SHIPPED"
-                and old_status != "SHIPPED"
-            ):
-                send_order_update_notification(
-                    order,
-                    "SHIPPED"
-                )
-                messages.success(
-                    request,
-                    f"Pesanan #{order.id} dikirim & notifikasi dikirim!"
+                    f"Status pesanan "
+                    f"#{order.id} "
+                    f"berhasil diperbarui."
                 )
             else:
-                messages.success(
+                messages.info(
                     request,
-                    f"Status pesanan #{order.id} diperbarui."
+                    f"Status pesanan "
+                    f"#{order.id} "
+                    f"tidak berubah."
                 )
-            return redirect("shop:management_order_list")
+            return redirect(
+                "shop:management_order_list"
+            )
     # =========================
     # FILTER LIST
     # =========================
-    status_filter = request.GET.get("status")
+    status_filter = request.GET.get(
+        "status"
+    )
     orders = (
         Order.objects
-        .select_related("customer__user")
-        .prefetch_related("items")
-        .order_by("-created_at")
+        .select_related(
+            "customer__user"
+        )
+        .prefetch_related(
+            "items"
+        )
+        .order_by(
+            "-created_at"
+        )
     )
     if status_filter:
-        orders = orders.filter(status=status_filter)
+        orders = orders.filter(
+            status=status_filter
+        )
     context = {
         "orders": orders,
-        "order_status_choices": Order.SHIPPING_STATUS_CHOICES,
-        "status_filter": status_filter,
+        "order_status_choices":
+            Order.SHIPPING_STATUS_CHOICES,
+        "status_filter":
+            status_filter,
     }
     return render(
         request,
         "shop/management_order_list.html",
         context
     )
-
 @staff_member_required
 def management_order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -732,7 +948,6 @@ def management_order_detail(request, order_id):
             "items": order.items.select_related("product").all()
         }
     )
-
 @staff_member_required
 @require_http_methods(["GET", "POST"])
 def management_order_update(request, order_id):
@@ -756,7 +971,6 @@ def management_order_update(request, order_id):
             "shipping_status_choices": Order.SHIPPING_STATUS_CHOICES,
         }
     )
-
 @staff_member_required
 def management_sales_report(request):
     # =========================
@@ -824,8 +1038,6 @@ def management_sales_report(request):
                 dict(Order.SHIPPING_STATUS_CHOICES),
         }
     )
-
-
 @staff_member_required
 def management_sales_report_export(request):
     start = request.GET.get("start")
@@ -879,51 +1091,111 @@ def custom_product_detail(request, slug):
         'custom_product': cp, 'base_product': cp.base_product, 'available_sizes': cv,
         'services': cp.available_services.all(), 'variants_json': json.dumps(v_json),
     })
-
-# =====================
-# Notifikasi 
-# =====================
-def send_order_update_notification(order, status_type):
+# =========================
+# API CHECK ONGKIR
+# =========================
+def api_check_ongkir(request):
+    destination = request.GET.get("destination")
+    courier = request.GET.get("courier")
+    weight = request.GET.get("weight", 1000)
+    # VALIDASI
+    if not destination:
+        return JsonResponse({
+            "success": False,
+            "message": "Destination wajib."
+        }, status=400)
+    if not courier:
+        return JsonResponse({
+            "success": False,
+            "message": "Courier wajib."
+        }, status=400)
     try:
-        templates = {
-            'PAID': {
-                'subject': f'Pembayaran Berhasil - Pesanan #{order.id}',
-                'template': 'emails/payment_success.html',
-                'wa_msg': f"Halo {order.shipping_name}, pembayaran pesanan #{order.id} sebesar Rp {order.total:,.0f} telah kami terima. Terima kasih!"
-            },
-            'PROCESSING': {
-                'subject': f'Pesanan Diproses - Pesanan #{order.id}',
-                'template': 'emails/order_processing.html',
-                'wa_msg': f"Halo {order.shipping_name}, pesanan #{order.id} saat ini sedang dalam tahap produksi/packing. Kami akan menginfokan kembali saat dikirim."
-            },
-            'SHIPPED': {
-                'subject': f'Pesanan Dikirim - Pesanan #{order.id}',
-                'template': 'emails/order_shipped.html',
-                'wa_msg': f"Kabar gembira {order.shipping_name}! Pesanan #{order.id} telah dikirim via {order.courier_code}. No Resi: {order.tracking_number}."
-            }
-        }
-        data = templates.get(status_type)
-        if not data: return
-        # --- KIRIM EMAIL ---
-        context = {'order': order, 'user': order.customer.user}
-        html_message = render_to_string(data['template'], context)
-        send_mail(
-            data['subject'],
-            strip_tags(html_message),
-            settings.DEFAULT_FROM_EMAIL,
-            [order.customer.user.email],
-            html_message=html_message
+        result = get_shipping_cost(
+            destination=destination,
+            weight=weight,
+            courier=courier
         )
-        # --- KIRIM WHATSAPP (Contoh Fonnte) ---
-        requests.post(
-            'https://api.fonnte.com/send',
-            data={
-                'target': order.shipping_phone,
-                'message': data['wa_msg'],
-            },
-            headers={
-                'Authorization': settings.FONNTE_TOKEN
-            }
-        )
+        # DEBUG TERMINAL
+        print("========== ONGKIR RESULT ==========")
+        print(result)
+        print("===================================")
+        return JsonResponse(result)
     except Exception as e:
-        print(f"Gagal mengirim notifikasi {status_type}: {e}")
+        print("ONGKIR ERROR:", str(e))
+        return JsonResponse({
+            "success": False,
+            "message": str(e)
+        }, status=500)
+    
+@require_POST
+def check_shipping_cost(request):
+    try:
+        data = json.loads(request.body)
+        destination = data.get("destination")
+        weight = data.get("weight")
+        courier = data.get("courier")
+        result = get_shipping_cost(
+            destination=destination,
+            weight=weight,
+            courier=courier
+        )
+        return JsonResponse(result)
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "message": str(e)
+        }, status=400)
+# =========================
+# PROVINCES API
+# =========================
+def province_api(request):
+    try:
+        response = get_provinces()
+        return JsonResponse({
+            "data": response.get("data", [])
+        })
+    except Exception as e:
+        return JsonResponse({
+            "data": [],
+            "error": str(e)
+        }, status=500)
+# =========================
+# CITIES API
+# =========================
+def city_api(request):
+    province_id = request.GET.get("province_id")
+    if not province_id:
+        return JsonResponse({
+            "data": [],
+            "error": "province_id required"
+        }, status=400)
+    try:
+        response = get_cities(province_id)
+        return JsonResponse({
+            "data": response.get("data", [])
+        })
+    except Exception as e:
+        return JsonResponse({
+            "data": [],
+            "error": str(e)
+        }, status=500)
+# =========================
+# SUBDISTRICTS API
+# =========================
+def subdistrict_api(request):
+    city_id = request.GET.get("city_id")
+    if not city_id:
+        return JsonResponse({
+            "data": [],
+            "error": "city_id required"
+        }, status=400)
+    try:
+        response = get_subdistricts(city_id)
+        return JsonResponse({
+            "data": response.get("data", [])
+        })
+    except Exception as e:
+        return JsonResponse({
+            "data": [],
+            "error": str(e)
+        }, status=500)

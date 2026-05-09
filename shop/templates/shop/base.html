@@ -1,4 +1,3 @@
-<!-- shop/templates/shop/base.html -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -6,12 +5,10 @@
   <title>{% block title %}AF Promotion{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% load static %}
-
   <!-- Font (sesuai halaman beranda) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
   <style>
     /* ============= WARNA GLOBAL AF PROMOTION ============= */
     :root {
@@ -22,11 +19,9 @@
       --af-ink: #2C2524;
       --af-muted: #7A6E6C;
     }
-
     * {
       box-sizing: border-box;
     }
-
     body {
       margin: 0;
       min-height: 100vh;
@@ -34,23 +29,18 @@
       background: radial-gradient(circle at top, #ffffff 0%, #f8f3f1 42%, #f2e7e3 100%);
       color: var(--af-ink);
     }
-
     a {
       color: inherit;
     }
-
     .af-page {
       max-width: 1280px;
       margin: 0 auto;
       padding: 0 1.4rem 3rem;
     }
-
     main.af-main {
       padding-top: 5.5rem; /* space untuk navbar sticky */
     }
-
     /* ===================== NAVBAR ELEGAN AF ===================== */
-
     .af-nav {
       position: sticky;
       top: 0;
@@ -59,16 +49,14 @@
       background: rgba(0, 0, 0, 0);
       border-bottom: 1px solid rgba(200, 190, 186, 0);
       padding: 0.75rem 0;
-      transition: background 0.25s ease, box-shadow 0.25s ease;
+      transition:  0.25s ease, box-shadow 0.25s ease;
       font-family: "Inter", sans-serif;
     }
-
     /* saat scroll sedikit → navbar lebih solid */
     .af-nav.scrolled {
       background: rgba(255, 255, 255, 0.247);
       box-shadow: 0 4px 14px rgba(0,0,0,0.06);
     }
-
     .af-nav-inner {
       max-width: 1280px;
       margin: 0 auto;
@@ -78,7 +66,6 @@
       justify-content: space-between;
       gap: 1rem;
     }
-
     .af-nav-logo {
       font-weight: 200;
       font-size: 1.5rem;
@@ -87,13 +74,11 @@
       text-decoration: none;
       text-transform: uppercase;
     }
-
     .af-nav-links {
       display: flex;
       align-items: center;
       gap: 1.4rem;
     }
-
     .af-nav-link {
       text-decoration: none;
       font-size: 0.88rem;
@@ -102,12 +87,10 @@
       text-transform: uppercase;
       transition: opacity .15s ease, color .15s ease;
     }
-
     .af-nav-link:hover {
       color: var(--af-maroon);
       opacity: 0.75;
     }
-
     .af-nav-link-accent {
       padding: 0.35rem 1rem;
       border-radius: 999px;
@@ -116,11 +99,9 @@
       font-size: 0.85rem;
       font-weight: 500;
     }
-
     .af-nav-link-accent:hover {
       background: var(--af-maroon-soft);
     }
-
     /* BURGER MOBILE */
     .af-nav-toggle {
       display: none;
@@ -131,7 +112,6 @@
       gap: 4px;
       padding: 2px;
     }
-
     .af-nav-toggle span {
       width: 22px;
       height: 2px;
@@ -139,17 +119,14 @@
       border-radius: 3px;
       transition: transform 0.2s ease, opacity 0.2s ease;
     }
-
     /* NAV MOBILE DROPDOWN */
     @media (max-width: 780px) {
       .af-nav-inner {
         padding-inline: 1rem;
       }
-
       .af-nav-toggle {
         display: flex;
       }
-
       .af-nav-links {
         position: absolute;
         top: 56px;
@@ -160,22 +137,18 @@
         background: rgba(255,255,255,0.97);
         padding: 1rem 1.4rem 1.4rem;
         border-bottom: 1px solid rgba(0,0,0,0.05);
-
         opacity: 0;
         pointer-events: none;
         transform: translateY(-6px);
         transition: 0.2s ease;
       }
-
       body.nav-open .af-nav-links {
         opacity: 1;
         pointer-events: auto;
         transform: translateY(0);
       }
     }
-
     /* ============== FOOTER ============== */
-
     .af-footer {
       border-top: 1px solid rgba(210, 198, 193, 0.7);
       padding: 1.5rem 0 2rem;
@@ -183,7 +156,6 @@
       font-size: 0.8rem;
       color: var(--af-muted);
     }
-
     .af-footer-inner {
       max-width: 1280px;
       margin: 0 auto;
@@ -193,7 +165,6 @@
       align-items: center;
       gap: 1rem;
     }
-
     /* ====== DEFAULT TYPO UNTUK PAGE KONTEN ====== */
     h1, h2, h3, h4 {
       font-weight: 600;
@@ -201,12 +172,10 @@
       text-transform: uppercase;
       color: var(--af-maroon);
     }
-
     h2 {
       font-size: 1.4rem;
       margin-bottom: 1rem;
     }
-
     p {
       font-size: 0.95rem;
       line-height: 1.7;
@@ -220,37 +189,30 @@
   color: #7A0E1A;
   transition: .2s ease;
 }
-
 .af-nav-cart:hover {
   background: rgba(122, 14, 26, 0.12);
   transform: translateY(-2px);
 }
-
 .af-nav-cart svg {
   display: block;
 }
-
   </style>
 </head>
 <body>
-
   <!-- NAVBAR -->
   <nav class="af-nav">
     <div class="af-nav-inner">
       <a href="{% url 'shop:home' %}" class="af-nav-logo">
         AF PROMOTION
       </a>
-
       <!-- burger mobile -->
       <button class="af-nav-toggle" type="button"
               onclick="document.body.classList.toggle('nav-open')">
         <span></span><span></span>
       </button>
-
       <div class="af-nav-links">
         <!-- selalu ada -->
         <a href="{% url 'shop:home' %}" class="af-nav-link">Beranda</a>
-
         {% if request.user.is_authenticated %}
           {# USER BIASA: punya keranjang & pesanan #}
           {% if not request.user.is_staff %}
@@ -274,7 +236,6 @@
             </svg>
             </a>
           <a href="{% url 'account_logout' %}" class="af-nav-link af-nav-link-accent">Logout</a>
-
         {% else %}
           <a href="{% url 'account_login' %}" class="af-nav-link">Login</a>
           <a href="{% url 'account_signup' %}" class="af-nav-link af-nav-link-accent">Daftar</a>
@@ -282,18 +243,15 @@
       </div>
     </div>
   </nav>
-
   <main class="af-main af-page">
     {% block content %}{% endblock %}
   </main>
-
   <footer class="af-footer">
     <div class="af-footer-inner">
       <span>AF Promotion Pontianak &copy; {{ now|default:None|date:"Y" }}</span>
       <span>#kemudahan Anda hanya di AF PROMOTION</span>
     </div>
   </footer>
-
   <!-- Script kecil: efek scroll pada navbar -->
   <script>
     document.addEventListener("scroll", function () {

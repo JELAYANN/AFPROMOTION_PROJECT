@@ -5,36 +5,28 @@
 
 {% block content %}
 <style>
-    /* Styling Dasar AF Promotion */
     * { font-family: "Poppins", sans-serif !important; }
     body { background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%); }
-
     .detail-wrapper {
         max-width: 1000px;
         margin: 2.4rem auto 4rem;
         padding: 0 1.5rem;
         animation: fadeInUp 0.6s ease;
     }
-
     @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
-
-    /* TOP SECTION: Gambar & Deskripsi */
     .top-section {
         display: grid;
         grid-template-columns: 400px 1fr;
         gap: 3rem;
         margin-bottom: 3rem;
-        align-items: stretch; /* Membuat kolom kiri dan kanan sama tinggi */
+        align-items: stretch;
     }
-
     @media (max-width: 850px) {
         .top-section { grid-template-columns: 1fr; gap: 2rem; }
     }
-
-    /* BINGKAI FOTO: Penuh tanpa sisa ruang */
     .detail-image-box {
         background: #fff;
         border-radius: 32px;
@@ -46,14 +38,12 @@
     .detail-image-box img { 
         width: 100%; 
         height: 100%; 
-        object-fit: cover; /* Foto memenuhi bingkai tanpa gepeng */
+        object-fit: cover; 
         display: block;
     }
-
     .detail-title { color: #7A0E1A; font-weight: 800; font-size: 2.4rem; margin-bottom: 0.5rem; text-transform: uppercase; }
     .price-tag-large { font-size: 1.5rem; color: #7A0E1A; font-weight: 700; margin-bottom: 1.5rem; display: block; }
     .description-text { color: #4A403E; line-height: 1.8; font-size: 0.95rem; white-space: pre-line; background: rgba(255,255,255,0.4); padding: 1.5rem; border-radius: 20px; }
-
     /* CUSTOMIZATION PANEL */
     .customization-panel {
         background: #ffffff;
@@ -62,13 +52,11 @@
         box-shadow: 0 20px 50px rgba(0,0,0,0.04);
         border: 1px solid rgba(255,255,255,0.8);
     }
-
     .variant-label { 
         display: block; font-size: 0.75rem; font-weight: 700; color: #8A7F7C; 
         text-transform: uppercase; margin-bottom: 1.2rem; letter-spacing: 0.15em; 
         border-left: 4px solid #7A0E1A; padding-left: 10px;
     }
-
     /* Option Chips */
     .option-wrapper { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 2.5rem; }
     .option-item input { position: absolute; opacity: 0; }
@@ -82,7 +70,6 @@
         box-shadow: 0 8px 15px rgba(122, 14, 26, 0.2); transform: translateY(-3px); 
     }
     .option-item input:disabled + .option-chip { background: #eee; color: #ccc; cursor: not-allowed; }
-
     /* INPUT GROUP: Upload & Notes */
     .custom-input-group {
         display: grid;
@@ -91,7 +78,6 @@
         margin-bottom: 2.5rem;
     }
     @media (max-width: 700px) { .custom-input-group { grid-template-columns: 1fr; } }
-
     /* MODERN FILE UPLOAD */
     .file-upload-wrapper { position: relative; width: 100%; }
     .file-upload-box {
@@ -111,13 +97,11 @@
     .file-upload-box span { font-size: 0.85rem; font-weight: 700; color: #7A0E1A; }
     .file-upload-box small { font-size: 0.7rem; color: #8A7F7C; }
     .file-upload-box input[type="file"] { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
-
     .notes-box {
         width: 100%; height: 125px; border-radius: 20px; border: 1px solid #ddd; 
         padding: 1rem; font-size: 0.9rem; transition: 0.3s; resize: none;
     }
     .notes-box:focus { border-color: #7A0E1A; outline: none; box-shadow: 0 0 0 4px rgba(122, 14, 26, 0.1); }
-
     /* ORDER BAR */
     .order-bar {
         display: flex; align-items: center; justify-content: space-between;
@@ -126,9 +110,7 @@
     }
     .qty-control { display: flex; align-items: center; background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 15px; }
     .qty-input { width: 50px; border: none; background: transparent; color: #fff; font-weight: 700; text-align: center; font-size: 1.1rem; outline: none; }
-    
     .total-amount { font-size: 1.6rem; font-weight: 800; display: block; }
-
     .btn-submit {
         background: #fff; color: #7A0E1A; border: none; padding: 1rem 2.5rem;
         border-radius: 999px; font-weight: 700; text-transform: uppercase;
@@ -137,7 +119,6 @@
     .btn-submit:hover { background: #f0f0f0; transform: scale(1.05); }
     .btn-submit:disabled { background: #aaa; color: #666; cursor: not-allowed; }
 </style>
-
 <div class="detail-wrapper">
     <div class="top-section">
         <div class="detail-image-box shadow-sm">
@@ -157,39 +138,35 @@
             </a>
         </div>
     </div>
-
     <div class="customization-panel">
         <form action="{% url 'shop:cart_add' custom_product.base_product.id %}" method="POST" enctype="multipart/form-data" id="main-custom-form">
             {% csrf_token %}
             <input type="hidden" name="is_custom" value="True">
-
             <div class="variant-section">
                 <label class="variant-label">1. Pilih Ukuran Pakaian</label>
                 <div class="option-wrapper">
                     {% for var in available_sizes %}
                     <label class="option-item">
                         <input type="radio" name="size" value="{{ var.size.id }}" 
-                               data-price="{{ var.price }}" data-stock="{{ var.stock }}" 
-                               class="recalc-trigger" required {% if var.stock <= 0 %}disabled{% endif %}>
+                            data-price="{{ var.price }}" data-stock="{{ var.stock }}" 
+                            class="recalc-trigger" required {% if var.stock <= 0 %}disabled{% endif %}>
                         <span class="option-chip">{{ var.size.name }}</span>
                     </label>
                     {% endfor %}
                 </div>
             </div>
-
             <div class="variant-section">
                 <label class="variant-label">2. Pilih Jenis Jasa Custom</label>
                 <div class="option-wrapper">
                     {% for service in services %}
                     <label class="option-item">
                         <input type="radio" name="custom_service" value="{{ service.id }}" 
-                               data-service-price="{{ service.additional_price }}" class="recalc-trigger" required>
+                            data-service-price="{{ service.additional_price }}" class="recalc-trigger" required>
                         <span class="option-chip">{{ service.name }}</span>
                     </label>
                     {% endfor %}
                 </div>
             </div>
-
             <div class="custom-input-group">
                 <div class="file-section">
                     <label class="variant-label">3. Upload Desain (.PNG / .JPG)</label>
@@ -206,7 +183,6 @@
                     <textarea name="custom_notes" class="notes-box" placeholder="Contoh: Sablon warna putih di dada kiri ukuran 10cm..."></textarea>
                 </div>
             </div>
-
             <div class="order-bar">
                 <div class="qty-section">
                     <span style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; display: block; opacity: 0.8;">Jumlah Pesanan</span>
@@ -215,12 +191,10 @@
                     </div>
                     <span id="stock-info" style="font-size: 0.6rem; margin-top: 5px; display: block; opacity: 0.7;">Pilih ukuran...</span>
                 </div>
-
                 <div class="price-summary" style="text-align: center;">
                     <span style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; opacity: 0.8;">Estimasi Total</span>
                     <span class="total-amount" id="total-price-display">Rp 0</span>
                 </div>
-
                 <button type="submit" class="btn-submit" id="btn-submit">
                     Tambah Ke Keranjang
                 </button>
@@ -228,7 +202,6 @@
         </form>
     </div>
 </div>
-
 <script>
     const totalPriceDisplay = document.getElementById('total-price-display');
     const mainPriceDisplay = document.getElementById('main-price-display');
@@ -237,7 +210,6 @@
     const qtyInput = document.getElementById('qty-input');
     const fileInput = document.getElementById('custom_image');
     const fileNameDisplay = document.getElementById('file-name-display');
-
     // Tampilkan nama file saat dipilih
     fileInput.addEventListener('change', function() {
         if (this.files.length > 0) {
@@ -245,17 +217,14 @@
             fileNameDisplay.parentElement.style.borderColor = "#22C55E";
         }
     });
-
     function formatIDR(val) {
         return "Rp " + new Intl.NumberFormat('id-ID').format(Math.round(val));
     }
-
     function calculate() {
         let priceBaju = 0;
         let priceJasa = 0;
         let currentStock = 0;
         let qty = parseInt(qtyInput.value) || 1;
-
         const selectedSize = document.querySelector('input[name="size"]:checked');
         if (selectedSize) {
             priceBaju = parseFloat(selectedSize.dataset.price);
@@ -263,20 +232,16 @@
             stockInfoDisplay.innerText = "Stok Tersedia: " + currentStock + " pcs";
             if (qty > currentStock) { qtyInput.value = currentStock; qty = currentStock; }
         }
-
         const selectedService = document.querySelector('input[name="custom_service"]:checked');
         if (selectedService) {
             priceJasa = parseFloat(selectedService.dataset.servicePrice) || 0;
         }
-
         const totalUnit = priceBaju + priceJasa;
         const totalGrand = totalUnit * qty;
-
         if (totalUnit > 0) {
             mainPriceDisplay.innerText = formatIDR(totalUnit);
             totalPriceDisplay.innerText = formatIDR(totalGrand);
         }
-
         if (selectedSize && currentStock > 0) {
             btnSubmit.disabled = false;
             btnSubmit.innerText = "Tambah Ke Keranjang";
@@ -285,12 +250,10 @@
             btnSubmit.innerText = "STOK HABIS";
         }
     }
-
     document.querySelectorAll('.recalc-trigger').forEach(el => {
         el.addEventListener('change', calculate);
     });
     qtyInput.addEventListener('input', calculate);
-
     window.onload = calculate;
 </script>
 {% endblock %}

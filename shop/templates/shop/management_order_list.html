@@ -1,26 +1,20 @@
 {% extends "shop/base.html" %}
 {% load humanize %}
-
 {% block title %}Manajemen Pesanan | AF Promotion{% endblock %}
-
 {% block content %}
-
 <style>
 * {
     font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
-
 body {
     background: #f7f4f2;
 }
-
 .m-orders-page {
     max-width: 1200px;
     margin: 2.6rem auto 4rem;
     padding: 0 clamp(1rem, 4vw, 1.5rem) 2rem;
     color: #2C2524;
 }
-
 .m-page-title {
     font-size: clamp(1.5rem, 2vw + 1rem, 1.9rem);
     font-weight: 700;
@@ -29,13 +23,11 @@ body {
     letter-spacing: 0.08em;
     margin-bottom: 0.4rem;
 }
-
 .m-page-sub {
     font-size: 0.9rem;
     color: #8A7F7C;
     margin-bottom: 1.8rem;
 }
-
 /* FILTER BAR */
 .m-filter-bar {
     display: flex;
@@ -48,14 +40,12 @@ body {
     box-shadow: 0 10px 24px rgba(0,0,0,0.04);
     border: 1px solid rgba(230, 220, 215, .9);
 }
-
 .m-filter-label {
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: .16em;
     color: #8A7F7C;
 }
-
 .m-filter-select {
     border-radius: 999px;
     padding: 0.4rem 0.9rem;
@@ -64,7 +54,6 @@ body {
     background: #fdfaf8;
     outline: none;
 }
-
 /* WRAPPER TABEL */
 .m-table-wrap {
     border-radius: 18px;
@@ -73,14 +62,12 @@ body {
     padding: 1.3rem 1.3rem 1.5rem;
     overflow-x: auto;
 }
-
 .m-table {
     width: 100%;
     min-width: 1100px;
     border-collapse: collapse;
     font-size: 0.88rem;
 }
-
 .m-table thead th {
     text-align: left;
     padding-bottom: 0.8rem;
@@ -91,13 +78,11 @@ body {
     color: #8A7F7C;
     border-bottom: 2px solid rgba(219, 208, 203, 0.5);
 }
-
 .m-table tbody td {
     padding: 1.2rem 0.5rem;
     border-bottom: 1px solid rgba(238, 229, 225, 0.9);
     vertical-align: middle;
 }
-
 /* DESIGN PREVIEW BOX */
 .design-item-box {
     display: flex;
@@ -109,7 +94,6 @@ body {
     border: 1px solid #eee;
     margin-bottom: 6px;
 }
-
 .design-img-preview {
     width: 50px;
     height: 50px;
@@ -117,7 +101,6 @@ body {
     border-radius: 6px;
     border: 1px solid #7A0E1A;
 }
-
 .btn-dl {
     font-size: 0.65rem;
     padding: 3px 8px;
@@ -128,7 +111,6 @@ body {
     font-weight: 600;
     text-align: center;
 }
-
 /* FORM UPDATE */
 .m-update-form {
     display: flex;
@@ -136,7 +118,6 @@ body {
     gap: 0.5rem;
     max-width: 160px;
 }
-
 .m-update-select {
     border-radius: 8px;
     padding: 0.4rem;
@@ -144,7 +125,6 @@ body {
     font-size: 0.8rem;
     background: #fff;
 }
-
 .m-update-btn {
     padding: 0.5rem;
     border-radius: 8px;
@@ -157,11 +137,9 @@ body {
     cursor: pointer;
     transition: 0.3s;
 }
-
 .m-update-btn:hover {
     background: #4d0910;
 }
-
 .btn-detail {
     text-decoration: none;
     font-size: 0.75rem;
@@ -174,16 +152,13 @@ body {
     padding: 4px;
     border-radius: 6px;
 }
-
 .btn-detail:hover {
     background: #fdfaf8;
 }
 </style>
-
 <div class="m-orders-page">
     <h1 class="m-page-title">Manajemen Pesanan</h1>
     <p class="m-page-sub">Pantau dan kelola status pengiriman serta desain kustom pelanggan secara real-time.</p>
-
     <!-- Filter Bar -->
     <form method="get" class="m-filter-bar">
         <span class="m-filter-label">Filter Status:</span>
@@ -196,7 +171,6 @@ body {
             {% endfor %}
         </select>
     </form>
-
     <div class="m-table-wrap">
         <table class="m-table">
             <thead>
@@ -217,19 +191,14 @@ body {
                         <small class="text-muted">{{ order.created_at|date:"d M Y" }}</small><br>
                         <small style="font-size: 0.7rem;">Jam: {{ order.created_at|date:"H:i" }}</small>
                     </td>
-
                     <!-- Nama Pelanggan -->
                     <td>
                         <span style="font-weight: 600;">{{ order.customer.user.get_full_name|default:order.customer.user.username }}</span>
                     </td>
-
-
                     <!-- Total Harga -->
                     <td>
                         <span style="font-weight: 700; color: #2C2524;">Rp {{ order.total|intcomma }}</span>
                     </td>
-
-                    <!-- Form Update Status (POST ke management_order_list sesuai permintaan view terbaru) -->
                     <td>
                         <form method="POST" class="m-update-form">
                             {% csrf_token %}
@@ -244,7 +213,6 @@ body {
                             <button type="submit" class="m-update-btn">Simpan Status</button>
                         </form>
                     </td>
-
                     <!-- Tombol Detail -->
                     <td>
                         <a href="{% url 'shop:management_order_detail' order.id %}" class="btn-detail">Lihat Detail</a>
@@ -259,5 +227,4 @@ body {
         </table>
     </div>
 </div>
-
 {% endblock %}

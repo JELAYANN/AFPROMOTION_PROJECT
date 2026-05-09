@@ -1,20 +1,14 @@
 {% extends "shop/base.html" %}
 {% load socialaccount %}
-
 {% block title %}Login | AF Promotion{% endblock %}
-
 {% block content %}
-
 <style>
-  /* CSS Dasar AF Promotion */
   * {
     font-family: "Poppins", sans-serif !important;
   }
-
   body {
     background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%);
   }
-
   .auth-page {
     min-height: calc(100vh - 120px);
     display: flex;
@@ -22,7 +16,6 @@
     justify-content: center;
     padding: 2rem 1.25rem 3rem;
   }
-
   .auth-card {
     width: 100%;
     max-width: 420px;
@@ -34,12 +27,10 @@
       inset 0 0 0 1px rgba(255, 255, 255, 0.7);
     animation: fadeInUp 0.6s ease;
   }
-
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(14px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
   .auth-logo {
     width: 64px;
     height: 64px;
@@ -54,7 +45,6 @@
     letter-spacing: 0.1em;
     margin: 0 auto 0.9rem;
   }
-
   .auth-brand {
     text-align: center;
     font-size: 0.75rem;
@@ -63,7 +53,6 @@
     color: #8A7F7C;
     margin-bottom: 1.4rem;
   }
-
   .auth-title {
     text-align: center;
     font-size: 1.4rem;
@@ -72,7 +61,6 @@
     color: #7A0E1A;
     margin-bottom: 1.2rem;
   }
-
   .auth-error {
     background: rgba(185, 28, 28, 0.06);
     border: 1px solid rgba(185, 28, 28, 0.35);
@@ -83,11 +71,9 @@
     margin-bottom: 1.1rem;
     text-align: center;
   }
-
   .auth-form-group {
     margin-bottom: 1.2rem;
   }
-
   .auth-form-group label {
     display: block;
     font-size: 0.8rem;
@@ -96,7 +82,6 @@
     color: #8A7F7C;
     margin-bottom: 0.5rem;
   }
-
   .auth-form-group input {
     width: 100%;
     border-radius: 14px;
@@ -107,24 +92,20 @@
     outline: none;
     transition: border 0.15s ease, box-shadow 0.15s ease;
   }
-
   /* KUNCI UNTUK MENGHILANGKAN TULISAN DI DALAM KOTAK (PLACEHOLDER) */
   .auth-form-group input::placeholder {
     color: transparent !important;
     opacity: 0 !important;
   }
-  
   /* Untuk Safari/Chrome/Legacy */
   .auth-form-group input::-webkit-input-placeholder {
     color: transparent !important;
   }
-
   .auth-form-group input:focus {
     border-color: #7A0E1A;
     box-shadow: 0 0 0 1px rgba(122, 14, 26, 0.3);
     background: #fff;
   }
-
   .auth-submit button {
     width: 100%;
     border: none;
@@ -141,13 +122,11 @@
     transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
     margin-top: 0.5rem;
   }
-
   .auth-submit button:hover {
     background: #A03B48;
     transform: translateY(-2px);
     box-shadow: 0 16px 34px rgba(122, 14, 26, 0.55);
   }
-
   .auth-divider {
     display: flex;
     align-items: center;
@@ -158,24 +137,20 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
-
   .auth-divider::before,
   .auth-divider::after {
     content: '';
     flex: 1;
     border-bottom: 1px solid rgba(148, 134, 129, 0.3);
   }
-
   .auth-divider:not(:empty)::before { margin-right: .75em; }
   .auth-divider:not(:empty)::after { margin-left: .75em; }
-
   .social-login-group {
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
     margin-bottom: 1rem;
   }
-
   .btn-social {
     display: flex;
     align-items: center;
@@ -192,68 +167,54 @@
     background: #fff;
     color: #444;
   }
-
   .btn-social:hover {
     background: #fdfdfd;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   }
-
   .btn-github {
     background: #24292e;
     color: #fff;
     border: none;
   }
-
   .auth-footer {
     margin-top: 1.6rem;
     text-align: center;
     font-size: 0.85rem;
     color: #8A7F7C;
   }
-
   .auth-footer a {
     color: #7A0E1A;
     text-decoration: none;
     font-weight: 600;
   }
-
   .auth-footer a:hover {
     text-decoration: underline;
   }
 </style>
-
 <div class="auth-page">
   <div class="auth-card">
     <div class="auth-logo">AF</div>
     <div class="auth-brand">AF PROMOTION</div>
-
     <h2 class="auth-title">Login</h2>
-
     {% if form.errors %}
       <div class="auth-error">Username atau password salah.</div>
     {% endif %}
-
     <form method="post" action="{% url 'account_login' %}">
       {% csrf_token %}
-
       <div class="auth-form-group">
         <label for="id_login">Username atau Email</label>
         {{ form.login }} 
       </div>
-
       <div class="auth-form-group">
         <label for="id_password">Password</label>
         {{ form.password }}
       </div>
-
       <div class="auth-submit">
         <button type="submit">Masuk</button>
       </div>
     </form>
-
     <div class="auth-divider">Atau masuk dengan</div>
-
     <div class="social-login-group">
       <a href="{% provider_login_url 'google' %}" class="btn-social">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
@@ -265,12 +226,10 @@
         GitHub
       </a>
     </div>
-
     <div class="auth-footer">
       Belum punya akun?
       <a href="{% url 'account_signup' %}">Daftar di sini</a>
     </div>
   </div>
 </div>
-
 {% endblock %}

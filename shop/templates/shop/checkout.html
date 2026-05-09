@@ -1,245 +1,438 @@
-{% extends "shop/base.html" %}
-{% load humanize %}
-
-{% block title %}Checkout | AF Promotion{% endblock %}
-
-{% block content %}
-
-<style>
-  * { font-family: "Poppins", sans-serif !important; }
-  body { background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%); }
-
-  .checkout-wrap {
-    max-width: 1100px;
-    margin: 2.2rem auto 4rem;
-    padding: 1rem 1.4rem;
-    display: grid;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-    gap: 2rem;
-    animation: fadeInUp 0.6s ease;
-  }
-
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (max-width: 900px) {
-    .checkout-wrap { grid-template-columns: 1fr; }
-  }
-
-  .checkout-title {
-    grid-column: 1 / -1;
-    text-align: center;
-    margin-bottom: 0.5rem;
-    font-size: 1.8rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #7A0E1A;
-  }
-
-  .checkout-subtitle {
-    grid-column: 1 / -1;
-    text-align: center;
-    font-size: 0.9rem;
-    color: #7A6E6C;
-    margin-bottom: 1.6rem;
-  }
-
-  /* KARTU RINGKASAN KERANJANG */
-  .summary-card {
-    background: radial-gradient(circle at top, #ffffff 0%, #f7f4f2 70%, #ece3df 100%);
-    border-radius: 22px;
-    padding: 1.4rem 1.5rem;
-    box-shadow: 0 14px 32px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(255,255,255,0.7);
-    height: fit-content;
-  }
-
-  .summary-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.9rem; color: #2C2524; }
-  .summary-list { list-style: none; margin: 0; padding: 0; margin-bottom: 1rem; }
-
-  .summary-item {
-    padding: 0.8rem 0;
-    border-bottom: 1px solid rgba(210, 200, 196, 0.6);
-    display: flex;
-    justify-content: space-between;
-    gap: 0.75rem;
-    font-size: 0.9rem;
-    color: #2C2524;
-  }
-
-  .summary-name { font-weight: 600; color: #7A0E1A; }
-  .summary-meta { font-size: 0.8rem; color: #7A6E6C; margin-top: 2px; }
-  
-  .summary-price {
-    font-weight: 600;
-    color: #2C2524;
-    font-size: 0.9rem;
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  /* TOTAL SECTION */
-  .summary-calculation { margin-top: 1rem; }
-  .calc-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: #7A6E6C;
-    margin-bottom: 0.4rem;
-  }
-
-  .summary-total-row {
-    margin-top: 0.8rem;
-    padding-top: 0.8rem;
-    border-top: 2px dashed rgba(210, 200, 196, 0.9);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .summary-total-label { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.85rem; font-weight: 700; color: #2C2524; }
-  .summary-total-value { font-size: 1.2rem; font-weight: 800; color: #7A0E1A; }
-
-  /* FORM CHECKOUT */
-  .checkout-card {
-    background: #ffffff;
-    border-radius: 22px;
-    padding: 1.7rem 1.8rem 2rem;
-    box-shadow: 0 14px 32px rgba(0,0,0,0.08);
-  }
-
-  .section-heading { font-size: 1.05rem; font-weight: 600; margin-bottom: 1rem; color: #2C2524; border-left: 4px solid #7A0E1A; padding-left: 10px; }
-  .form-row { margin-bottom: 1rem; }
-  .form-row label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #8A7F7C; margin-bottom: 0.4rem; }
-
-  .form-row input, .form-row textarea, .form-row select {
-    width: 100%; border-radius: 12px; border: 1px solid rgba(148, 134, 129, 0.4);
-    padding: 0.7rem 0.9rem; font-size: 0.9rem; outline: none; transition: 0.2s;
-  }
-
-  .form-row input:focus, .form-row textarea:focus, .form-row select:focus {
-    border-color: #7A0E1A; box-shadow: 0 0 0 3px rgba(122, 14, 26, 0.1);
-  }
-
-  .checkout-submit button {
-    width: 100%; border-radius: 999px; border: none; padding: 1rem;
-    background: #7A0E1A; color: #fff; font-size: 0.95rem; text-transform: uppercase;
-    font-weight: 700; cursor: pointer; box-shadow: 0 10px 20px rgba(122,14,26,0.3);
-    transition: 0.3s;
-  }
-
-  .checkout-submit button:hover { background: #A03B48; transform: translateY(-2px); }
-</style>
-
-<div class="checkout-wrap">
-
-  <h2 class="checkout-title">Checkout</h2>
-  <p class="checkout-subtitle">Selesaikan data pengiriman untuk memproses pesanan Anda.</p>
-
-  <div class="summary-card">
-    <div class="summary-title">Ringkasan Pesanan</div>
-
-    <ul class="summary-list">
-      {% for item in items %}
-      <li class="summary-item">
-        <div>
-          <div class="summary-name">{{ item.product.name }}</div>
-          <div class="summary-meta">
-            {% if item.is_custom %}
-                Ukuran: {{ item.custom_variant.size.name }} (Custom)
-            {% else %}
-                Varian: {{ item.variant.color.name }}, {{ item.variant.size.name }}
-            {% endif %}
-            <br>Qty: {{ item.quantity }} pcs
-          </div>
+    {% extends "shop/base.html" %}
+    {% load humanize %}
+    {% block title %}Checkout | AF Promotion{% endblock %}
+    {% block content %}
+    <style>
+    * { font-family: "Poppins", sans-serif !important; }
+    body {
+        background: radial-gradient(circle at top, #fdf8f6 0%, #efe8e5 55%, #e2d7d3 100%);
+        overflow-x: hidden;
+    }
+    .checkout-bg-blur {
+        position: fixed;
+        width: 520px; height: 520px;
+        border-radius: 999px;
+        filter: blur(120px);
+        opacity: 0.18;
+        z-index: -1;
+    }
+    .blur-1 { top: -140px;    left: -120px;  background: #7a0e1a; }
+    .blur-2 { bottom: -160px; right: -120px; background: #d18b94; }
+    .checkout-wrap {
+        max-width: 1280px;
+        margin: 2.5rem auto 5rem;
+        padding: 1rem 1.4rem;
+    }
+    .checkout-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    .checkout-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        background: rgba(122, 14, 26, .08);
+        color: #7a0e1a;
+        padding: .6rem 1rem;
+        border-radius: 999px;
+        font-size: .76rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        margin-bottom: 1.2rem;
+    }
+    .checkout-title {
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: #2c2524;
+        margin-bottom: .8rem;
+    }
+    .checkout-title span { color: #7a0e1a; }
+    .checkout-subtitle {
+        max-width: 700px;
+        margin: auto;
+        color: #7a6e6c;
+        line-height: 1.8;
+        font-size: .96rem;
+    }
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: .95fr 1.05fr;
+        gap: 2rem;
+    }
+    @media (max-width: 980px) {
+        .checkout-grid { grid-template-columns: 1fr; }
+    }
+    .glass-card {
+        position: relative;
+        background: rgba(255, 255, 255, .72);
+        backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, .5);
+        border-radius: 30px;
+        padding: 2rem;
+        overflow: hidden;
+        align-self: flex-start;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, .08);
+    }
+    .summary-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .summary-title { font-size: 1.25rem; font-weight: 700; color: #2c2524; }
+    .summary-count {
+        background: rgba(122, 14, 26, .08);
+        color: #7a0e1a;
+        padding: .5rem .9rem;
+        border-radius: 999px;
+        font-size: .75rem;
+        font-weight: 700;
+    }
+    .summary-list { display: flex; flex-direction: column; gap: 1rem; }
+    .summary-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, .75);
+        border: 1px solid rgba(255, 255, 255, .7);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, .04);
+    }
+    .product-thumb {
+        width: 74px; height: 74px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #7a0e1a, #c26b78);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 1.4rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    .summary-content { flex: 1; }
+    .summary-name  { font-size: .97rem; font-weight: 700; color: #2c2524; margin-bottom: .35rem; }
+    .summary-meta  { font-size: .82rem; color: #7a6e6c; line-height: 1.7; }
+    .summary-price { font-size: 1rem; font-weight: 800; color: #7a0e1a; white-space: nowrap; }
+    .total-box {
+        margin-top: 1.6rem;
+        padding: 1.4rem;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #7a0e1a 0%, #a12a3c 100%);
+        color: #fff;
+    }
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: .7rem;
+        font-size: .92rem;
+    }
+    .grand-total {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, .2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .grand-total span:last-child { font-size: 1.8rem; font-weight: 800; }
+    .form-title   { font-size: 1.3rem; font-weight: 700; color: #2c2524; margin-bottom: 1.5rem; }
+    .section-label {
+        display: flex;
+        align-items: center;
+        gap: .7rem;
+        font-size: .9rem;
+        font-weight: 700;
+        color: #7a0e1a;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin: 2rem 0 1rem;
+    }
+    .section-dot { width: 10px; height: 10px; border-radius: 999px; background: #7a0e1a; }
+    .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 700px) {
+        .grid-form { grid-template-columns: 1fr; }
+    }
+    .form-row { margin-bottom: 1rem; }
+    .form-row label {
+        display: block;
+        margin-bottom: .5rem;
+        font-size: .74rem;
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: #8a7f7c;
+    }
+    .form-row input,
+    .form-row textarea,
+    .form-row select {
+        width: 100%;
+        border: none;
+        border-radius: 18px;
+        padding: 1rem;
+        font-size: .92rem;
+        background: rgba(255, 255, 255, .9);
+        box-shadow: inset 0 0 0 1px rgba(148, 134, 129, .18);
+    }
+    .form-row textarea { min-height: 120px; resize: vertical; }
+    .form-row input:focus,
+    .form-row textarea:focus,
+    .form-row select:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(122, 14, 26, .08),
+                    inset 0 0 0 1px rgba(122, 14, 26, .2);
+    }
+    .shipping-card {
+        margin-top: 1rem;
+        padding: 1.3rem;
+        border-radius: 22px;
+        background: linear-gradient(135deg, rgba(122, 14, 26, .05), rgba(255, 255, 255, .5));
+        border: 1px solid rgba(122, 14, 26, .08);
+        display: none;
+    }
+    .shipping-row  { display: flex; justify-content: space-between; align-items: center; }
+    .shipping-name { font-weight: 700; color: #2c2524; }
+    .shipping-etd  { margin-top: .25rem; font-size: .82rem; color: #7a6e6c; }
+    .shipping-price { font-size: 1.1rem; font-weight: 800; color: #7a0e1a; }
+    .notice-box {
+        margin-top: 1.4rem;
+        padding: 1rem 1.2rem;
+        border-radius: 20px;
+        background: rgba(16, 185, 129, .08);
+        border: 1px solid rgba(16, 185, 129, .12);
+        color: #065f46;
+        line-height: 1.8;
+        font-size: .86rem;
+    }
+    .checkout-submit { margin-top: 2rem; }
+    .checkout-submit button {
+        width: 100%;
+        border: none;
+        border-radius: 999px;
+        padding: 1.1rem;
+        background: linear-gradient(135deg, #7a0e1a 0%, #b22c40 100%);
+        color: #fff;
+        font-size: .95rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+    .checkout-submit button:hover { opacity: .92; }
+    .address-warning {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 16px;
+        background: rgba(239, 68, 68, .08);
+        color: #991b1b;
+        font-size: .85rem;
+        line-height: 1.7;
+    }
+    </style>
+    <div class="checkout-bg-blur blur-1"></div>
+    <div class="checkout-bg-blur blur-2"></div>
+    <div class="checkout-wrap">
+    <div class="checkout-header">
+        <div class="checkout-badge">✦ Secure Checkout Experience</div>
+        <h1 class="checkout-title">Checkout <span>Pesanan Anda</span></h1>
+        <p class="checkout-subtitle">Semua detail pesanan dan pengiriman diproses otomatis.</p>
+    </div>
+    <div class="checkout-grid">
+        <!-- LEFT: Ringkasan Pesanan -->
+        <div class="glass-card">
+        <div class="summary-head">
+            <div class="summary-title">Ringkasan Pesanan</div>
+            <div class="summary-count">{{ items|length }} Item</div>
         </div>
-        <div class="summary-price">
-          {# KUNCI SINKRONISASI: Menggunakan unit_total yang dihitung di view #}
-          Rp {{ item.line_total|floatformat:0|intcomma }}
+        <div class="summary-list">
+            {% for item in items %}
+            <div class="summary-item">
+            <div class="product-thumb">AF</div>
+            <div class="summary-content">
+                <div class="summary-name">{{ item.product.name }}</div>
+                <div class="summary-meta">
+                {% if item.is_custom %}
+                    Custom - {{ item.custom_variant.size.name }}
+                {% else %}
+                    {{ item.variant.color.name }} / {{ item.variant.size.name }}
+                {% endif %}
+                <br>Qty: {{ item.quantity }}
+                </div>
+            </div>
+            <div class="summary-price">Rp {{ item.line_total|floatformat:0|intcomma }}</div>
+            </div>
+            {% endfor %}
         </div>
-      </li>
-      {% endfor %}
-    </ul>
-
-    <div class="summary-calculation">
-        <div class="calc-row">
-            <span>Subtotal Produk</span>
+        <div class="total-box">
+            <div class="total-row">
+            <span>Subtotal</span>
             <span>Rp {{ subtotal|floatformat:0|intcomma }}</span>
+            </div>
+            <div class="total-row">
+            <span>Ongkir</span>
+            <span id="shippingCostDisplay">Rp 0</span>
+            </div>
+            <div class="grand-total">
+            <span>Total</span>
+            <span id="totalDisplay">Rp {{ subtotal|floatformat:0|intcomma }}</span>
+            </div>
         </div>
-        <div class="calc-row">
-            <span>Biaya Pengiriman (Flat)</span>
-            <span>Rp {{ shipping_cost|floatformat:0|intcomma }}</span>
         </div>
-        <div class="summary-total-row">
-            <div class="summary-total-label">Total Tagihan</div>
-            <div class="summary-total-value">Rp {{ total|floatformat:0|intcomma }}</div>
+        <!-- RIGHT: Informasi Pengiriman -->
+        <div class="glass-card">
+        <div class="form-title">Informasi Pengiriman</div>
+        <form method="post" id="checkoutForm">
+            {% csrf_token %}
+            <div class="section-label">
+            <div class="section-dot"></div>Detail Penerima
+            </div>
+            <div class="form-row">
+            <label>Nama Lengkap</label>
+            <input type="text" name="shipping_name" value="{{ customer.user.get_full_name }}" required>
+            </div>
+            <div class="grid-form">
+            <div class="form-row">
+                <label>No. Telepon</label>
+                <input type="text" name="shipping_phone" value="{{ customer.phone }}" required>
+            </div>
+            <div class="form-row">
+                <label>Kode Pos</label>
+                <input type="text" name="shipping_postal_code" value="{{ customer.postal_code }}" required>
+            </div>
+            </div>
+            <div class="form-row">
+            <label>Alamat Lengkap</label>
+            <textarea name="shipping_address" required>{{ customer.address }}</textarea>
+            </div>
+            <div class="grid-form">
+            <div class="form-row">
+                <label>Provinsi</label>
+                <input type="text" name="shipping_province" value="{{ customer.province }}" readonly>
+            </div>
+            <div class="form-row">
+                <label>Kota / Kabupaten</label>
+                <input type="text" name="shipping_city" value="{{ customer.city }}" readonly>
+            </div>
+            </div>
+            <!-- HIDDEN FIELDS -->
+            <input type="hidden" id="destinationId"      name="destination_subdistrict_id" value="{{ customer.subdistrict_id|default:'' }}">
+            <input type="hidden" id="finalShippingCost"  name="shipping_cost"              value="0">
+            <div class="section-label">
+            <div class="section-dot"></div>Pengiriman
+            </div>
+            {% if not customer.subdistrict_id %}
+            <div class="address-warning">
+            ⚠️ Kecamatan tujuan belum tersedia.<br>
+            Silakan lengkapi alamat di halaman profil terlebih dahulu.
+            </div>
+            {% endif %}
+            <div class="grid-form">
+            <div class="form-row">
+                <label>Kurir</label>
+                <select name="courier_code" id="courierSelect" {% if not customer.subdistrict_id %}disabled{% endif %} required>
+                <option value="">-- Pilih Kurir --</option>
+                <option value="jne">JNE</option>
+                <option value="jnt">J&T</option>
+                <option value="sicepat">SiCepat</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Layanan</label>
+                <select name="courier_service" id="serviceSelect" disabled required>
+                <option value="">-- Pilih Layanan --</option>
+                </select>
+            </div>
+            </div>
+            <div class="shipping-card" id="shippingCard">
+            <div class="shipping-row">
+                <div>
+                <div class="shipping-name" id="selectedServiceName">Layanan</div>
+                <div class="shipping-etd"  id="selectedServiceEtd">Estimasi</div>
+                </div>
+                <div class="shipping-price" id="selectedServicePrice">Rp 0</div>
+            </div>
+            </div>
+            <div class="notice-box">
+            🚚 Nomor resi akan dibuat otomatis setelah pembayaran berhasil.
+            </div>
+            <div class="checkout-submit">
+            <button type="submit" id="btnSubmit">Konfirmasi Pesanan</button>
+            </div>
+        </form>
         </div>
     </div>
-  </div>
-
-  <div class="checkout-card">
-    <form method="post">
-      {% csrf_token %}
-
-      <div class="section-heading">Informasi Penerima</div>
-
-      <div class="form-row">
-        <label>Nama Lengkap</label>
-        <input type="text" name="shipping_name" value="{{ customer.user.get_full_name }}" required>
-      </div>
-
-      <div class="form-row">
-        <label>No. Telepon Aktif</label>
-        <input type="text" name="shipping_phone" value="{{ customer.phone }}" required>
-      </div>
-
-      <div class="form-row">
-        <label>Alamat Lengkap Pengiriman</label>
-        <textarea name="shipping_address" required>{{ customer.address }}</textarea>
-      </div>
-
-      <div class="grid-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-          <div class="form-row">
-            <label>Kota/Kabupaten</label>
-            <input type="text" name="shipping_city" value="{{ customer.city }}" required>
-          </div>
-          <div class="form-row">
-            <label>Kode Pos</label>
-            <input type="text" name="shipping_postal_code" value="{{ customer.postal_code }}" required>
-          </div>
-      </div>
-
-      <div class="form-row">
-        <label>Provinsi</label>
-        <input type="text" name="shipping_province" value="{{ customer.province }}" required>
-      </div>
-
-      <div class="section-heading" style="margin-top:1.8rem;">Metode Pengiriman</div>
-
-      <div class="form-row">
-        <label>Pilih Kurir Eksklusif</label>
-        <select name="courier_code">
-          <option value="JNE">JNE Express</option>
-          <option value="JNT">J&T Express</option>
-          <option value="SICEPAT">SiCepat</option>
-        </select>
-      </div>  
-
-      <div class="form-row">
-        <label>Pilih Layanan</label>
-        <select name="courier_service">
-          <option value="REG">Layanan Reguler (2-3 Hari)</option>
-          <option value="YES">Layanan Kilat (1 Hari)</option>
-        </select>
-      </div>
-
-      <div class="checkout-submit">
-        <button type="submit">Konfirmasi & Buat Pesanan</button>
-      </div>
-    </form>
-  </div>
-
-</div>
-
-{% endblock %}
+    </div>
+    <script>
+    const courierSelect       = document.getElementById('courierSelect');
+    const serviceSelect       = document.getElementById('serviceSelect');
+    const shippingCostDisplay = document.getElementById('shippingCostDisplay');
+    const totalDisplay        = document.getElementById('totalDisplay');
+    const shippingInput       = document.getElementById('finalShippingCost');
+    const subtotal            = parseInt("{{ subtotal|default:0 }}");
+    // ========================= GET ONGKIR =========================
+    courierSelect?.addEventListener('change', async function () {
+        const courier     = this.value;
+        const destination = document.getElementById('destinationId').value;
+        if (!courier) {
+        serviceSelect.innerHTML = '<option value="">-- Pilih Layanan --</option>';
+        serviceSelect.disabled  = true;
+        return;
+        }
+        serviceSelect.disabled = true;
+        serviceSelect.innerHTML = '<option>Memuat...</option>';
+        try {
+        const response = await fetch(
+            `/api/check-ongkir/?destination=${destination}&courier=${courier}&weight={{ total_weight }}`
+        );
+        const result = await response.json();
+        console.log(result);
+        serviceSelect.innerHTML = '<option value="">-- Pilih Layanan --</option>';
+        // FIX RESPONSE KOMERCE: result.data.data
+        const services = result?.data?.data || [];
+        if (services.length > 0) {
+            services.forEach(service => {
+            const option        = document.createElement('option');
+            option.value        = service.service;
+            option.dataset.price = service.cost;
+            option.dataset.etd  = service.etd;
+            option.textContent  = `${service.service} (${service.description}) - Rp ${parseInt(service.cost).toLocaleString('id-ID')}`;
+            serviceSelect.appendChild(option);
+            });
+            serviceSelect.disabled = false;
+        } else {
+            serviceSelect.innerHTML = '<option value="">Tidak tersedia</option>';
+        }
+        } catch (err) {
+        console.error(err);
+        alert('Gagal mengambil ongkir.');
+        }
+    });
+    // ========================= PILIH SERVICE =========================
+    serviceSelect.addEventListener('change', function () {
+        const selected = this.options[this.selectedIndex];
+        if (!selected.value) return;
+        const price = parseInt(selected.dataset.price);
+        const etd   = selected.dataset.etd;
+        shippingInput.value             = price;
+        shippingCostDisplay.textContent = `Rp ${price.toLocaleString('id-ID')}`;
+        totalDisplay.textContent        = `Rp ${(subtotal + price).toLocaleString('id-ID')}`;
+        document.getElementById('shippingCard').style.display        = 'block';
+        document.getElementById('selectedServiceName').textContent   = `${courierSelect.value.toUpperCase()} - ${selected.value}`;
+        document.getElementById('selectedServiceEtd').textContent    = `Estimasi ${etd}`;
+        document.getElementById('selectedServicePrice').textContent  = `Rp ${price.toLocaleString('id-ID')}`;
+    });
+    // ========================= SUBMIT =========================
+    document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+        if (!courierSelect.value || !serviceSelect.value) {
+        e.preventDefault();
+        alert('Silakan pilih layanan pengiriman.');
+        return;
+        }
+        const btn     = document.getElementById('btnSubmit');
+        btn.disabled  = true;
+        btn.innerHTML = 'Memproses...';
+    });
+    </script>
+    {% endblock %}

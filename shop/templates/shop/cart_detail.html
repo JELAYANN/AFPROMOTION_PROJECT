@@ -1,34 +1,27 @@
 {% extends "shop/base.html" %}
 {% load humanize %}
-
 {% block title %}Keranjang Belanja | AF Promotion{% endblock %}
-
 {% block content %}
-
 <style>
   /* --- BASE STYLE --- */
   * { font-family: "Poppins", sans-serif !important; }
   body { background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%); }
-
   .cart-wrap {
     max-width: 1100px;
     margin: 2.4rem auto 4rem;
     padding: 0 1.5rem;
     animation: cartFadeIn 0.6s ease;
   }
-
   @keyframes cartFadeIn {
     from { opacity: 0; transform: translateY(15px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-
   .cart-header { text-align: center; margin-bottom: 3rem; }
   .cart-title {
     font-size: 2.2rem; font-weight: 800; letter-spacing: 0.05em;
     text-transform: uppercase; color: #7A0E1A; margin-bottom: 0.5rem;
   }
   .cart-subtext { color: #8A7F7C; font-size: 0.95rem; font-weight: 500; }
-
   /* --- LAYOUT GRID --- */
   .cart-layout {
     display: grid;
@@ -36,15 +29,12 @@
     gap: 2.5rem;
     align-items: flex-start;
   }
-
-  @media (max-width: 950px) { 
-    .cart-layout { grid-template-columns: 1fr; } 
+  @media (max-width: 950px) {
+    .cart-layout  { grid-template-columns: 1fr; }
     .cart-summary { position: static !important; }
   }
-
   /* --- CART ITEMS --- */
   .cart-list { display: flex; flex-direction: column; gap: 1.2rem; }
-
   .cart-item {
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
@@ -54,157 +44,145 @@
     display: flex;
     gap: 1.5rem;
     align-items: center;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.03);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.03);
     transition: transform 0.3s ease;
   }
   .cart-item:hover { transform: translateY(-5px); background: #fff; }
-
   .cart-thumb {
-    width: 120px; height: 120px; border-radius: 20px;
-    overflow: hidden; background: #fff;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-    flex-shrink: 0;
+    width: 120px; height: 120px;
+    border-radius: 20px; overflow: hidden;
+    background: #fff; flex-shrink: 0;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
   }
   .cart-thumb img { width: 100%; height: 100%; object-fit: cover; }
-
   .cart-info { flex-grow: 1; }
   .badge-custom {
-    background: #7A0E1A; color: #fff; font-size: 0.6rem; font-weight: 700;
-    padding: 4px 10px; border-radius: 8px; text-transform: uppercase; 
-    margin-bottom: 8px; display: inline-block; letter-spacing: 0.05em;
+    background: #7A0E1A; color: #fff;
+    font-size: 0.6rem; font-weight: 700;
+    padding: 4px 10px; border-radius: 8px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 8px; display: inline-block;
   }
-
-  .cart-name { font-size: 1.2rem; font-weight: 700; color: #2C2524; margin-bottom: 4px; }
-  .cart-meta { font-size: 0.85rem; color: #7A6E6C; line-height: 1.6; }
+  .cart-name  { font-size: 1.2rem; font-weight: 700; color: #2C2524; margin-bottom: 4px; }
+  .cart-meta  { font-size: 0.85rem; color: #7A6E6C; line-height: 1.6; }
   .cart-meta strong { color: #2C2524; }
 
-  .cart-pricing { text-align: right; min-width: 150px; }
-  .unit-price { font-size: 0.8rem; color: #8A7F7C; display: block; margin-bottom: 2px; }
+  .cart-pricing    { text-align: right; min-width: 150px; }
+  .unit-price      { font-size: 0.8rem; color: #8A7F7C; display: block; margin-bottom: 2px; }
   .item-total-price { font-size: 1.2rem; font-weight: 800; color: #7A0E1A; display: block; }
-
   .btn-remove {
-    display: inline-block; margin-top: 10px; color: #991B1B; 
-    font-size: 0.75rem; font-weight: 700; text-decoration: none;
-    padding: 5px 12px; border-radius: 8px; background: #fff1f2;
+    display: inline-block; margin-top: 10px;
+    color: #991B1B; font-size: 0.75rem; font-weight: 700;
+    text-decoration: none; padding: 5px 12px;
+    border-radius: 8px; background: #fff1f2;
     transition: 0.2s;
   }
   .btn-remove:hover { background: #fee2e2; }
-
   /* --- SUMMARY CARD --- */
   .cart-summary {
-    background: #ffffff;
+    background: #fff;
     border-radius: 32px;
     padding: 2rem;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+    border: 1px solid rgba(255, 255, 255, 1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
     position: sticky; top: 100px;
-    border: 1px solid rgba(255,255,255,1);
   }
-
-  .summary-title { font-weight: 800; font-size: 1.2rem; color: #2C2524; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .summary-title {
+    font-weight: 800; font-size: 1.2rem; color: #2C2524;
+    margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.05em;
+  }
   .summary-row { display: flex; justify-content: space-between; margin-bottom: 0.8rem; color: #7A6E6C; font-size: 0.9rem; }
-  
   .total-row {
-    margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #f1ebe9;
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;
+    margin-top: 1.5rem; padding-top: 1.5rem;
+    border-top: 2px dashed #f1ebe9;
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 2rem;
   }
   .total-label { font-weight: 700; color: #2C2524; font-size: 1rem; }
   .total-value { font-size: 1.6rem; font-weight: 800; color: #7A0E1A; }
-
   .btn-checkout {
-    display: block; width: 100%; padding: 1.1rem; border-radius: 999px;
-    background: #7A0E1A; color: #fff; font-size: 0.95rem; text-align: center;
+    display: block; width: 100%; padding: 1.1rem;
+    border-radius: 999px; background: #7A0E1A;
+    color: #fff; font-size: 0.95rem; text-align: center;
     font-weight: 700; text-transform: uppercase; text-decoration: none;
-    box-shadow: 0 12px 25px rgba(122,14,26,0.25); transition: 0.3s;
+    box-shadow: 0 12px 25px rgba(122, 14, 26, 0.25); transition: 0.3s;
   }
-  .btn-checkout:hover { transform: translateY(-3px); background: #A03B48; box-shadow: 0 15px 30px rgba(122,14,26,0.35); }
-
+  .btn-checkout:hover { transform: translateY(-3px); background: #A03B48; box-shadow: 0 15px 30px rgba(122, 14, 26, 0.35); }
   .empty-state {
-    text-align: center; padding: 5rem 2rem; 
-    background: #fff; border-radius: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.03);
+    text-align: center; padding: 5rem 2rem;
+    background: #fff; border-radius: 40px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.03);
   }
+  .back-link { color: #8A7F7C; text-decoration: none; font-size: 0.8rem; font-weight: 600; }
 </style>
-
 <div class="cart-wrap">
   <header class="cart-header">
     <h2 class="cart-title">Keranjang Belanja</h2>
     <p class="cart-subtext">Periksa kembali item pilihan Anda sebelum melakukan pembayaran.</p>
   </header>
-
   {% if items %}
   <div class="cart-layout">
+    <!-- CART ITEMS -->
     <div class="cart-list">
       {% for item in items %}
-        <div class="cart-item">
-          <div class="cart-thumb">
-            {% if item.is_custom and item.custom_image %}
-              <img src="{{ item.custom_image.url }}" alt="Desain Custom">
-            {% else %}
-              <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
-            {% endif %}
-          </div>
-
-          <div class="cart-info">
-            {% if item.is_custom %}
-              <span class="badge-custom">Custom Order</span>
-            {% endif %}
-            <div class="cart-name">{{ item.product.name }}</div>
-            
-            <div class="cart-meta">
-              {% if item.is_custom %}
-                Ukuran: <strong>{{ item.custom_variant.size.name }}</strong><br>
-                Jasa: <strong>{{ item.custom_service.name }}</strong><br>
-                <small>Catatan: {{ item.custom_notes|default:"-" }}</small>
-              {% else %}
-                Ukuran: <strong>{{ item.variant.size.name }}</strong> | Warna: <strong>{{ item.variant.color.name }}</strong>
-              {% endif %}
-              <br>Jumlah: <strong>{{ item.quantity }} pcs</strong>
-            </div>
-            
-            <a href="{% url 'shop:cart_remove' item.id %}" class="btn-remove">Hapus Item</a>
-          </div>
-
-          <div class="cart-pricing">
-            <span class="unit-price">Total per item:</span>
-            <span class="item-total-price">Rp {{ item.line_total|floatformat:0|intcomma }}</span>
-          </div>
+      <div class="cart-item">
+        <div class="cart-thumb">
+          {% if item.is_custom and item.custom_image %}
+            <img src="{{ item.custom_image.url }}" alt="Desain Custom">
+          {% else %}
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+          {% endif %}
         </div>
+        <div class="cart-info">
+          {% if item.is_custom %}<span class="badge-custom">Custom Order</span>{% endif %}
+          <div class="cart-name">{{ item.product.name }}</div>
+          <div class="cart-meta">
+            {% if item.is_custom %}
+              Ukuran: <strong>{{ item.custom_variant.size.name }}</strong><br>
+              Jasa: <strong>{{ item.custom_service.name }}</strong><br>
+              <small>Catatan: {{ item.custom_notes|default:"-" }}</small>
+            {% else %}
+              Ukuran: <strong>{{ item.variant.size.name }}</strong> | Warna: <strong>{{ item.variant.color.name }}</strong>
+            {% endif %}
+            <br>Jumlah: <strong>{{ item.quantity }} pcs</strong>
+          </div>
+          <a href="{% url 'shop:cart_remove' item.id %}" class="btn-remove">Hapus Item</a>
+        </div>
+        <div class="cart-pricing">
+          <span class="unit-price">Total per item:</span>
+          <span class="item-total-price">Rp {{ item.line_total|floatformat:0|intcomma }}</span>
+        </div>
+      </div>
       {% endfor %}
     </div>
-
+    <!-- SUMMARY -->
     <aside class="cart-summary">
       <div class="summary-title">Ringkasan Belanja</div>
-      
       <div class="summary-row">
         <span>Total Produk ({{ items|length }} jenis)</span>
         <span>{{ items|length }} Item</span>
       </div>
-      
       <div class="summary-row">
         <span>Estimasi Pajak</span>
         <span>Rp 0</span>
       </div>
-
       <div class="total-row">
         <div class="total-label">Total Pembayaran</div>
         <div class="total-value">Rp {{ total|floatformat:0|intcomma }}</div>
       </div>
-
       <a href="{% url 'shop:checkout' %}" class="btn-checkout">Lanjut ke Checkout</a>
-      
       <div style="text-align: center; margin-top: 1.5rem;">
-        <a href="{% url 'shop:product_list' %}" style="color: #8A7F7C; text-decoration: none; font-size: 0.8rem; font-weight: 600;">← Kembali Belanja</a>
+        <a href="{% url 'shop:product_list' %}" class="back-link">← Kembali Belanja</a>
       </div>
     </aside>
   </div>
-
   {% else %}
-    <div class="empty-state">
-      <div style="font-size: 4rem; margin-bottom: 1.5rem;">🛍️</div>
-      <h3 style="font-weight: 700; color: #2C2524;">Wah, keranjangmu masih kosong</h3>
-      <p style="color: #7A6E6C; margin-bottom: 2rem;">Sepertinya kamu belum memilih produk kustom terbaikmu hari ini.</p>
-      <a href="{% url 'shop:product_list' %}" class="btn-checkout" style="display: inline-block; width: auto; padding: 1rem 3rem;">Mulai Belanja</a>
-    </div>
+  <div class="empty-state">
+    <div style="font-size: 4rem; margin-bottom: 1.5rem;">🛍️</div>
+    <h3 style="font-weight: 700; color: #2C2524;">Wah, keranjangmu masih kosong</h3>
+    <p style="color: #7A6E6C; margin-bottom: 2rem;">Sepertinya kamu belum memilih produk kustom terbaikmu hari ini.</p>
+    <a href="{% url 'shop:product_list' %}" class="btn-checkout" style="display: inline-block; width: auto; padding: 1rem 3rem;">Mulai Belanja</a>
+  </div>
   {% endif %}
 </div>
-
 {% endblock %}

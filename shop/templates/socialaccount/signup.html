@@ -1,18 +1,14 @@
 {% extends "shop/base.html" %}
 {% load i18n %}
-
 {% block title %}Konfirmasi Akun | AF Promotion{% endblock %}
-
 {% block content %}
 <style>
   * {
     font-family: "Poppins", sans-serif !important;
   }
-
   body {
     background: linear-gradient(180deg, #f8f5f4 0%, #f1ebe9 45%, #e7dfdc 100%);
   }
-
   .auth-page {
     min-height: calc(100vh - 120px);
     display: flex;
@@ -20,7 +16,6 @@
     justify-content: center;
     padding: 2.4rem 1.25rem 3rem;
   }
-
   .auth-card {
     width: 100%;
     max-width: 480px;
@@ -32,12 +27,10 @@
       inset 0 0 0 1px rgba(255, 255, 255, 0.7);
     animation: fadeInUp 0.6s ease;
   }
-
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(14px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
   .auth-logo {
     width: 68px;
     height: 68px;
@@ -52,7 +45,6 @@
     letter-spacing: 0.1em;
     margin: 0 auto 1rem;
   }
-
   .auth-brand {
     text-align: center;
     font-size: 0.75rem;
@@ -61,7 +53,6 @@
     color: #8A7F7C;
     margin-bottom: 1.4rem;
   }
-
   .auth-title {
     text-align: center;
     font-size: 1.45rem;
@@ -70,7 +61,6 @@
     color: #7A0E1A;
     margin-bottom: 0.6rem;
   }
-
   .auth-subtext {
     text-align: center;
     font-size: 0.9rem;
@@ -82,7 +72,6 @@
   .auth-form-group {
     margin-bottom: 1.5rem;
   }
-
   .auth-form-group label {
     font-size: 0.78rem;
     color: #8A7F7C;
@@ -91,8 +80,6 @@
     margin-bottom: 0.5rem;
     display: block;
   }
-
-  /* Styling untuk input field yang dihasilkan Allauth */
   .auth-form-group input {
     width: 100%;
     border-radius: 14px;
@@ -103,13 +90,11 @@
     transition: 0.15s ease;
     outline: none;
   }
-
   .auth-form-group input:focus {
     border-color: #7A0E1A;
     box-shadow: 0 0 0 1px rgba(122,14,26,0.3);
     background: #fff;
   }
-
   .auth-submit button {
     width: 100%;
     border-radius: 999px;
@@ -126,14 +111,12 @@
     box-shadow: 0 12px 28px rgba(122,14,26,0.45);
     transition: all 0.2s ease;
   }
-
   .auth-submit button:hover {
     background: #A03B48;
     transform: translateY(-2px);
     box-shadow: 0 16px 36px rgba(122,14,26,0.55);
     }
 </style>
-
 <div class="auth-page">
     <div class="auth-card">
         <div class="auth-logo">AF</div>
@@ -144,7 +127,6 @@
             Selamat datang! Anda berhasil terhubung. <br>
             Silakan lengkapi email untuk masuk.
         </p>
-
         <form class="signup" id="signup_form" method="post" action="{% url 'socialaccount_signup' %}">
             {% csrf_token %}
             
@@ -155,7 +137,6 @@
                     <p style="color: #B91C1C; font-size: 0.75rem; margin-top: 5px;">{{ form.email.errors.0 }}</p>
                 {% endif %}
             </div>
-
             <div class="auth-submit">
                 <button type="submit">Selesaikan Pendaftaran</button>
             </div>
