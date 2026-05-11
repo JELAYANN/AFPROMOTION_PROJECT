@@ -98,7 +98,6 @@ DATABASES = {
         "PORT": config("DB_PORT"),
     }
 }
-
 # =========================================================
 # AUTHENTICATION
 # =========================================================
@@ -106,16 +105,13 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
-
 # =========================================================
 # ALLAUTH CONFIGURATION
 # =========================================================
-
 # LOGIN / LOGOUT
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
-
 # LOGIN METHOD
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = [
@@ -123,18 +119,15 @@ ACCOUNT_SIGNUP_FIELDS = [
     'password1*',
     'password2*',
 ]
-
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_LOGOUT_ON_GET = True
-
 # SOCIAL LOGIN
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 SOCIALACCOUNT_QUERY_EMAIL = True
-
 # PROVIDERS
 SOCIALACCOUNT_PROVIDERS = {
     'github': {
@@ -143,7 +136,6 @@ SOCIALACCOUNT_PROVIDERS = {
             'user:email'
         ],
     },
-
     'google': {
         'SCOPE': [
             'profile',
@@ -154,15 +146,12 @@ SOCIALACCOUNT_PROVIDERS = {
         },
     }
 }
-
 # OPTIONAL CUSTOM TEMPLATES
 ACCOUNT_LOGIN_TEMPLATE = 'socialaccount/login.html'
 ACCOUNT_SIGNUP_TEMPLATE = 'socialaccount/signup.html'
-
 # ADAPTERS
 ACCOUNT_ADAPTER = 'allauth.account.adapter.DefaultAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'allauth.socialaccount.adapter.DefaultSocialAccountAdapter'
-
 # =========================================================
 # INTERNATIONALIZATION
 # =========================================================
@@ -170,24 +159,20 @@ LANGUAGE_CODE = 'id'
 TIME_ZONE = 'Asia/Pontianak'
 USE_I18N = True
 USE_TZ = True
-
 # =========================================================
 # STATIC FILES
 # =========================================================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
 # =========================================================
 # MEDIA FILES
 # =========================================================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
 # =========================================================
 # DEFAULT PRIMARY KEY
 # =========================================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 # =========================================================
 # EMAIL CONFIGURATION
 # =========================================================
@@ -199,7 +184,6 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = 'AF Promotion <afpromotion9000@gmail.com>'
-
 # =========================================================
 # MIDTRANS CONFIGURATION
 # =========================================================
@@ -209,7 +193,6 @@ MIDTRANS_IS_PRODUCTION = config(
     "MIDTRANS_IS_PRODUCTION",
     cast=bool
 )
-
 # =========================================================
 # SECURITY (BASIC PRODUCTION READY)
 # =========================================================
@@ -231,3 +214,7 @@ DEFAULT_COURIER = config(
     "DEFAULT_COURIER",
     default="JNE"
 )
+# =========================
+# DJANGO FORM LIMIT
+# =========================
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 200000

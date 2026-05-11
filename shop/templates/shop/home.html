@@ -1,596 +1,832 @@
 {% extends "shop/base.html" %}
 {% load static %}
 {% load humanize %}
-{% block title %}Beranda | AF Promotion{% endblock %}
+
+{% block title %}
+Beranda | AF Promotion
+{% endblock %}
+
 {% block content %}
+
 <style>
-  /* ========= GLOBAL ========= */
-  html {
-    scroll-behavior: smooth;
+
+/* =========================
+   GLOBAL
+========================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #F5F3F2;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.home-wrapper {
+  width: 100%;
+  max-width: 1320px;
+  margin: 2rem auto 5rem;
+  padding: 0 1.5rem;
+  position: relative;
+}
+
+/* =========================
+   FLOATING GLOW
+========================= */
+
+.home-wrapper::before {
+  content: "";
+  position: fixed;
+  width: 320px;
+  height: 320px;
+  background: rgba(122,14,26,0.08);
+  border-radius: 50%;
+  filter: blur(90px);
+  top: 8%;
+  left: -120px;
+  z-index: -1;
+  animation: floatingGlow 10s ease-in-out infinite;
+}
+
+@keyframes floatingGlow {
+  0% {
+    transform: translateY(0px);
   }
-  body {
-    background: #F5F3F2;
-    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    margin: 0;
-    padding: 0;
+  50% {
+    transform: translateY(40px);
   }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* =========================
+   HERO
+========================= */
+
+.home-hero-shell {
+  position: relative;
+  padding-top: 1rem;
+}
+
+.hero-orbit {
+  position: absolute;
+  border-radius: 999px;
+  border: 110px dashed rgba(122, 14, 27, 0.12);
+  pointer-events: none;
+}
+
+.hero-orbit.orbit-1 {
+  width: 420px;
+  height: 420px;
+  top: -60px;
+  left: -80px;
+  animation: orbit-slow 30s linear infinite;
+}
+
+.hero-orbit.orbit-2 {
+  width: 320px;
+  height: 320px;
+  bottom: -80px;
+  right: -80px;
+  animation: orbit-slow 30s linear infinite reverse;
+}
+
+@keyframes orbit-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================
+   HERO CARD
+========================= */
+
+.home-hero-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  background: white;
+
+  box-shadow:
+    0 25px 60px rgba(0,0,0,0.10),
+    inset 0 0 0 1px rgba(255,255,255,0.8);
+}
+
+.home-hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255,255,255,0.1),
+      rgba(255,255,255,0.02),
+      rgba(255,255,255,0.1)
+    );
+
+  animation: shimmerMove 7s linear infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
+@keyframes shimmerMove {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* =========================
+   HERO SLIDER
+========================= */
+
+.hero-slider {
+  width: 100%;
+  display: flex;
+  transition: transform 0.6s ease;
+}
+
+.hero-slide {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.hero-slide img {
+  width: 100%;
+  display: block;
+  height: auto;
+}
+
+/* =========================
+   HERO DOTS
+========================= */
+
+.hero-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 1rem 0 1.2rem;
+}
+
+.hero-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(122,14,26,0.2);
+  transition: all 0.3s ease;
+}
+
+.hero-dot.active {
+  width: 28px;
+  background: #7A0E1A;
+}
+
+/* =========================
+   TAGLINE
+========================= */
+
+.home-tagline {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #7D6D6A;
+  max-width: 720px;
+  margin-inline: auto;
+  line-height: 1.8;
+}
+
+/* =========================
+   ACTION BUTTON
+========================= */
+
+.home-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.home-btn-outline {
+  text-decoration: none;
+  border: 1px solid rgba(122,14,26,0.25);
+  padding: 0.9rem 1.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7A0E1A;
+  background: rgba(255,255,255,0.7);
+
+  transition: all 0.25s ease;
+}
+
+.home-btn-outline:hover {
+  background: #7A0E1A;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* =========================
+   DIVIDER
+========================= */
+
+.section-divider {
+  margin: 3rem auto;
+  max-width: 700px;
+  border: none;
+  border-top: 1px solid rgba(122,14,26,0.18);
+}
+
+/* =========================
+   SECTION HEADING
+========================= */
+
+.section-heading {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-mini-title {
+  font-size: 0.72rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #9A7E82;
+}
+
+.section-main-title {
+  margin-top: 1rem;
+  font-size: 2.4rem;
+  color: #7A0E1A;
+  font-weight: 700;
+}
+
+.section-description {
+  max-width: 720px;
+  margin: 1rem auto 0;
+  line-height: 1.8;
+  color: #6B5B58;
+}
+
+/* =========================
+   PRODUCT TYPE
+========================= */
+
+.home-product-type {
+  margin-top: 4rem;
+}
+
+.product-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 2rem;
+}
+
+.product-type-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 30px;
+  transition: all 0.35s ease;
+}
+
+.product-type-card:hover {
+  transform: translateY(-8px);
+}
+
+.glass-card {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,0.9),
+      rgba(255,255,255,0.7)
+    );
+
+  box-shadow:
+    0 25px 50px rgba(0,0,0,0.08);
+}
+
+.dark-card {
+  background:
+    linear-gradient(
+      145deg,
+      #7A0E1A,
+      #4A0910
+    );
+
+  color: white;
+
+  box-shadow:
+    0 25px 60px rgba(122,14,26,0.35);
+}
+
+.type-badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 3;
+
+  background: white;
+  color: #7A0E1A;
+
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.type-badge-dark {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+.type-image-wrap {
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+}
+
+.type-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
+}
+
+.product-type-card:hover img {
+  transform: scale(1.05);
+}
+
+.type-content {
+  padding: 2rem;
+}
+
+.type-content h3 {
+  font-size: 1.9rem;
+  margin-bottom: 1rem;
+}
+
+.type-content p {
+  line-height: 1.8;
+  font-size: 0.94rem;
+}
+
+.type-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.type-btn-primary,
+.type-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.95rem 1.8rem;
+  border-radius: 999px;
+
+  text-decoration: none;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  transition: all 0.25s ease;
+}
+
+.type-btn-primary {
+  background: #7A0E1A;
+  color: white;
+}
+
+.type-btn-primary:hover {
+  background: #9D2130;
+  transform: translateY(-2px);
+}
+
+.type-btn-secondary {
+  background: white;
+  color: #7A0E1A;
+}
+
+.type-btn-secondary:hover {
+  transform: translateY(-2px);
+}
+
+/* =========================
+   FEATURE STRIP
+========================= */
+
+.feature-strip {
+  margin-top: 3rem;
+
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1.5rem;
+}
+
+.feature-box {
+  background: rgba(255,255,255,0.75);
+  padding: 1.5rem;
+  border-radius: 24px;
+
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 14px 28px rgba(0,0,0,0.05);
+
+  transition: all 0.3s ease;
+}
+
+.feature-box:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  width: 58px;
+  height: 58px;
+
+  border-radius: 18px;
+
+  background: rgba(122,14,26,0.08);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.5rem;
+}
+
+.feature-box h4 {
+  margin: 0;
+  color: #7A0E1A;
+}
+
+.feature-box p {
+  margin-top: 0.3rem;
+  font-size: 0.88rem;
+  color: #6B5B58;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+  .product-type-grid,
+  .feature-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .section-main-title {
+    font-size: 2rem;
+  }
+
+}
+
+@media (max-width: 640px) {
+
   .home-wrapper {
-    width: 100%;
-    max-width: 1280px;
-    margin: 2.5rem auto 4rem;
-    padding: 0 1.5rem;
-  }
-  /* ========= HERO AREA + ANIMATED BACKGROUND ========= */
-  .home-hero-shell {
-    position: relative;
-    padding: 1.5rem 0 0;
-  }
-  .hero-orbit {
-    position: absolute;
-    border-radius: 150px;
-    border: 110px dashed rgba(122, 14, 27, 0.469);
-    pointer-events: none;
-    z-index: 0;
-    filter: blur(0.2px);
-  }
-  .hero-orbit.orbit-1 {
-    width: 420px;
-    height: 420px;
-    top: -60px;
-    left: -80px;
-    animation: orbit-slow 30s linear infinite;
-  }
-  .hero-orbit.orbit-2 {
-    width: 320px;
-    height: 320px;
-    bottom: -60px;
-    right: -60px;
-    animation: orbit-slow 30s linear infinite reverse;
-  }
-  .hero-dot {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: rgba(122, 14, 26, 0.22);
-    box-shadow: 0 0 12px rgba(122, 14, 26, 0.32);
-    pointer-events: none;
-    z-index: 0;
-  }
-  .hero-dot.dot-1 {
-    top: 18%;
-    left: 8%;
-    animation: dot-drift-1 18s ease-in-out infinite;
-  }
-  .hero-dot.dot-2 {
-    top: 65%;
-    left: 16%;
-    animation: dot-drift-2 22s ease-in-out infinite;
-  }
-  .hero-dot.dot-3 {
-    top: 22%;
-    right: 10%;
-    animation: dot-drift-3 20s ease-in-out infinite;
-  }
-  @keyframes orbit-slow {
-    0% { transform: rotate(0deg) translate3d(0,0,0); }
-    100% { transform: rotate(360deg) translate3d(0,0,0); }
-  }
-  @keyframes dot-drift-1 {
-    0%   { transform: translate3d(0, 0, 0); opacity: .7; }
-    25%  { transform: translate3d(40px, -10px, 0); opacity: .9; }
-    50%  { transform: translate3d(20px, 25px, 0); opacity: .6; }
-    75%  { transform: translate3d(-10px, 10px, 0); opacity: .8; }
-    100% { transform: translate3d(0, 0, 0); opacity: .7; }
-  }
-  @keyframes dot-drift-2 {
-    0%   { transform: translate3d(0, 0, 0); opacity: .6; }
-    30%  { transform: translate3d(25px, -5px, 0); opacity: .85; }
-    55%  { transform: translate3d(40px, 15px, 0); opacity: .7; }
-    80%  { transform: translate3d(10px, 25px, 0); opacity: .5; }
-    100% { transform: translate3d(0, 0, 0); opacity: .6; }
-  }
-  @keyframes dot-drift-3 {
-    0%   { transform: translate3d(0, 0, 0); opacity: .7; }
-    20%  { transform: translate3d(-20px, 10px, 0); opacity: .9; }
-    50%  { transform: translate3d(-35px, -5px, 0); opacity: .6; }
-    80%  { transform: translate3d(-10px, -20px, 0); opacity: .8; }
-    100% { transform: translate3d(0, 0, 0); opacity: .7; }
-  }
-  /* ========= HERO BANNER (CARD) ========= */
-  .home-hero-card {
-    position: relative;
-    width: 100%;
-    border-radius: 18px;
-    overflow: hidden;
-    background: #FFFFFF;
-    box-shadow:
-      0 18px 40px rgba(0,0,0,0.08),
-      inset 0 0 0 1px rgba(255,255,255,0.9);
-    z-index: 1;
-  }
-  /* ========= TAGLINE ========= */
-  .home-tagline {
-    margin-top: 1.6rem;
-    text-align: center;
-    font-size: 0.95rem;
-    color: #8A7F7C;
-    max-width: 620px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.7;
-  }
-  /* ========= ACTION BUTTONS ========= */
-  .home-actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.9rem;
-    margin-top: 1.5rem;
-  }
-  .home-btn-primary,
-  .home-btn-outline {
-    text-decoration: none;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-size: 0.8rem;
-    border-radius: 999px;
-    padding: 0.7rem 1.7rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, color 0.12s ease;
-    white-space: nowrap;
-  }
-  .home-btn-primary {
-    background: #7A0E1A;
-    color: #FFFFFF;
-    font-weight: 600;
-    box-shadow: 0 12px 26px rgba(122, 14, 26, 0.35);
-  }
-  .home-btn-primary:hover {
-    background: #A03B48;
-    transform: translateY(-1px);
-    box-shadow: 0 16px 32px rgba(122, 14, 26, 0.45);
-  }
-  .home-btn-outline {
-    border: 1px solid rgba(122, 14, 26, 0.5);
-    color: #7A0E1A;
-    background: rgba(255,255,255,0.9);
-    font-weight: 500;
-  }
-  .home-btn-outline:hover {
-    background: #7A0E1A;
-    color: #FFFFFF;
-    transform: translateY(-1px);
-    box-shadow: 0 12px 26px rgba(122, 14, 26, 0.35);
-  }
-  /* ========= CATEGORY CARDS ========= */
-  .home-categories {
-    margin-top: 2.4rem;
-  }
-  .cat-label {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: #8A7F7C;
-    margin-bottom: 0.8rem;
-    text-align: center;
-  }
-  .cat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.4rem;
-  }
-  @media (max-width: 960px) {
-    .cat-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-  @media (max-width: 640px) {
-    .home-wrapper {
-      margin-top: 1.5rem;
-    }
-    .home-hero-card {
-      border-radius: 12px;
-    }
-    .cat-grid {
-      grid-template-columns: minmax(0, 1fr);
-    }
-    .hero-orbit {
-      opacity: 0.4;
-    }
-  }
-  .cat-card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    border-radius: 18px;
-    overflow: hidden;
-    text-decoration: none;
-    color: inherit;
-    background: radial-gradient(circle at top left, #FFFFFF 0%, #F5F3F2 60%, #E9DED9 100%);
-    box-shadow:
-      0 12px 28px rgba(0,0,0,0.07),
-      inset 0 0 0 1px rgba(255,255,255,0.9);
-    transition: transform 0.14s ease, box-shadow 0.14s ease;
-  }
-  .cat-card:hover {
-    transform: translateY(-4px);
-    box-shadow:
-      0 18px 40px rgba(0,0,0,0.12),
-      inset 0 0 0 1px rgba(255,255,255,1);
-  }
-  .cat-card-active {
-    box-shadow:
-      0 22px 46px rgba(122,14,26,0.25),
-      inset 0 0 0 1px rgba(122,14,26,0.45);
-  }
-  .cat-card-img {
-    width: 100%;
-    height: 370px;
-    overflow: hidden;
-    background: #E5DED9;
-  }
-  .cat-card-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .cat-card-body {
-    padding: 0.85rem 1rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-  .cat-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #7A0E1A;
-  }
-  .cat-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: #8A7F7C;
-  }
-  .cat-pill {
-    padding: 0.15rem 0.6rem;
-    border-radius: 999px;
-    border: 1px solid rgba(122,14,26,0.25);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-  }
-  .cat-sample-name {
-    font-size: 0.8rem;
-    color: #4A3B38;
-    margin-top: 0.2rem;
-  }
-  /* ========= KATALOG SECTION ========= */
-  #katalog {
-    margin-top: 3rem;
-  }
-  .catalog-header {
-    text-align: center;
-    margin-bottom: 1.8rem;
-  }
-  .catalog-eyebrow {
-    font-size: 0.8rem;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: #8A7F7C;
-    margin-bottom: 0.4rem;
-  }
-  .catalog-title {
-    font-size: 1.4rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #7A0E1A;
-    margin-bottom: 0.6rem;
-  }
-  .catalog-subtext {
-    font-size: 0.9rem;
-    color: #5B4A47;
-    max-width: 520px;
-    margin: 0 auto;
-    line-height: 1.6;
-  }
-  .home-catalog-card {
-    margin-top: 1.4rem;
-    border-radius: 18px;
-    background: transparent;
-    box-shadow: none;
-    padding: 1.6rem 0 1.8rem;
-  }
-  .catalog-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.5rem;
-  }
-  @media (max-width: 960px) {
-    .catalog-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-  @media (max-width: 640px) {
-    .catalog-grid {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-  .catalog-item {
-    position: relative;
-    background: radial-gradient(circle at top left, #FFFFFF 0%, #F5F3F2 65%, #E9DED9 100%);
-    border-radius: 16px;
-    padding: 0.9rem 0.9rem 1rem 1rem;
-    overflow: hidden;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 100%;
-    max-width: 450px;
-    min-height: 300px;
-  }
-  .catalog-item a {
-    text-decoration: none;
-    color: inherit;
-  }
-  .catalog-item img {
-    width: 100%;
-    height: 320px;
-    object-fit: cover;
-    border-radius: 12px;
-  }
-  .catalog-item-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-    margin-top: 0.45rem;
-    color: #2C2524;
-  }
-  .catalog-item-bottom {
-    margin-top: auto;
-    padding-top: 0.4rem;
-    border-top: 1px solid rgba(230,219,214,0.8);
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-  .catalog-price {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #7A0E1A;
-  }
-  .catalog-stock {
-    font-size: 0.8rem;
-    color: #8A7F7C;
-  }
-  .catalog-stock.out {
-    color: #B91C1C;
-    font-weight: 600;
-  }
-  .catalog-empty {
-    font-size: 0.9rem;
-    color: #8A7F7C;
-    text-align: center;
-  }
-  /* ========= ANIMATED LINES ========= */
-  .hero-line {
-    position: absolute;
-    background: rgba(122,14,26,0.12);
-    opacity: 0.35;
-    z-index: 0;
-    pointer-events: none;
-  }
-  .line-h-1 {
-    top: 20%;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    animation: line-move-h 14s linear infinite;
-  }
-  .line-h-2 {
-    top: 60%;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    animation: line-move-h 20s linear infinite reverse;
-  }
-  .line-v-1 {
-    top: 0;
-    left: 20%;
-    width: 1px;
-    height: 100%;
-    animation: line-move-v 22s linear infinite;
-  }
-  @keyframes line-move-h {
-    0%   { transform: translateX(-12px); opacity: .25; }
-    50%  { transform: translateX(12px); opacity: .42; }
-    100% { transform: translateX(-12px); opacity: .25; }
-  }
-  @keyframes line-move-v {
-    0%   { transform: translateY(-12px); opacity: .3; }
-    50%  { transform: translateY(12px); opacity: .5; }
-    100% { transform: translateY(-12px); opacity: .3; }
-  }
-  .section-divider {
-    width: 100%;
-    max-width: 640px;
-    margin: 2.2rem auto;
-    border: none;
-    border-top: 1px solid rgba(122,14,26,0.25);
-    position: relative;
-  }
-  .section-divider::after {
-    content: "";
-    width: 90px;
-    height: 2px;
-    background: rgba(122,14,26,0.55);
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 999px;
-  }
-  /* === SLIDER STYLE === */
-  .hero-slider {
-    width: 100%;
-    position: relative;
-    display: flex;
-    transition: transform 0.6s ease;
-  }
-  .hero-slide {
-    width: 100%;
-    flex-shrink: 0;
-  }
-  .hero-slide img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-  .hero-dots {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    
-  }
-  .hero-dot {
-    width: 9px;
-    height: 9px;
-    background: rgba(122,14,26,0.25);
-    border-radius: 50%;
-    transition: 0.25s ease;
-  }
-  .hero-dot.active {
-    width: 24px;
-    background: #7A0E1A;
-    border-radius: 999px;
-  }
+    padding: 0 1rem;
+  }
+
+  .type-content {
+    padding: 1.5rem;
+  }
+
+  .section-main-title {
+    font-size: 1.7rem;
+  }
+
+}
+
 </style>
+
 <div class="home-wrapper">
-  <!-- HERO + ANIMATED BACKGROUND -->
+
+  <!-- HERO -->
   <div class="home-hero-shell">
+
     <div class="hero-orbit orbit-1"></div>
     <div class="hero-orbit orbit-2"></div>
-    <div class="hero-dot dot-1"></div>
-    <div class="hero-dot dot-2"></div>
-    <div class="hero-dot dot-3"></div>
-    <div class="hero-line line-h-1"></div>
-    <div class="hero-line line-h-2"></div>
-    <div class="hero-line line-v-1"></div>
-    <!-- HERO BANNER SLIDER -->
+
     <div class="home-hero-card">
+
       <div class="hero-slider" id="heroSlider">
+
         <div class="hero-slide">
-          <img src="{% static 'img/BANER1.jpeg' %}" alt="Banner 1">
+          <img
+            src="{% static 'img/BANER1.jpeg' %}"
+            alt="Banner 1"
+          >
         </div>
+
         <div class="hero-slide">
-          <img src="{% static 'img/BANER2.png' %}" alt="Banner 2">
+          <img
+            src="{% static 'img/BANER2.png' %}"
+            alt="Banner 2"
+          >
         </div>
+
         <div class="hero-slide">
-          <img src="{% static 'img/BANER3.png' %}" alt="Banner 3">
+          <img
+            src="{% static 'img/BANER3.png' %}"
+            alt="Banner 3"
+          >
         </div>
+
       </div>
+
       <div class="hero-dots" id="heroDots"></div>
+
     </div>
+
   </div>
-  <!-- COPYWRITING -->
-  <p class="home-tagline">
-    <!-- isi kalau mau: Konveksi & sablon kaos di Pontianak untuk brand, komunitas, dan bisnis Anda. -->
-  </p>
-  <!-- BUTTONS -->
+
+  <!-- BUTTON -->
+
   <div class="home-actions">
+
     {% if not request.user.is_staff %}
-      <a href="{% url 'shop:profile' %}" class="home-btn-outline">
+
+      <a
+        href="{% url 'shop:profile' %}"
+        class="home-btn-outline"
+      >
         Atur Data Pengiriman
       </a>
+
     {% else %}
-      <a href="{% url 'shop:management_dashboard' %}" class="home-btn-outline">
-        Buka Dashboard Admin
+
+      <a
+        href="{% url 'shop:management_dashboard' %}"
+        class="home-btn-outline"
+      >
+        Dashboard Admin
       </a>
+
     {% endif %}
+
   </div>
+
   <hr class="section-divider">
-  <!-- CATEGORY CARDS -->
-  {% if category_cards %}
-    <section class="home-categories">
-      <div class="cat-label">Kategori Produk</div>
-      <div class="cat-grid">
-        {% for card in category_cards %}
-          {% with cat=card.category sample=card.sample %}
-            <div class="cat-card{% if selected_category and selected_category.slug == cat.slug %} cat-card-active{% endif %}">
-              <div class="cat-card-img">
-                {% if sample and sample.image %}
-                  <img src="{{ sample.image.url }}" alt="{{ cat.name }}">
-                {% else %}
-                  <img src="{% static 'img/placeholders/category_placeholder.jpg' %}" alt="{{ cat.name }}">
-                {% endif %}
-              </div>
-              <div class="cat-card-body">
-                <div class="cat-name">{{ cat.name }}</div>
-                <div class="cat-meta">
-                  {% if request.user.is_authenticated %}
-                    <a href="{% url 'shop:product_list' %}?category={{ cat.slug }}"
-                      class="cat-pill"
-                      style="text-decoration:none; display:inline-block;">
-                      Lihat Katalog
-                    </a>
-                  {% else %}
-                    <a href="{% url 'account_login' %}?next={% url 'shop:product_list' %}?category={{ cat.slug }}"
-                      class="cat-pill"
-                      style="text-decoration:none; display:inline-block;">
-                      Login untuk lihat
-                    </a>
-                  {% endif %}
-                </div>
-                {% if sample %}
-                  <div class="cat-sample-name">
-                    <!-- contoh nama produk dalam kategori -->
-                  </div>
-                {% endif %}
-              </div>
-            </div>
-          {% endwith %}
-        {% endfor %}
+
+  <!-- PRODUCT SECTION -->
+
+  <section class="home-product-type">
+
+    <div class="section-heading">
+
+      <span class="section-mini-title">
+        AF PROMOTION COLLECTION
+      </span>
+
+      <h2 class="section-main-title">
+        Pilih Kebutuhan Produksi Anda
+      </h2>
+
+      <p class="section-description">
+        Solusi apparel modern untuk kebutuhan personal,
+        komunitas, clothing brand, merchandise bisnis,
+        hingga custom produksi skala besar.
+      </p>
+
+    </div>
+
+    <div class="product-type-grid">
+
+      <!-- PRODUK POLOS -->
+
+      <div class="product-type-card glass-card">
+
+        <div class="type-badge">
+          READY STOCK
+        </div>
+
+        <div class="type-image-wrap">
+
+          <img
+            src="{% static 'img/BANER2.png' %}"
+            alt="Produk Polos"
+          >
+
+        </div>
+
+        <div class="type-content">
+
+          <h3>
+            Produk Polos
+          </h3>
+
+          <p>
+            Kaos polos premium dengan bahan nyaman,
+            jahitan rapih, dan kualitas modern untuk
+            kebutuhan fashion harian maupun brand apparel.
+          </p>
+
+          <ul class="type-feature-list">
+            <li>✓ Cotton Combed Premium</li>
+            <li>✓ Ready Stock</li>
+            <li>✓ Jahitan Rapih</li>
+            <li>✓ Size Lengkap</li>
+          </ul>
+
+          <a
+            href="{% url 'shop:product_list' %}"
+            class="type-btn-primary"
+          >
+            Lihat Produk
+          </a>
+
+        </div>
+
       </div>
-    </section>
-  {% endif %}
+
+      <!-- CUSTOM -->
+
+      <div class="product-type-card dark-card">
+
+        <div class="type-badge type-badge-dark">
+          CUSTOM ORDER
+        </div>
+
+        <div class="type-image-wrap">
+
+          <img
+            src="{% static 'img/BANER3.png' %}"
+            alt="Custom Produk"
+          >
+
+        </div>
+
+        <div class="type-content">
+
+          <h3 style="color: white;">
+            Custom Produk
+          </h3>
+
+          <p>
+            Produksi Custom apparel untuk komunitas,
+            clothing brand, sekolah, event organizer,
+            merchandise bisnis, dan kebutuhan produksi massal.
+          </p>
+
+          <ul class="type-feature-list">
+            <li>✓ Sablon & Bordir</li>
+            <li>✓ Custom Design</li>
+            <li>✓ Produksi Massal</li>
+            <li>✓ Konsultasi Gratis</li>
+          </ul>
+
+          <a
+            href="{% url 'shop:custom_katalog' %}"
+            class="type-btn-secondary"
+          >
+            Mulai Custom
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- FEATURE STRIP -->
+
+  <section class="feature-strip">
+
+    <div class="feature-box">
+
+      <div class="feature-icon">
+        ⚡
+      </div>
+
+      <div>
+        <h4>Fast Production</h4>
+        <p>Pengerjaan cepat & profesional.</p>
+      </div>
+
+    </div>
+
+    <div class="feature-box">
+
+      <div class="feature-icon">
+        🧵
+      </div>
+
+      <div>
+        <h4>Premium Material</h4>
+        <p>Kualitas bahan nyaman & modern.</p>
+      </div>
+
+    </div>
+
+    <div class="feature-box">
+
+      <div class="feature-icon">
+        🚚
+      </div>
+
+      <div>
+        <h4>Nationwide Shipping</h4>
+        <p>Pengiriman ke seluruh Indonesia.</p>
+      </div>
+
+    </div>
+
+  </section>
+
 </div>
+
 <script>
-  const slider = document.getElementById('heroSlider');
-  const dotsContainer = document.getElementById('heroDots');
-  const slides = slider ? slider.children : [];
-  let index = 0;
-  if (slider && dotsContainer && slides.length > 0) {
-    // generate dots
-    for (let i = 0; i < slides.length; i++) {
-      const dot = document.createElement("div");
-      dot.className = "hero-dot" + (i === 0 ? " active" : "");
-      dot.dataset.index = i;
-      dot.onclick = () => {
-        index = i;bv 
-        updateSlider();
-      };
-      dotsContainer.appendChild(dot);
-    }
-    const dots = dotsContainer.children;
-    function updateSlider() {
-      slider.style.transform = `translateX(-${index * 100}%)`;
-      for (let d of dots) d.classList.remove("active");
-      dots[index].classList.add("active");
-    }
-    // auto-slide
-    setInterval(() => {
-      index = (index + 1) % slides.length;
+
+const slider = document.getElementById("heroSlider");
+const dotsContainer = document.getElementById("heroDots");
+
+const slides = slider
+  ? slider.children
+  : [];
+
+let index = 0;
+
+if (
+  slider &&
+  dotsContainer &&
+  slides.length > 0
+) {
+
+  for (let i = 0; i < slides.length; i++) {
+
+    const dot = document.createElement("div");
+
+    dot.className =
+      "hero-dot" +
+      (i === 0 ? " active" : "");
+
+    dot.dataset.index = i;
+
+    dot.onclick = () => {
+      index = i;
       updateSlider();
-    }, 4000);
+    };
+
+    dotsContainer.appendChild(dot);
+
   }
+
+  const dots = dotsContainer.children;
+
+  function updateSlider() {
+
+    slider.style.transform =
+      `translateX(-${index * 100}%)`;
+
+    for (let d of dots) {
+      d.classList.remove("active");
+    }
+
+    dots[index].classList.add("active");
+
+  }
+
+  setInterval(() => {
+
+    index =
+      (index + 1) %
+      slides.length;
+
+    updateSlider();
+
+  }, 4000);
+
+}
+
 </script>
 
 {% endblock %}

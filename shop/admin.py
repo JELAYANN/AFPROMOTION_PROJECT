@@ -26,8 +26,6 @@ class CustomServiceAdmin(admin.ModelAdmin):
     list_display = ('name', 'service_type', 'additional_price')
     list_filter = ('service_type',)
     search_fields = ('name',)
-
-
 # --- 2. SETTING PRODUK STANDAR (POLOS) ---
 class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
@@ -41,8 +39,6 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}
     inlines = [ProductVariantInline]
-
-
 # --- 3. SETTING TRANSAKSI (ORDER) ---
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
@@ -86,7 +82,6 @@ class OrderAdmin(admin.ModelAdmin):
             'fields': ('courier_code', 'courier_service', 'tracking_number')
         }),
     )  
-
 # --- 4. MASTER DATA LAINNYA ---
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):

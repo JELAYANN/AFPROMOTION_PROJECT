@@ -69,7 +69,7 @@ class ProductVariant(models.Model):
         return f"{self.product.name} - {self.color} - {self.size}"
 # --- SISTEM CUSTOM PRODUCT (SABLON/BORDIR) ---
 class CustomService(models.Model):
-    name = models.CharField(max_length=100) # Contoh: 'DTF A3', 'Bordir Logo'
+    name = models.CharField(max_length=100) 
     service_type = models.CharField(max_length=20, choices=[('SABLON', 'Sablon'), ('BORDIR', 'Bordir')])
     additional_price = models.DecimalField(max_digits=10, decimal_places=2)
     def __str__(self):

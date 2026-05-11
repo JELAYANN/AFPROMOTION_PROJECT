@@ -153,7 +153,6 @@
   <div class="product-grid">
     {% for product in products %}
       <div class="product-card">
-        <a href="{% url 'shop:cart_add' product.id %}" class="btn-add">Tambah</a>
         <a href="{% url 'shop:product_detail' product.slug %}">
           {% if product.image %}
           <img class="product-img" src="{{ product.image.url }}" alt="{{ product.name }}">

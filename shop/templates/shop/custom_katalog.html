@@ -1,6 +1,6 @@
     {% extends "shop/base.html" %}
     {% load humanize %}
-    {% block title %}Katalog Custom | AF Promotion{% endblock %}
+    {% block title %}Katalog custom | AF Promotion{% endblock %}
     {% block content %}
     <style>
     * { font-family: "Poppins", sans-serif !important; }
@@ -101,7 +101,6 @@
         <div class="katalog-container">
         <div class="katalog-header">
             <h1 class="katalog-title">Katalog Custom Produk</h1>
-            <p style="color: #8A7F7C; font-size: 0.9rem;">Pilih produk dasar dan mulai kustomisasi desainmu sendiri</p>
         </div>
         <div class="custom-grid">
             {% for product in products %}
@@ -114,12 +113,12 @@
             
             <div class="card-info">
                 <h3 class="product-name">{{ product.name }}</h3>
-                <div class="btn-kustom">Kustom Sekarang</div>
+                <div class="btn-kustom">Custom Sekarang</div>
             </div>
             </a>
             {% empty %}
             <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #8A7F7C;">
-                Belum ada produk kustom yang tersedia.
+                Belum ada produk Custom yang tersedia.
             </div>
             {% endfor %}
         </div>
