@@ -1,743 +1,256 @@
 {% extends "shop/base.html" %}
 {% load humanize %}
-
 {% block title %}Profil Saya | AF Promotion{% endblock %}
-
 {% block content %}
-
 <style>
-  * {
-    font-family: "Poppins", sans-serif !important;
-  }
+* { font-family: "Poppins", sans-serif !important; }
+body { background: #f7f4f2; }
+.profile-page { max-width: 900px; margin: 3rem auto 4rem; padding: 0 1.5rem; color: #2C2524; }
+.profile-heading { margin-bottom: 2.5rem; }
+.profile-name { font-size: 1.6rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #7A0E1A; margin-bottom: 0.3rem; }
+.profile-sub { font-size: 0.85rem; color: #8A7F7C; }
+.messages { list-style: none; padding: 0; margin: 0 0 1.5rem 0; }
+.messages li {
+  font-size: 0.9rem; padding: 0.7rem 1rem;
+  border-left: 3px solid #7A0E1A; background: rgba(122,14,26,0.06);
+  color: #7A0E1A; border-radius: 8px; margin-bottom: .7rem;
+}
 
-  body {
-    background: #f7f4f2;
-  }
-
-  .profile-page {
-    max-width: 900px;
-    margin: 3rem auto 4rem;
-    padding: 0 1.5rem;
-    color: #2C2524;
-  }
-
-  .profile-heading {
-    margin-bottom: 2.5rem;
-  }
-
-  .profile-name {
-    font-size: 1.6rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #7A0E1A;
-    margin-bottom: 0.3rem;
-  }
-
-  .profile-sub {
-    font-size: 0.85rem;
-    color: #8A7F7C;
-  }
-
-  .messages {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 1.5rem 0;
-  }
-
-  .messages li {
-    font-size: 0.9rem;
-    padding: 0.7rem 1rem;
-    border-left: 3px solid #7A0E1A;
-    background: rgba(122, 14, 26, 0.06);
-    color: #7A0E1A;
-    border-radius: 8px;
-    margin-bottom: .7rem;
-  }
-
-  .profile-layout {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 3rem;
-  }
-
-  @media (max-width: 900px) {
-    .profile-layout {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .profile-form-simple {
-    width: 100%;
-  }
-
-  .section-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: #8A7F7C;
-    margin-bottom: 1.2rem;
-  }
-
-  .field-block {
-    margin-bottom: 1.6rem;
-  }
-
-  .field-block label {
-    display: block;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.13em;
-    color: #8A7F7C;
-    margin-bottom: 0.5rem;
-  }
-
-  .field-block input,
-  .field-block textarea,
-  .field-block select {
-    width: 100%;
-    border: none;
-    border-bottom: 1px solid rgba(148, 134, 129, 0.5);
-    padding: 0.55rem 0;
-    font-size: 0.95rem;
-    background: transparent;
-    outline: none;
-    border-radius: 0;
-    transition: border-color 0.15s ease;
-  }
-
-  .field-block textarea {
-    resize: vertical;
-    min-height: 90px;
-  }
-
-  .field-block input:focus,
-  .field-block textarea:focus,
-  .field-block select:focus {
-    border-bottom-color: #7A0E1A;
-  }
-
-  .btn-session {
-    margin-top: 1rem;
-    padding: 0.75rem 1.7rem;
-    border-radius: 999px;
-    border: 1px solid #7A0E1A;
-    background: transparent;
-    color: #7A0E1A;
-    font-size: 0.8rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s ease;
-  }
-
-  .btn-session:hover {
-    background: #7A0E1A;
-    color: #fff;
-  }
-
-  .loading-text {
-    font-size: 0.74rem;
-    color: #8A7F7C;
-    margin-top: 0.4rem;
-  }
-
-  .profile-side {
-    border-left: 1px solid rgba(180,166,160,.3);
-    padding-left: 2rem;
-  }
-
-  @media (max-width: 900px) {
-    .profile-side {
-      border-left: none;
-      padding-left: 0;
-      border-top: 1px solid rgba(180,166,160,.3);
-      padding-top: 2rem;
-    }
-  }
-
-  .side-title {
-    font-size: 0.78rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #8A7F7C;
-    margin-bottom: 1.4rem;
-  }
-
-  .profile-info-box {
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(220,210,206,.5);
-  }
-
-  .profile-info-label {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #8A7F7C;
-    margin-bottom: 0.3rem;
-  }
-
-  .profile-info-value {
-    font-size: 0.95rem;
-    color: #2C2524;
-    line-height: 1.7;
-  }
-
-  .address-note {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 14px;
-    background: rgba(122,14,26,.06);
-    color: #7A0E1A;
-    font-size: 0.82rem;
-    line-height: 1.7;
-  }
-
-  select:disabled {
-    opacity: .7;
-    cursor: not-allowed;
-  }
+.profile-layout { display: grid; grid-template-columns: 1fr 320px; gap: 3rem; }
+@media (max-width: 900px) { .profile-layout { grid-template-columns: 1fr; } }
+.profile-form-simple { width: 100%; }
+.section-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.14em; color: #8A7F7C; margin-bottom: 1.2rem; }
+.field-block { margin-bottom: 1.6rem; }
+.field-block label { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.13em; color: #8A7F7C; margin-bottom: 0.5rem; }
+.field-block input,
+.field-block textarea,
+.field-block select {
+  width: 100%; border: none; border-bottom: 1px solid rgba(148,134,129,0.5);
+  padding: 0.55rem 0; font-size: 0.95rem; background: transparent;
+  outline: none; border-radius: 0; transition: border-color 0.15s ease;
+}
+.field-block textarea { resize: vertical; min-height: 90px; }
+.field-block input:focus,
+.field-block textarea:focus,
+.field-block select:focus { border-bottom-color: #7A0E1A; }
+.btn-session {
+  margin-top: 1rem; padding: 0.75rem 1.7rem; border-radius: 999px;
+  border: 1px solid #7A0E1A; background: transparent; color: #7A0E1A;
+  font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
+  font-weight: 600; cursor: pointer; transition: 0.2s ease;
+}
+.btn-session:hover { background: #7A0E1A; color: #fff; }
+.loading-text { font-size: 0.74rem; color: #8A7F7C; margin-top: 0.4rem; }
+.profile-side { border-left: 1px solid rgba(180,166,160,.3); padding-left: 2rem; }
+@media (max-width: 900px) {
+  .profile-side { border-left: none; padding-left: 0; border-top: 1px solid rgba(180,166,160,.3); padding-top: 2rem; }
+}
+.side-title { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: #8A7F7C; margin-bottom: 1.4rem; }
+.profile-info-box { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(220,210,206,.5); }
+.profile-info-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: #8A7F7C; margin-bottom: 0.3rem; }
+.profile-info-value { font-size: 0.95rem; color: #2C2524; line-height: 1.7; }
+.address-note {
+  margin-top: 1rem; padding: 1rem; border-radius: 14px;
+  background: rgba(122,14,26,.06); color: #7A0E1A; font-size: 0.82rem; line-height: 1.7;
+}
+select:disabled { opacity: .7; cursor: not-allowed; }
 </style>
-
 <div class="profile-page">
-
   <div class="profile-heading">
-
     <div class="profile-name">
-
       {% if user_obj.first_name or user_obj.last_name %}
         {{ user_obj.first_name }} {{ user_obj.last_name }}
       {% else %}
         {{ user_obj.username }}
       {% endif %}
-
     </div>
-
-    <div class="profile-sub">
-      Kelola informasi akun dan alamat pengiriman Anda.
-    </div>
-
+    <div class="profile-sub">Kelola informasi akun dan alamat pengiriman Anda.</div>
   </div>
-
   {% if messages %}
     <ul class="messages">
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
+      {% for message in messages %}<li>{{ message }}</li>{% endfor %}
     </ul>
   {% endif %}
-
   <div class="profile-layout">
-
     <!-- FORM -->
     <div>
-
       <form method="post" class="profile-form-simple">
-
         {% csrf_token %}
-
         <!-- DATA AKUN -->
-        <div class="section-label">
-          Data Akun
-        </div>
-
+        <div class="section-label">Data Akun</div>
         <div class="field-block">
           <label>Nama Depan</label>
-
-          <input type="text"
-                 name="first_name"
-                 value="{{ user_obj.first_name }}">
+          <input type="text" name="first_name" value="{{ user_obj.first_name }}">
         </div>
-
         <div class="field-block">
           <label>Nama Belakang</label>
-
-          <input type="text"
-                 name="last_name"
-                 value="{{ user_obj.last_name }}">
+          <input type="text" name="last_name" value="{{ user_obj.last_name }}">
         </div>
-
         <div class="field-block">
           <label>Email</label>
-
-          <input type="email"
-                 name="email"
-                 value="{{ user_obj.email }}">
+          <input type="email" name="email" value="{{ user_obj.email }}">
         </div>
-
         <!-- ALAMAT -->
-        <div class="section-label"
-             style="margin-top:2.4rem;">
-
-          Kontak & Alamat
-
-        </div>
-
+        <div class="section-label" style="margin-top:2.4rem;">Kontak & Alamat</div>
         <div class="field-block">
           <label>No. Telepon</label>
           {{ form.phone }}
         </div>
-
         <div class="field-block">
           <label>Alamat Lengkap</label>
           {{ form.address }}
         </div>
-
         <!-- PROVINSI -->
         <div class="field-block">
-
           <label>Provinsi</label>
-
-          <select id="provinceSelect"
-                  required>
-
-            <option value="">
-              -- Pilih Provinsi --
-            </option>
-
+          <select id="provinceSelect" required>
+            <option value="">-- Pilih Provinsi --</option>
           </select>
-
-          <div class="loading-text"
-               id="provinceLoading"></div>
-
+          <div class="loading-text" id="provinceLoading"></div>
         </div>
-
         <!-- KOTA -->
         <div class="field-block">
-
           <label>Kota / Kabupaten</label>
-
-          <select id="citySelect"
-                  disabled
-                  required>
-
-            <option value="">
-              -- Pilih Kota --
-            </option>
-
+          <select id="citySelect" disabled required>
+            <option value="">-- Pilih Kota --</option>
           </select>
-
-          <div class="loading-text"
-               id="cityLoading"></div>
-
+          <div class="loading-text" id="cityLoading"></div>
         </div>
-
         <!-- KECAMATAN -->
         <div class="field-block">
-
           <label>Kecamatan</label>
-
-          <select id="subdistrictSelect"
-                  disabled
-                  required>
-
-            <option value="">
-              -- Pilih Kecamatan --
-            </option>
-
+          <select id="subdistrictSelect" disabled required>
+            <option value="">-- Pilih Kecamatan --</option>
           </select>
-
-          <div class="loading-text"
-               id="subdistrictLoading"></div>
-
+          <div class="loading-text" id="subdistrictLoading"></div>
         </div>
-
-        <!-- HIDDEN FIELD -->
-        <input type="hidden"
-               name="province"
-               id="provinceInput"
-               value="{{ customer.province }}">
-
-        <input type="hidden"
-               name="province_id"
-               id="provinceId"
-               value="{{ customer.province_id|default:'' }}">
-
-        <input type="hidden"
-               name="city"
-               id="cityInput"
-               value="{{ customer.city }}">
-
-        <input type="hidden"
-               name="city_id"
-               id="cityId"
-               value="{{ customer.city_id|default:'' }}">
-
-        <input type="hidden"
-               name="subdistrict"
-               id="subdistrictInput"
-               value="{{ customer.subdistrict|default:'' }}">
-
-        <input type="hidden"
-               name="subdistrict_id"
-               id="subdistrictId"
-               value="{{ customer.subdistrict_id|default:'' }}">
-
+        <!-- HIDDEN FIELDS -->
+        <input type="hidden" name="province"      id="provinceInput"    value="{{ customer.province }}">
+        <input type="hidden" name="province_id"   id="provinceId"       value="{{ customer.province_id|default:'' }}">
+        <input type="hidden" name="city"          id="cityInput"        value="{{ customer.city }}">
+        <input type="hidden" name="city_id"       id="cityId"           value="{{ customer.city_id|default:'' }}">
+        <input type="hidden" name="subdistrict"   id="subdistrictInput" value="{{ customer.subdistrict|default:'' }}">
+        <input type="hidden" name="subdistrict_id" id="subdistrictId"   value="{{ customer.subdistrict_id|default:'' }}">
         <!-- POSTAL -->
         <div class="field-block">
-
           <label>Kode Pos</label>
-
           {{ form.postal_code }}
-
         </div>
-
-        <button type="submit"
-                class="btn-session">
-
-          Simpan Perubahan
-
-        </button>
-
+        <button type="submit" class="btn-session">Simpan Perubahan</button>
       </form>
-
     </div>
-
     <!-- SIDE -->
     <div class="profile-side">
-
-      <div class="side-title">
-        Informasi Saat Ini
-      </div>
-
+      <div class="side-title">Informasi Saat Ini</div>
       <div class="profile-info-box">
-        <div class="profile-info-label">
-          Nama
-        </div>
-
-        <div class="profile-info-value">
-          {{ user_obj.get_full_name|default:user_obj.username }}
-        </div>
+        <div class="profile-info-label">Nama</div>
+        <div class="profile-info-value">{{ user_obj.get_full_name|default:user_obj.username }}</div>
       </div>
-
       <div class="profile-info-box">
-        <div class="profile-info-label">
-          Email
-        </div>
-
-        <div class="profile-info-value">
-          {{ user_obj.email|default:"-" }}
-        </div>
+        <div class="profile-info-label">Email</div>
+        <div class="profile-info-value">{{ user_obj.email|default:"-" }}</div>
       </div>
-
       <div class="profile-info-box">
-        <div class="profile-info-label">
-          Telepon
-        </div>
-
-        <div class="profile-info-value">
-          {{ customer.phone|default:"-" }}
-        </div>
+        <div class="profile-info-label">Telepon</div>
+        <div class="profile-info-value">{{ customer.phone|default:"-" }}</div>
       </div>
-
       <div class="profile-info-box">
-        <div class="profile-info-label">
-          Alamat Pengiriman
-        </div>
-
+        <div class="profile-info-label">Alamat Pengiriman</div>
         <div class="profile-info-value">
-
           {{ customer.address|default:"-" }}
-
-          {% if customer.city %}
-            <br>{{ customer.city }}
-          {% endif %}
-
-          {% if customer.province %}
-            <br>{{ customer.province }}
-          {% endif %}
-
+          {% if customer.city %}<br>{{ customer.city }}{% endif %}
+          {% if customer.province %}<br>{{ customer.province }}{% endif %}
         </div>
       </div>
-
       <div class="address-note">
         Pastikan alamat dan kecamatan sudah benar agar ongkir otomatis dapat dihitung saat checkout.
       </div>
-
     </div>
-
   </div>
-
 </div>
-
 <script>
-
-  const provinceSelect =
-    document.getElementById('provinceSelect');
-
-  const citySelect =
-    document.getElementById('citySelect');
-
-  const subdistrictSelect =
-    document.getElementById('subdistrictSelect');
-
-  // hidden inputs
-  const provinceInput =
-    document.getElementById('provinceInput');
-
-  const provinceIdInput =
-    document.getElementById('provinceId');
-
-  const cityInput =
-    document.getElementById('cityInput');
-
-  const cityIdInput =
-    document.getElementById('cityId');
-
-  const subdistrictInput =
-    document.getElementById('subdistrictInput');
-
-  const subdistrictIdInput =
-    document.getElementById('subdistrictId');
-
-  // =========================
-  // LOAD PROVINCES
-  // =========================
-  async function loadProvinces() {
-
-    try {
-
-      document.getElementById(
-        'provinceLoading'
-      ).textContent = 'Memuat provinsi...';
-
-      const response =
-        await fetch('/api/provinces/');
-
-      const data =
-        await response.json();
-
-      provinceSelect.innerHTML =
-        '<option value="">-- Pilih Provinsi --</option>';
-
-      data.data.forEach(item => {
-
-        const selected =
-          item.id == provinceIdInput.value
-          ? 'selected'
-          : '';
-
-        provinceSelect.innerHTML += `
-          <option
-            value="${item.name}"
-            data-id="${item.id}"
-            ${selected}>
-            ${item.name}
-          </option>
-        `;
-      });
-
-      document.getElementById(
-        'provinceLoading'
-      ).textContent = '';
-
-      // auto load city
-      if (provinceIdInput.value) {
-        loadCities(provinceIdInput.value);
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-      document.getElementById(
-        'provinceLoading'
-      ).textContent =
-        'Gagal memuat provinsi';
-
-    }
+const provinceSelect     = document.getElementById('provinceSelect');
+const citySelect         = document.getElementById('citySelect');
+const subdistrictSelect  = document.getElementById('subdistrictSelect');
+const provinceInput      = document.getElementById('provinceInput');
+const provinceIdInput    = document.getElementById('provinceId');
+const cityInput          = document.getElementById('cityInput');
+const cityIdInput        = document.getElementById('cityId');
+const subdistrictInput   = document.getElementById('subdistrictInput');
+const subdistrictIdInput = document.getElementById('subdistrictId');
+// ========================= LOAD PROVINCES =========================
+async function loadProvinces() {
+  try {
+    document.getElementById('provinceLoading').textContent = 'Memuat provinsi...';
+    const data = await (await fetch('/api/provinces/')).json();
+    provinceSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
+    data.data.forEach(item => {
+      const selected = item.id == provinceIdInput.value ? 'selected' : '';
+      provinceSelect.innerHTML += `<option value="${item.name}" data-id="${item.id}" ${selected}>${item.name}</option>`;
+    });
+    document.getElementById('provinceLoading').textContent = '';
+    if (provinceIdInput.value) loadCities(provinceIdInput.value);
+  } catch (error) {
+    console.error(error);
+    document.getElementById('provinceLoading').textContent = 'Gagal memuat provinsi';
   }
-
-  // =========================
-  // LOAD CITIES
-  // =========================
-  async function loadCities(provinceId) {
-
-    try {
-
-      citySelect.disabled = true;
-
-      citySelect.innerHTML =
-        '<option>Memuat kota...</option>';
-
-      const response =
-        await fetch(
-          `/api/cities/?province_id=${provinceId}`
-        );
-
-      const data =
-        await response.json();
-
-      citySelect.innerHTML =
-        '<option value="">-- Pilih Kota --</option>';
-
-      data.data.forEach(item => {
-
-        const selected =
-          item.id == cityIdInput.value
-          ? 'selected'
-          : '';
-
-        citySelect.innerHTML += `
-          <option
-            value="${item.name}"
-            data-id="${item.id}"
-            ${selected}>
-            ${item.name}
-          </option>
-        `;
-      });
-
-      citySelect.disabled = false;
-
-      if (cityIdInput.value) {
-        loadSubdistricts(cityIdInput.value);
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-  }
-
-  // =========================
-  // LOAD SUBDISTRICTS
-  // =========================
-  async function loadSubdistricts(cityId) {
-
-    try {
-
-      subdistrictSelect.disabled = true;
-
-      subdistrictSelect.innerHTML =
-        '<option>Memuat kecamatan...</option>';
-
-      const response =
-        await fetch(
-          `/api/subdistricts/?city_id=${cityId}`
-        );
-
-      const data =
-        await response.json();
-
-      subdistrictSelect.innerHTML =
-        '<option value="">-- Pilih Kecamatan --</option>';
-
-      data.data.forEach(item => {
-
-        const selected =
-          item.id == subdistrictIdInput.value
-          ? 'selected'
-          : '';
-
-        subdistrictSelect.innerHTML += `
-          <option
-            value="${item.name}"
-            data-id="${item.id}"
-            ${selected}>
-            ${item.name}
-          </option>
-        `;
-      });
-
-      subdistrictSelect.disabled = false;
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-  }
-
-  // =========================
-  // PROVINCE CHANGE
-  // =========================
-  provinceSelect.addEventListener(
-    'change',
-    function () {
-
-      const selected =
-        this.options[this.selectedIndex];
-
-      provinceInput.value =
-        selected.value;
-
-      provinceIdInput.value =
-        selected.dataset.id || '';
-
-      cityInput.value = '';
-      cityIdInput.value = '';
-
-      subdistrictInput.value = '';
-      subdistrictIdInput.value = '';
-
-      citySelect.innerHTML =
-        '<option value="">-- Pilih Kota --</option>';
-
-      subdistrictSelect.innerHTML =
-        '<option value="">-- Pilih Kecamatan --</option>';
-
-      if (selected.dataset.id) {
-        loadCities(selected.dataset.id);
-      }
-
-    }
-  );
-
-  // =========================
-  // CITY CHANGE
-  // =========================
-  citySelect.addEventListener(
-    'change',
-    function () {
-
-      const selected =
-        this.options[this.selectedIndex];
-
-      cityInput.value =
-        selected.value;
-
-      cityIdInput.value =
-        selected.dataset.id || '';
-
-      subdistrictInput.value = '';
-      subdistrictIdInput.value = '';
-
-      subdistrictSelect.innerHTML =
-        '<option value="">-- Pilih Kecamatan --</option>';
-
-      if (selected.dataset.id) {
-        loadSubdistricts(selected.dataset.id);
-      }
-
-    }
-  );
-
-  // =========================
-  // SUBDISTRICT CHANGE
-  // =========================
-  subdistrictSelect.addEventListener(
-    'change',
-    function () {
-
-      const selected =
-        this.options[this.selectedIndex];
-
-      subdistrictInput.value =
-        selected.value;
-
-      subdistrictIdInput.value =
-        selected.dataset.id || '';
-
-    }
-  );
-
-  // init
-  loadProvinces();
-
+}
+// ========================= LOAD CITIES =========================
+async function loadCities(provinceId) {
+  try {
+    citySelect.disabled = true;
+    citySelect.innerHTML = '<option>Memuat kota...</option>';
+    const data = await (await fetch(`/api/cities/?province_id=${provinceId}`)).json();
+    citySelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
+    data.data.forEach(item => {
+      const selected = item.id == cityIdInput.value ? 'selected' : '';
+      citySelect.innerHTML += `<option value="${item.name}" data-id="${item.id}" ${selected}>${item.name}</option>`;
+    });
+    citySelect.disabled = false;
+    if (cityIdInput.value) loadSubdistricts(cityIdInput.value);
+  } catch (error) { console.error(error); }
+}
+// ========================= LOAD SUBDISTRICTS =========================
+async function loadSubdistricts(cityId) {
+  try {
+    subdistrictSelect.disabled = true;
+    subdistrictSelect.innerHTML = '<option>Memuat kecamatan...</option>';
+    const data = await (await fetch(`/api/subdistricts/?city_id=${cityId}`)).json();
+    subdistrictSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+    data.data.forEach(item => {
+      const selected = item.id == subdistrictIdInput.value ? 'selected' : '';
+      subdistrictSelect.innerHTML += `<option value="${item.name}" data-id="${item.id}" ${selected}>${item.name}</option>`;
+    });
+    subdistrictSelect.disabled = false;
+  } catch (error) { console.error(error); }
+}
+// ========================= PROVINCE CHANGE =========================
+provinceSelect.addEventListener('change', function () {
+  const selected = this.options[this.selectedIndex];
+  provinceInput.value = selected.value;
+  provinceIdInput.value = selected.dataset.id || '';
+  cityInput.value = ''; cityIdInput.value = '';
+  subdistrictInput.value = ''; subdistrictIdInput.value = '';
+  citySelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
+  subdistrictSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+  if (selected.dataset.id) loadCities(selected.dataset.id);
+});
+// ========================= CITY CHANGE =========================
+citySelect.addEventListener('change', function () {
+  const selected = this.options[this.selectedIndex];
+  cityInput.value = selected.value;
+  cityIdInput.value = selected.dataset.id || '';
+  subdistrictInput.value = ''; subdistrictIdInput.value = '';
+  subdistrictSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+  if (selected.dataset.id) loadSubdistricts(selected.dataset.id);
+});
+// ========================= SUBDISTRICT CHANGE =========================
+subdistrictSelect.addEventListener('change', function () {
+  const selected = this.options[this.selectedIndex];
+  subdistrictInput.value = selected.value;
+  subdistrictIdInput.value = selected.dataset.id || '';
+});
+// init
+loadProvinces();
 </script>
-
 {% endblock %}

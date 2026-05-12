@@ -1,832 +1,275 @@
 {% extends "shop/base.html" %}
 {% load static %}
 {% load humanize %}
-
-{% block title %}
-Beranda | AF Promotion
-{% endblock %}
-
+{% block title %}Beranda | AF Promotion{% endblock %}
 {% block content %}
-
 <style>
-
-/* =========================
-   GLOBAL
-========================= */
-
-html {
-  scroll-behavior: smooth;
-}
-
+/* ========================= GLOBAL ========================= */
+html { scroll-behavior: smooth; }
 body {
   background: #F5F3F2;
-  font-family:
-    "Inter",
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  margin: 0; padding: 0; overflow-x: hidden;
 }
-
 .home-wrapper {
-  width: 100%;
-  max-width: 1320px;
-  margin: 2rem auto 5rem;
-  padding: 0 1.5rem;
-  position: relative;
+  width: 100%; max-width: 1320px;
+  margin: 2rem auto 5rem; padding: 0 1.5rem; position: relative;
 }
-
-/* =========================
-   FLOATING GLOW
-========================= */
-
+/* ========================= FLOATING GLOW ========================= */
 .home-wrapper::before {
-  content: "";
-  position: fixed;
-  width: 320px;
-  height: 320px;
-  background: rgba(122,14,26,0.08);
-  border-radius: 50%;
-  filter: blur(90px);
-  top: 8%;
-  left: -120px;
-  z-index: -1;
+  content: ""; position: fixed;
+  width: 320px; height: 320px;
+  background: rgba(122,14,26,0.08); border-radius: 50%; filter: blur(90px);
+  top: 8%; left: -120px; z-index: -1;
   animation: floatingGlow 10s ease-in-out infinite;
 }
-
 @keyframes floatingGlow {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(40px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(40px); }
+  100% { transform: translateY(0px); }
 }
-
-/* =========================
-   HERO
-========================= */
-
-.home-hero-shell {
-  position: relative;
-  padding-top: 1rem;
-}
-
+/* ========================= HERO ========================= */
+.home-hero-shell { position: relative; padding-top: 1rem; }
 .hero-orbit {
-  position: absolute;
-  border-radius: 999px;
-  border: 110px dashed rgba(122, 14, 27, 0.12);
-  pointer-events: none;
+  position: absolute; border-radius: 999px;
+  border: 110px dashed rgba(122,14,27,0.12); pointer-events: none;
 }
-
 .hero-orbit.orbit-1 {
-  width: 420px;
-  height: 420px;
-  top: -60px;
-  left: -80px;
+  width: 420px; height: 420px; top: -60px; left: -80px;
   animation: orbit-slow 30s linear infinite;
 }
-
 .hero-orbit.orbit-2 {
-  width: 320px;
-  height: 320px;
-  bottom: -80px;
-  right: -80px;
+  width: 320px; height: 320px; bottom: -80px; right: -80px;
   animation: orbit-slow 30s linear infinite reverse;
 }
-
 @keyframes orbit-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
-
-/* =========================
-   HERO CARD
-========================= */
-
+/* ========================= HERO CARD ========================= */
 .home-hero-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 28px;
-  background: white;
-
-  box-shadow:
-    0 25px 60px rgba(0,0,0,0.10),
-    inset 0 0 0 1px rgba(255,255,255,0.8);
+  position: relative; overflow: hidden; border-radius: 28px; background: white;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.10), inset 0 0 0 1px rgba(255,255,255,0.8);
 }
-
 .home-hero-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-
-  background:
-    linear-gradient(
-      120deg,
-      rgba(255,255,255,0.1),
-      rgba(255,255,255,0.02),
-      rgba(255,255,255,0.1)
-    );
-
-  animation: shimmerMove 7s linear infinite;
-  z-index: 2;
-  pointer-events: none;
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(120deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02), rgba(255,255,255,0.1));
+  animation: shimmerMove 7s linear infinite; z-index: 2; pointer-events: none;
 }
-
 @keyframes shimmerMove {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(100%);
-  }
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
 }
-
-/* =========================
-   HERO SLIDER
-========================= */
-
-.hero-slider {
-  width: 100%;
-  display: flex;
-  transition: transform 0.6s ease;
-}
-
-.hero-slide {
-  width: 100%;
-  flex-shrink: 0;
-}
-
-.hero-slide img {
-  width: 100%;
-  display: block;
-  height: auto;
-}
-
-/* =========================
-   HERO DOTS
-========================= */
-
-.hero-dots {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  padding: 1rem 0 1.2rem;
-}
-
+/* ========================= HERO SLIDER ========================= */
+.hero-slider { width: 100%; display: flex; transition: transform 0.6s ease; }
+.hero-slide { width: 100%; flex-shrink: 0; }
+.hero-slide img { width: 100%; display: block; height: auto; }
+/* ========================= HERO DOTS ========================= */
+.hero-dots { display: flex; gap: 8px; justify-content: center; padding: 1rem 0 1.2rem; }
 .hero-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(122,14,26,0.2);
-  transition: all 0.3s ease;
+  width: 10px; height: 10px; border-radius: 999px;
+  background: rgba(122,14,26,0.2); transition: all 0.3s ease;
 }
-
-.hero-dot.active {
-  width: 28px;
-  background: #7A0E1A;
-}
-
-/* =========================
-   TAGLINE
-========================= */
-
+.hero-dot.active { width: 28px; background: #7A0E1A; }
+/* ========================= TAGLINE ========================= */
 .home-tagline {
-  margin-top: 2rem;
-  text-align: center;
-  font-size: 0.95rem;
-  color: #7D6D6A;
-  max-width: 720px;
-  margin-inline: auto;
-  line-height: 1.8;
+  margin-top: 2rem; text-align: center; font-size: 0.95rem;
+  color: #7D6D6A; max-width: 720px; margin-inline: auto; line-height: 1.8;
 }
-
-/* =========================
-   ACTION BUTTON
-========================= */
-
-.home-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
-}
-
+/* ========================= ACTION BUTTON ========================= */
+.home-actions { display: flex; justify-content: center; margin-top: 2rem; }
 .home-btn-outline {
-  text-decoration: none;
-  border: 1px solid rgba(122,14,26,0.25);
-  padding: 0.9rem 1.8rem;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #7A0E1A;
-  background: rgba(255,255,255,0.7);
-
-  transition: all 0.25s ease;
+  text-decoration: none; border: 1px solid rgba(122,14,26,0.25);
+  padding: 0.9rem 1.8rem; border-radius: 999px;
+  font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #7A0E1A; background: rgba(255,255,255,0.7); transition: all 0.25s ease;
 }
-
-.home-btn-outline:hover {
-  background: #7A0E1A;
-  color: white;
-  transform: translateY(-2px);
-}
-
-/* =========================
-   DIVIDER
-========================= */
-
+.home-btn-outline:hover { background: #7A0E1A; color: white; transform: translateY(-2px); }
+/* ========================= DIVIDER ========================= */
 .section-divider {
-  margin: 3rem auto;
-  max-width: 700px;
-  border: none;
+  margin: 3rem auto; max-width: 700px; border: none;
   border-top: 1px solid rgba(122,14,26,0.18);
 }
-
-/* =========================
-   SECTION HEADING
-========================= */
-
-.section-heading {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.section-mini-title {
-  font-size: 0.72rem;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  color: #9A7E82;
-}
-
-.section-main-title {
-  margin-top: 1rem;
-  font-size: 2.4rem;
-  color: #7A0E1A;
-  font-weight: 700;
-}
-
-.section-description {
-  max-width: 720px;
-  margin: 1rem auto 0;
-  line-height: 1.8;
-  color: #6B5B58;
-}
-
-/* =========================
-   PRODUCT TYPE
-========================= */
-
-.home-product-type {
-  margin-top: 4rem;
-}
-
-.product-type-grid {
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 2rem;
-}
-
-.product-type-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 30px;
-  transition: all 0.35s ease;
-}
-
-.product-type-card:hover {
-  transform: translateY(-8px);
-}
-
+/* ========================= SECTION HEADING ========================= */
+.section-heading { text-align: center; margin-bottom: 3rem; }
+.section-mini-title { font-size: 0.72rem; letter-spacing: 0.35em; text-transform: uppercase; color: #9A7E82; }
+.section-main-title { margin-top: 1rem; font-size: 2.4rem; color: #7A0E1A; font-weight: 700; }
+.section-description { max-width: 720px; margin: 1rem auto 0; line-height: 1.8; color: #6B5B58; }
+/* ========================= PRODUCT TYPE ========================= */
+.home-product-type { margin-top: 4rem; }
+.product-type-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2rem; }
+.product-type-card { position: relative; overflow: hidden; border-radius: 30px; transition: all 0.35s ease; }
+.product-type-card:hover { transform: translateY(-8px); }
 .glass-card {
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,0.9),
-      rgba(255,255,255,0.7)
-    );
-
-  box-shadow:
-    0 25px 50px rgba(0,0,0,0.08);
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+  box-shadow: 0 25px 50px rgba(0,0,0,0.08);
 }
-
 .dark-card {
-  background:
-    linear-gradient(
-      145deg,
-      #7A0E1A,
-      #4A0910
-    );
-
-  color: white;
-
-  box-shadow:
-    0 25px 60px rgba(122,14,26,0.35);
+  background: linear-gradient(145deg, #7A0E1A, #4A0910);
+  color: white; box-shadow: 0 25px 60px rgba(122,14,26,0.35);
 }
-
 .type-badge {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 3;
-
-  background: white;
-  color: #7A0E1A;
-
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
-
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
+  position: absolute; top: 20px; left: 20px; z-index: 3;
+  background: white; color: #7A0E1A;
+  padding: 0.5rem 1rem; border-radius: 999px;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em;
 }
-
-.type-badge-dark {
-  background: rgba(255,255,255,0.15);
-  color: white;
-}
-
-.type-image-wrap {
-  width: 100%;
-  height: 320px;
-  overflow: hidden;
-}
-
-.type-image-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.7s ease;
-}
-
-.product-type-card:hover img {
-  transform: scale(1.05);
-}
-
-.type-content {
-  padding: 2rem;
-}
-
-.type-content h3 {
-  font-size: 1.9rem;
-  margin-bottom: 1rem;
-}
-
-.type-content p {
-  line-height: 1.8;
-  font-size: 0.94rem;
-}
-
-.type-feature-list {
-  list-style: none;
-  padding: 0;
-  margin: 1.5rem 0;
-  display: grid;
-  gap: 0.7rem;
-}
-
-.type-btn-primary,
-.type-btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0.95rem 1.8rem;
-  border-radius: 999px;
-
-  text-decoration: none;
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-
+.type-badge-dark { background: rgba(255,255,255,0.15); color: white; }
+.type-image-wrap { width: 100%; height: 320px; overflow: hidden; }
+.type-image-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
+.product-type-card:hover img { transform: scale(1.05); }
+.type-content { padding: 2rem; }
+.type-content h3 { font-size: 1.9rem; margin-bottom: 1rem; }
+.type-content p { line-height: 1.8; font-size: 0.94rem; }
+.type-feature-list { list-style: none; padding: 0; margin: 1.5rem 0; display: grid; gap: 0.7rem; }
+.type-btn-primary, .type-btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0.95rem 1.8rem; border-radius: 999px;
+  text-decoration: none; font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase;
   transition: all 0.25s ease;
 }
-
-.type-btn-primary {
-  background: #7A0E1A;
-  color: white;
-}
-
-.type-btn-primary:hover {
-  background: #9D2130;
-  transform: translateY(-2px);
-}
-
-.type-btn-secondary {
-  background: white;
-  color: #7A0E1A;
-}
-
-.type-btn-secondary:hover {
-  transform: translateY(-2px);
-}
-
-/* =========================
-   FEATURE STRIP
-========================= */
-
-.feature-strip {
-  margin-top: 3rem;
-
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 1.5rem;
-}
-
+.type-btn-primary { background: #7A0E1A; color: white; }
+.type-btn-primary:hover { background: #9D2130; transform: translateY(-2px); }
+.type-btn-secondary { background: white; color: #7A0E1A; }
+.type-btn-secondary:hover { transform: translateY(-2px); }
+/* ========================= FEATURE STRIP ========================= */
+.feature-strip { margin-top: 3rem; display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
 .feature-box {
-  background: rgba(255,255,255,0.75);
-  padding: 1.5rem;
-  border-radius: 24px;
-
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-
-  backdrop-filter: blur(10px);
-
-  box-shadow:
-    0 14px 28px rgba(0,0,0,0.05);
-
+  background: rgba(255,255,255,0.75); padding: 1.5rem; border-radius: 24px;
+  display: flex; gap: 1rem; align-items: center;
+  backdrop-filter: blur(10px); box-shadow: 0 14px 28px rgba(0,0,0,0.05);
   transition: all 0.3s ease;
 }
-
-.feature-box:hover {
-  transform: translateY(-5px);
-}
-
+.feature-box:hover { transform: translateY(-5px); }
 .feature-icon {
-  width: 58px;
-  height: 58px;
-
-  border-radius: 18px;
-
+  width: 58px; height: 58px; border-radius: 18px;
   background: rgba(122,14,26,0.08);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 1.5rem;
+  display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
 }
-
-.feature-box h4 {
-  margin: 0;
-  color: #7A0E1A;
-}
-
-.feature-box p {
-  margin-top: 0.3rem;
-  font-size: 0.88rem;
-  color: #6B5B58;
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-
+.feature-box h4 { margin: 0; color: #7A0E1A; }
+.feature-box p { margin-top: 0.3rem; font-size: 0.88rem; color: #6B5B58; }
+/* ========================= RESPONSIVE ========================= */
 @media (max-width: 900px) {
-
-  .product-type-grid,
-  .feature-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .section-main-title {
-    font-size: 2rem;
-  }
-
+  .product-type-grid, .feature-strip { grid-template-columns: 1fr; }
+  .section-main-title { font-size: 2rem; }
 }
-
 @media (max-width: 640px) {
-
-  .home-wrapper {
-    padding: 0 1rem;
-  }
-
-  .type-content {
-    padding: 1.5rem;
-  }
-
-  .section-main-title {
-    font-size: 1.7rem;
-  }
-
+  .home-wrapper { padding: 0 1rem; }
+  .type-content { padding: 1.5rem; }
+  .section-main-title { font-size: 1.7rem; }
 }
-
 </style>
-
 <div class="home-wrapper">
-
   <!-- HERO -->
   <div class="home-hero-shell">
-
     <div class="hero-orbit orbit-1"></div>
     <div class="hero-orbit orbit-2"></div>
-
     <div class="home-hero-card">
-
       <div class="hero-slider" id="heroSlider">
-
-        <div class="hero-slide">
-          <img
-            src="{% static 'img/BANER1.jpeg' %}"
-            alt="Banner 1"
-          >
-        </div>
-
-        <div class="hero-slide">
-          <img
-            src="{% static 'img/BANER2.png' %}"
-            alt="Banner 2"
-          >
-        </div>
-
-        <div class="hero-slide">
-          <img
-            src="{% static 'img/BANER3.png' %}"
-            alt="Banner 3"
-          >
-        </div>
-
+        <div class="hero-slide"><img src="{% static 'img/BANER1.jpeg' %}" alt="Banner 1"></div>
+        <div class="hero-slide"><img src="{% static 'img/BANER2.png' %}" alt="Banner 2"></div>
+        <div class="hero-slide"><img src="{% static 'img/BANER3.png' %}" alt="Banner 3"></div>
       </div>
-
       <div class="hero-dots" id="heroDots"></div>
-
     </div>
-
   </div>
-
   <!-- BUTTON -->
-
   <div class="home-actions">
-
     {% if not request.user.is_staff %}
-
-      <a
-        href="{% url 'shop:profile' %}"
-        class="home-btn-outline"
-      >
-        Atur Data Pengiriman
-      </a>
-
+      <a href="{% url 'shop:profile' %}" class="home-btn-outline">Atur Data Pengiriman</a>
     {% else %}
-
-      <a
-        href="{% url 'shop:management_dashboard' %}"
-        class="home-btn-outline"
-      >
-        Dashboard Admin
-      </a>
-
+      <a href="{% url 'shop:management_dashboard' %}" class="home-btn-outline">Dashboard Admin</a>
     {% endif %}
-
   </div>
-
   <hr class="section-divider">
-
   <!-- PRODUCT SECTION -->
-
   <section class="home-product-type">
-
     <div class="section-heading">
-
-      <span class="section-mini-title">
-        AF PROMOTION COLLECTION
-      </span>
-
-      <h2 class="section-main-title">
-        Pilih Kebutuhan Produksi Anda
-      </h2>
-
+      <span class="section-mini-title">AF PROMOTION COLLECTION</span>
+      <h2 class="section-main-title">Pilih Kebutuhan Produksi Anda</h2>
       <p class="section-description">
-        Solusi apparel modern untuk kebutuhan personal,
-        komunitas, clothing brand, merchandise bisnis,
-        hingga custom produksi skala besar.
+        Solusi apparel modern untuk kebutuhan personal, komunitas, clothing brand,
+        merchandise bisnis, hingga custom produksi skala besar.
       </p>
-
     </div>
-
     <div class="product-type-grid">
-
       <!-- PRODUK POLOS -->
-
       <div class="product-type-card glass-card">
-
-        <div class="type-badge">
-          READY STOCK
-        </div>
-
+        <div class="type-badge">READY STOCK</div>
         <div class="type-image-wrap">
-
-          <img
-            src="{% static 'img/BANER2.png' %}"
-            alt="Produk Polos"
-          >
-
+          <img src="{% static 'img/BANER2.png' %}" alt="Produk Polos">
         </div>
-
         <div class="type-content">
-
-          <h3>
-            Produk Polos
-          </h3>
-
-          <p>
-            Kaos polos premium dengan bahan nyaman,
-            jahitan rapih, dan kualitas modern untuk
-            kebutuhan fashion harian maupun brand apparel.
-          </p>
-
+          <h3>Produk Polos</h3>
+          <p>Kaos polos premium dengan bahan nyaman, jahitan rapih, dan kualitas modern untuk kebutuhan fashion harian maupun brand apparel.</p>
           <ul class="type-feature-list">
             <li>✓ Cotton Combed Premium</li>
             <li>✓ Ready Stock</li>
             <li>✓ Jahitan Rapih</li>
             <li>✓ Size Lengkap</li>
           </ul>
-
-          <a
-            href="{% url 'shop:product_list' %}"
-            class="type-btn-primary"
-          >
-            Lihat Produk
-          </a>
-
+          <a href="{% url 'shop:product_list' %}" class="type-btn-primary">Lihat Produk</a>
         </div>
-
       </div>
-
       <!-- CUSTOM -->
-
       <div class="product-type-card dark-card">
-
-        <div class="type-badge type-badge-dark">
-          CUSTOM ORDER
-        </div>
-
+        <div class="type-badge type-badge-dark">CUSTOM ORDER</div>
         <div class="type-image-wrap">
-
-          <img
-            src="{% static 'img/BANER3.png' %}"
-            alt="Custom Produk"
-          >
-
+          <img src="{% static 'img/BANER3.png' %}" alt="Custom Produk">
         </div>
-
         <div class="type-content">
-
-          <h3 style="color: white;">
-            Custom Produk
-          </h3>
-
-          <p>
-            Produksi Custom apparel untuk komunitas,
-            clothing brand, sekolah, event organizer,
-            merchandise bisnis, dan kebutuhan produksi massal.
-          </p>
-
+          <h3 style="color: white;">Custom Produk</h3>
+          <p>Produksi Custom apparel untuk komunitas, clothing brand, sekolah, event organizer, merchandise bisnis, dan kebutuhan produksi massal.</p>
           <ul class="type-feature-list">
             <li>✓ Sablon & Bordir</li>
             <li>✓ Custom Design</li>
             <li>✓ Produksi Massal</li>
             <li>✓ Konsultasi Gratis</li>
           </ul>
-
-          <a
-            href="{% url 'shop:custom_katalog' %}"
-            class="type-btn-secondary"
-          >
-            Mulai Custom
-          </a>
-
+          <a href="{% url 'shop:custom_katalog' %}" class="type-btn-secondary">Mulai Custom</a>
         </div>
-
       </div>
-
     </div>
-
   </section>
-
   <!-- FEATURE STRIP -->
-
   <section class="feature-strip">
-
     <div class="feature-box">
-
-      <div class="feature-icon">
-        ⚡
-      </div>
-
-      <div>
-        <h4>Fast Production</h4>
-        <p>Pengerjaan cepat & profesional.</p>
-      </div>
-
+      <div class="feature-icon">⚡</div>
+      <div><h4>Fast Production</h4><p>Pengerjaan cepat & profesional.</p></div>
     </div>
-
     <div class="feature-box">
-
-      <div class="feature-icon">
-        🧵
-      </div>
-
-      <div>
-        <h4>Premium Material</h4>
-        <p>Kualitas bahan nyaman & modern.</p>
-      </div>
-
+      <div class="feature-icon">🧵</div>
+      <div><h4>Premium Material</h4><p>Kualitas bahan nyaman & modern.</p></div>
     </div>
-
     <div class="feature-box">
-
-      <div class="feature-icon">
-        🚚
-      </div>
-
-      <div>
-        <h4>Nationwide Shipping</h4>
-        <p>Pengiriman ke seluruh Indonesia.</p>
-      </div>
-
+      <div class="feature-icon">🚚</div>
+      <div><h4>Nationwide Shipping</h4><p>Pengiriman ke seluruh Indonesia.</p></div>
     </div>
-
-  </section>
-
+  </sction>
 </div>
-
 <script>
-
 const slider = document.getElementById("heroSlider");
 const dotsContainer = document.getElementById("heroDots");
-
-const slides = slider
-  ? slider.children
-  : [];
-
+const slides = slider ? slider.children : [];
 let index = 0;
-
-if (
-  slider &&
-  dotsContainer &&
-  slides.length > 0
-) {
-
+if (slider && dotsContainer && slides.length > 0) {
   for (let i = 0; i < slides.length; i++) {
-
     const dot = document.createElement("div");
-
-    dot.className =
-      "hero-dot" +
-      (i === 0 ? " active" : "");
-
+    dot.className = "hero-dot" + (i === 0 ? " active" : "");
     dot.dataset.index = i;
-
-    dot.onclick = () => {
-      index = i;
-      updateSlider();
-    };
-
+    dot.onclick = () => { index = i; updateSlider(); };
     dotsContainer.appendChild(dot);
-
   }
-
   const dots = dotsContainer.children;
-
   function updateSlider() {
-
-    slider.style.transform =
-      `translateX(-${index * 100}%)`;
-
-    for (let d of dots) {
-      d.classList.remove("active");
-    }
-
+    slider.style.transform = `translateX(-${index * 100}%)`;
+    for (let d of dots) d.classList.remove("active");
     dots[index].classList.add("active");
-
   }
-
   setInterval(() => {
-
-    index =
-      (index + 1) %
-      slides.length;
-
+    index = (index + 1) % slides.length;
     updateSlider();
-
   }, 4000);
-
 }
-
 </script>
-
 {% endblock %}
